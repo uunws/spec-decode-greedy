@@ -1,0 +1,1676 @@
+{
+  "first": {
+    "summary": {
+      "total_tokens_generated": 65,
+      "accepted_tokens": 28,
+      "rejected_tokens": 41,
+      "max_accepted_in_single_step": 3,
+      "average_accepted_per_step": 0.78,
+      "speculative_steps": 36,
+      "normal_steps": 64,
+      "speedup_ratio": 1.78
+    },
+    "mismatch_count": 29,
+    "sample_mismatches": [
+      {
+        "step_index": 1,
+        "prompt_context_ids": [
+          40226
+        ],
+        "draft_token_ids": [
+          14922,
+          1547,
+          481
+        ],
+        "accepted_count": 1,
+        "mismatched_draft_token_id": 1547,
+        "expected_token_id": 666,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            40226
+          ],
+          "total_matches": 1,
+          "strategy": "first",
+          "chosen_match_index": 209,
+          "chosen_draft": [
+            14922,
+            1547,
+            481
+          ],
+          "reason": "First match of prefix [40226] at index 209"
+        }
+      },
+      {
+        "step_index": 2,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 10686,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 3,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686
+        ],
+        "draft_token_ids": [
+          832,
+          262,
+          6483
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 832,
+        "expected_token_id": 17901,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            10686
+          ],
+          "total_matches": 1,
+          "strategy": "first",
+          "chosen_match_index": 20,
+          "chosen_draft": [
+            832,
+            262,
+            6483
+          ],
+          "reason": "First match of prefix [10686] at index 20"
+        }
+      },
+      {
+        "step_index": 4,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901
+        ],
+        "draft_token_ids": [
+          262,
+          1767,
+          286
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 262,
+        "expected_token_id": 706,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            17901
+          ],
+          "total_matches": 2,
+          "strategy": "first",
+          "chosen_match_index": 14,
+          "chosen_draft": [
+            262,
+            1767,
+            286
+          ],
+          "reason": "First match of prefix [17901] at index 14"
+        }
+      },
+      {
+        "step_index": 5,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706
+        ],
+        "draft_token_ids": [
+          2485,
+          10181,
+          351
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 2485,
+        "expected_token_id": 3344,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            706
+          ],
+          "total_matches": 2,
+          "strategy": "first",
+          "chosen_match_index": 29,
+          "chosen_draft": [
+            2485,
+            10181,
+            351
+          ],
+          "reason": "First match of prefix [706] at index 29"
+        }
+      },
+      {
+        "step_index": 6,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344
+        ],
+        "draft_token_ids": [
+          7411,
+          30886,
+          28195
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 7411,
+        "expected_token_id": 351,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            3344
+          ],
+          "total_matches": 2,
+          "strategy": "first",
+          "chosen_match_index": 49,
+          "chosen_draft": [
+            7411,
+            30886,
+            28195
+          ],
+          "reason": "First match of prefix [3344] at index 49"
+        }
+      },
+      {
+        "step_index": 8,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678
+        ],
+        "draft_token_ids": [
+          661,
+          11,
+          11432
+        ],
+        "accepted_count": 1,
+        "mismatched_draft_token_id": 11,
+        "expected_token_id": 764,
+        "explanation": {
+          "n_used": 3,
+          "prefix_tokens": [
+            2923,
+            678
+          ],
+          "total_matches": 1,
+          "strategy": "first",
+          "chosen_match_index": 35,
+          "chosen_draft": [
+            661,
+            11,
+            11432
+          ],
+          "reason": "First match of prefix [2923, 678] at index 35"
+        }
+      },
+      {
+        "step_index": 9,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 198,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 10,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 464,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 11,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 1767,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 12,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464,
+          1767
+        ],
+        "draft_token_ids": [
+          286,
+          281,
+          47689
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 286,
+        "expected_token_id": 373,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            1767
+          ],
+          "total_matches": 2,
+          "strategy": "first",
+          "chosen_match_index": 16,
+          "chosen_draft": [
+            286,
+            281,
+            47689
+          ],
+          "reason": "First match of prefix [1767] at index 16"
+        }
+      },
+      {
+        "step_index": 16,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464,
+          1767,
+          373,
+          5421,
+          1021,
+          290,
+          2366,
+          351,
+          6503,
+          290,
+          12908,
+          287,
+          257,
+          9629,
+          286
+        ],
+        "draft_token_ids": [
+          7309,
+          618,
+          31622
+        ],
+        "accepted_count": 1,
+        "mismatched_draft_token_id": 618,
+        "expected_token_id": 764,
+        "explanation": {
+          "n_used": 3,
+          "prefix_tokens": [
+            9629,
+            286
+          ],
+          "total_matches": 1,
+          "strategy": "first",
+          "chosen_match_index": 109,
+          "chosen_draft": [
+            7309,
+            618,
+            31622
+          ],
+          "reason": "First match of prefix [9629, 286] at index 109"
+        }
+      },
+      {
+        "step_index": 17,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464,
+          1767,
+          373,
+          5421,
+          1021,
+          290,
+          2366,
+          351,
+          6503,
+          290,
+          12908,
+          287,
+          257,
+          9629,
+          286,
+          7309,
+          764
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 198,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 18,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464,
+          1767,
+          373,
+          5421,
+          1021,
+          290,
+          2366,
+          351,
+          6503,
+          290,
+          12908,
+          287,
+          257,
+          9629,
+          286,
+          7309,
+          764,
+          198
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 25517,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 19,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464,
+          1767,
+          373,
+          5421,
+          1021,
+          290,
+          2366,
+          351,
+          6503,
+          290,
+          12908,
+          287,
+          257,
+          9629,
+          286,
+          7309,
+          764,
+          198,
+          25517
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 738,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      }
+    ]
+  },
+  "recency": {
+    "summary": {
+      "total_tokens_generated": 65,
+      "accepted_tokens": 27,
+      "rejected_tokens": 45,
+      "max_accepted_in_single_step": 3,
+      "average_accepted_per_step": 0.73,
+      "speculative_steps": 37,
+      "normal_steps": 64,
+      "speedup_ratio": 1.73
+    },
+    "mismatch_count": 30,
+    "sample_mismatches": [
+      {
+        "step_index": 1,
+        "prompt_context_ids": [
+          40226
+        ],
+        "draft_token_ids": [
+          14922,
+          1547,
+          481
+        ],
+        "accepted_count": 1,
+        "mismatched_draft_token_id": 1547,
+        "expected_token_id": 666,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            40226
+          ],
+          "total_matches": 1,
+          "strategy": "recency",
+          "chosen_match_index": 209,
+          "chosen_draft": [
+            14922,
+            1547,
+            481
+          ],
+          "reason": "Most recent (last) match of prefix [40226] at index 209"
+        }
+      },
+      {
+        "step_index": 2,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 10686,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 3,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686
+        ],
+        "draft_token_ids": [
+          832,
+          262,
+          6483
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 832,
+        "expected_token_id": 17901,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            10686
+          ],
+          "total_matches": 1,
+          "strategy": "recency",
+          "chosen_match_index": 20,
+          "chosen_draft": [
+            832,
+            262,
+            6483
+          ],
+          "reason": "Most recent (last) match of prefix [10686] at index 20"
+        }
+      },
+      {
+        "step_index": 4,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901
+        ],
+        "draft_token_ids": [
+          832,
+          262,
+          6483
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 832,
+        "expected_token_id": 706,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            17901
+          ],
+          "total_matches": 2,
+          "strategy": "recency",
+          "chosen_match_index": 64,
+          "chosen_draft": [
+            832,
+            262,
+            6483
+          ],
+          "reason": "Most recent (last) match of prefix [17901] at index 64"
+        }
+      },
+      {
+        "step_index": 5,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706
+        ],
+        "draft_token_ids": [
+          257,
+          5707,
+          290
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 257,
+        "expected_token_id": 3344,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            706
+          ],
+          "total_matches": 2,
+          "strategy": "recency",
+          "chosen_match_index": 305,
+          "chosen_draft": [
+            257,
+            5707,
+            290
+          ],
+          "reason": "Most recent (last) match of prefix [706] at index 305"
+        }
+      },
+      {
+        "step_index": 6,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344
+        ],
+        "draft_token_ids": [
+          6265,
+          503,
+          319
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 6265,
+        "expected_token_id": 351,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            3344
+          ],
+          "total_matches": 2,
+          "strategy": "recency",
+          "chosen_match_index": 154,
+          "chosen_draft": [
+            6265,
+            503,
+            319
+          ],
+          "reason": "Most recent (last) match of prefix [3344] at index 154"
+        }
+      },
+      {
+        "step_index": 7,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351
+        ],
+        "draft_token_ids": [
+          4334,
+          4572,
+          6541
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 4334,
+        "expected_token_id": 5533,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            351
+          ],
+          "total_matches": 4,
+          "strategy": "recency",
+          "chosen_match_index": 171,
+          "chosen_draft": [
+            4334,
+            4572,
+            6541
+          ],
+          "reason": "Most recent (last) match of prefix [351] at index 171"
+        }
+      },
+      {
+        "step_index": 9,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661
+        ],
+        "draft_token_ids": [
+          11,
+          11432,
+          2098
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 11,
+        "expected_token_id": 764,
+        "explanation": {
+          "n_used": 3,
+          "prefix_tokens": [
+            678,
+            661
+          ],
+          "total_matches": 1,
+          "strategy": "recency",
+          "chosen_match_index": 36,
+          "chosen_draft": [
+            11,
+            11432,
+            2098
+          ],
+          "reason": "Most recent (last) match of prefix [678, 661] at index 36"
+        }
+      },
+      {
+        "step_index": 10,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 198,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 11,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 464,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 12,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 1767,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 16,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464,
+          1767,
+          373,
+          5421,
+          1021,
+          290,
+          2366,
+          351,
+          6503,
+          290,
+          12908,
+          287,
+          257,
+          9629
+        ],
+        "draft_token_ids": [
+          286,
+          7309,
+          618
+        ],
+        "accepted_count": 2,
+        "mismatched_draft_token_id": 618,
+        "expected_token_id": 764,
+        "explanation": {
+          "n_used": 3,
+          "prefix_tokens": [
+            257,
+            9629
+          ],
+          "total_matches": 1,
+          "strategy": "recency",
+          "chosen_match_index": 108,
+          "chosen_draft": [
+            286,
+            7309,
+            618
+          ],
+          "reason": "Most recent (last) match of prefix [257, 9629] at index 108"
+        }
+      },
+      {
+        "step_index": 17,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464,
+          1767,
+          373,
+          5421,
+          1021,
+          290,
+          2366,
+          351,
+          6503,
+          290,
+          12908,
+          287,
+          257,
+          9629,
+          286,
+          7309,
+          764
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 198,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 18,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464,
+          1767,
+          373,
+          5421,
+          1021,
+          290,
+          2366,
+          351,
+          6503,
+          290,
+          12908,
+          287,
+          257,
+          9629,
+          286,
+          7309,
+          764,
+          198
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 25517,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 19,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464,
+          1767,
+          373,
+          5421,
+          1021,
+          290,
+          2366,
+          351,
+          6503,
+          290,
+          12908,
+          287,
+          257,
+          9629,
+          286,
+          7309,
+          764,
+          198,
+          25517
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 738,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      }
+    ]
+  },
+  "frequency": {
+    "summary": {
+      "total_tokens_generated": 65,
+      "accepted_tokens": 27,
+      "rejected_tokens": 45,
+      "max_accepted_in_single_step": 3,
+      "average_accepted_per_step": 0.73,
+      "speculative_steps": 37,
+      "normal_steps": 64,
+      "speedup_ratio": 1.73
+    },
+    "mismatch_count": 30,
+    "sample_mismatches": [
+      {
+        "step_index": 1,
+        "prompt_context_ids": [
+          40226
+        ],
+        "draft_token_ids": [
+          14922,
+          1547,
+          481
+        ],
+        "accepted_count": 1,
+        "mismatched_draft_token_id": 1547,
+        "expected_token_id": 666,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            40226
+          ],
+          "total_matches": 1,
+          "strategy": "frequency",
+          "chosen_match_index": 209,
+          "chosen_draft": [
+            14922,
+            1547,
+            481
+          ],
+          "frequency_map": {
+            "[14922, 1547, 481]": 1
+          },
+          "reason": "Most frequent continuation [14922, 1547, 481] (frequency 1) among 1 candidates matching prefix [40226]"
+        }
+      },
+      {
+        "step_index": 2,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 10686,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 3,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686
+        ],
+        "draft_token_ids": [
+          832,
+          262,
+          6483
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 832,
+        "expected_token_id": 17901,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            10686
+          ],
+          "total_matches": 1,
+          "strategy": "frequency",
+          "chosen_match_index": 20,
+          "chosen_draft": [
+            832,
+            262,
+            6483
+          ],
+          "frequency_map": {
+            "[832, 262, 6483]": 1
+          },
+          "reason": "Most frequent continuation [832, 262, 6483] (frequency 1) among 1 candidates matching prefix [10686]"
+        }
+      },
+      {
+        "step_index": 4,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901
+        ],
+        "draft_token_ids": [
+          832,
+          262,
+          6483
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 832,
+        "expected_token_id": 706,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            17901
+          ],
+          "total_matches": 2,
+          "strategy": "frequency",
+          "chosen_match_index": 64,
+          "chosen_draft": [
+            832,
+            262,
+            6483
+          ],
+          "frequency_map": {
+            "[262, 1767, 286]": 1,
+            "[832, 262, 6483]": 1
+          },
+          "reason": "Most frequent continuation [832, 262, 6483] (frequency 1) among 2 candidates matching prefix [17901]"
+        }
+      },
+      {
+        "step_index": 5,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706
+        ],
+        "draft_token_ids": [
+          257,
+          5707,
+          290
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 257,
+        "expected_token_id": 3344,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            706
+          ],
+          "total_matches": 2,
+          "strategy": "frequency",
+          "chosen_match_index": 305,
+          "chosen_draft": [
+            257,
+            5707,
+            290
+          ],
+          "frequency_map": {
+            "[2485, 10181, 351]": 1,
+            "[257, 5707, 290]": 1
+          },
+          "reason": "Most frequent continuation [257, 5707, 290] (frequency 1) among 2 candidates matching prefix [706]"
+        }
+      },
+      {
+        "step_index": 6,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344
+        ],
+        "draft_token_ids": [
+          6265,
+          503,
+          319
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 6265,
+        "expected_token_id": 351,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            3344
+          ],
+          "total_matches": 2,
+          "strategy": "frequency",
+          "chosen_match_index": 154,
+          "chosen_draft": [
+            6265,
+            503,
+            319
+          ],
+          "frequency_map": {
+            "[7411, 30886, 28195]": 1,
+            "[6265, 503, 319]": 1
+          },
+          "reason": "Most frequent continuation [6265, 503, 319] (frequency 1) among 2 candidates matching prefix [3344]"
+        }
+      },
+      {
+        "step_index": 7,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351
+        ],
+        "draft_token_ids": [
+          4334,
+          4572,
+          6541
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 4334,
+        "expected_token_id": 5533,
+        "explanation": {
+          "n_used": 2,
+          "prefix_tokens": [
+            351
+          ],
+          "total_matches": 4,
+          "strategy": "frequency",
+          "chosen_match_index": 171,
+          "chosen_draft": [
+            4334,
+            4572,
+            6541
+          ],
+          "frequency_map": {
+            "[5533, 31622, 2923]": 1,
+            "[6503, 290, 12908]": 1,
+            "[262, 4315, 287]": 1,
+            "[4334, 4572, 6541]": 1
+          },
+          "reason": "Most frequent continuation [4334, 4572, 6541] (frequency 1) among 4 candidates matching prefix [351]"
+        }
+      },
+      {
+        "step_index": 9,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661
+        ],
+        "draft_token_ids": [
+          11,
+          11432,
+          2098
+        ],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": 11,
+        "expected_token_id": 764,
+        "explanation": {
+          "n_used": 3,
+          "prefix_tokens": [
+            678,
+            661
+          ],
+          "total_matches": 1,
+          "strategy": "frequency",
+          "chosen_match_index": 36,
+          "chosen_draft": [
+            11,
+            11432,
+            2098
+          ],
+          "frequency_map": {
+            "[11, 11432, 2098]": 1
+          },
+          "reason": "Most frequent continuation [11, 11432, 2098] (frequency 1) among 1 candidates matching prefix [678, 661]"
+        }
+      },
+      {
+        "step_index": 10,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 198,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 11,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 464,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 12,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 1767,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 16,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464,
+          1767,
+          373,
+          5421,
+          1021,
+          290,
+          2366,
+          351,
+          6503,
+          290,
+          12908,
+          287,
+          257,
+          9629
+        ],
+        "draft_token_ids": [
+          286,
+          7309,
+          618
+        ],
+        "accepted_count": 2,
+        "mismatched_draft_token_id": 618,
+        "expected_token_id": 764,
+        "explanation": {
+          "n_used": 3,
+          "prefix_tokens": [
+            257,
+            9629
+          ],
+          "total_matches": 1,
+          "strategy": "frequency",
+          "chosen_match_index": 108,
+          "chosen_draft": [
+            286,
+            7309,
+            618
+          ],
+          "frequency_map": {
+            "[286, 7309, 618]": 1
+          },
+          "reason": "Most frequent continuation [286, 7309, 618] (frequency 1) among 1 candidates matching prefix [257, 9629]"
+        }
+      },
+      {
+        "step_index": 17,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464,
+          1767,
+          373,
+          5421,
+          1021,
+          290,
+          2366,
+          351,
+          6503,
+          290,
+          12908,
+          287,
+          257,
+          9629,
+          286,
+          7309,
+          764
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 198,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 18,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464,
+          1767,
+          373,
+          5421,
+          1021,
+          290,
+          2366,
+          351,
+          6503,
+          290,
+          12908,
+          287,
+          257,
+          9629,
+          286,
+          7309,
+          764,
+          198
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 25517,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      },
+      {
+        "step_index": 19,
+        "prompt_context_ids": [
+          40226,
+          14922,
+          666,
+          10686,
+          17901,
+          706,
+          3344,
+          351,
+          5533,
+          31622,
+          2923,
+          678,
+          661,
+          764,
+          198,
+          464,
+          1767,
+          373,
+          5421,
+          1021,
+          290,
+          2366,
+          351,
+          6503,
+          290,
+          12908,
+          287,
+          257,
+          9629,
+          286,
+          7309,
+          764,
+          198,
+          25517
+        ],
+        "draft_token_ids": [],
+        "accepted_count": 0,
+        "mismatched_draft_token_id": null,
+        "expected_token_id": 738,
+        "explanation": {
+          "reason": "No match found at any n-gram level"
+        }
+      }
+    ]
+  }
+}
