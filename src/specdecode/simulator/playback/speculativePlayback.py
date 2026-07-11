@@ -1,5 +1,6 @@
 """Playback simulation classes for speculative decoding."""
 
+import time
 from typing import Any, List, Optional
 
 import torch
@@ -37,13 +38,19 @@ class SpeculativePlayback(AbstractPlayback):
         if self.metrics:
             self.metrics.normal_steps = len(complete_tokens) - 1
 
+        playback_start_ns = time.perf_counter_ns() if self.metrics else 0
+        drafter_time_start_ns = self.metrics.drafter_wall_time_ns if self.metrics else 0
+
         current_prefix = [complete_tokens[0]]
         step_idx = 0
 
         while len(current_prefix) < len(complete_tokens):
             if use_drafter and self.drafter is not None:
                 prefix_snapshot = list(current_prefix)
+                drafter_start_ns = time.perf_counter_ns()
                 draft_tokens = self.drafter.generate_draft(current_prefix)
+                if self.metrics:
+                    self.metrics.record_drafter_time(time.perf_counter_ns() - drafter_start_ns)
                 n_used = getattr(self.drafter, "last_n_used", 0)
 
                 verification_result = self.verifier.verify(
@@ -93,6 +100,11 @@ class SpeculativePlayback(AbstractPlayback):
         decoded_string = self.tokenizer.decode(current_prefix)
         if self.metrics:
             self.metrics.total_tokens_generated = len(current_prefix)
+            drafter_elapsed_ns = self.metrics.drafter_wall_time_ns - drafter_time_start_ns
+            self.metrics.record_playback_time(
+                time.perf_counter_ns() - playback_start_ns,
+                excluded_ns=drafter_elapsed_ns,
+            )
 
         return decoded_string
 
@@ -134,13 +146,19 @@ class TensorSpeculativePlayback(AbstractPlayback):
         if self.metrics:
             self.metrics.normal_steps = len(complete_tokens) - 1
 
+        playback_start_ns = time.perf_counter_ns() if self.metrics else 0
+        drafter_time_start_ns = self.metrics.drafter_wall_time_ns if self.metrics else 0
+
         current_prefix = [complete_tokens[0]]
         step_idx = 0
 
         while len(current_prefix) < len(complete_tokens):
             if use_drafter and self.drafter is not None:
                 prefix_snapshot = list(current_prefix)
+                drafter_start_ns = time.perf_counter_ns()
                 draft_tokens: torch.Tensor = self._tensor_drafter.generate_draft(current_prefix)
+                if self.metrics:
+                    self.metrics.record_drafter_time(time.perf_counter_ns() - drafter_start_ns)
                 n_used = getattr(self._tensor_drafter, "last_n_used", 0)
 
                 result = self._tensor_verifier.verify(draft_tokens, current_prefix, complete_tokens)
@@ -181,5 +199,10 @@ class TensorSpeculativePlayback(AbstractPlayback):
 
         if self.metrics:
             self.metrics.total_tokens_generated = len(current_prefix)
+            drafter_elapsed_ns = self.metrics.drafter_wall_time_ns - drafter_time_start_ns
+            self.metrics.record_playback_time(
+                time.perf_counter_ns() - playback_start_ns,
+                excluded_ns=drafter_elapsed_ns,
+            )
 
         return current_prefix

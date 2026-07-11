@@ -101,6 +101,9 @@ def run_benchmark(
                 "rejected_tokens": summary["rejected_tokens"],
                 "steps": summary["speculative_steps"],
                 "acceptance_rate": acceptance_rate,
+                "drafter_calls": summary["drafter_calls"],
+                "drafter_wall_time_ms": summary["drafter_wall_time_ms"],
+                "average_drafter_wall_time_ms": summary["average_drafter_wall_time_ms"],
             }
         )
 
@@ -108,7 +111,8 @@ def run_benchmark(
             f"K={k}: steps={summary['speculative_steps']} | "
             f"avg_accept={summary['average_accepted_per_step']} | "
             f"accept_rate={acceptance_rate:.1%} | "
-            f"speedup={summary['speedup_ratio']}x"
+            f"speedup={summary['speedup_ratio']}x | "
+            f"drafter={summary['average_drafter_wall_time_ms']} ms/call"
         )
         assert reconstructed == target_text, f"Reconstruction mismatch at K={k}!"
 
