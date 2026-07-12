@@ -7,23 +7,22 @@ so that any future drafter/verifier automatically gets coverage by being added
 to the parametrize lists below.
 """
 
-import pytest
-import torch
 from typing import List
 
+import pytest
+import torch
+
 from specdecode.interface.abstractDrafter import AbstractDrafter
-from specdecode.interface.abstractVerifier import AbstractVerifier
+from specdecode.interface.abstractPlayback import AbstractPlayback
 from specdecode.interface.abstractTensorDrafter import AbstractTensorDrafter
 from specdecode.interface.abstractTensorVerifier import AbstractTensorVerifier
-from specdecode.interface.abstractPlayback import AbstractPlayback
-
+from specdecode.interface.abstractVerifier import AbstractVerifier
 from specdecode.simulator.drafter.nGramDrafter import NGramDrafter
-from specdecode.simulator.verifier.greedyVerifier import GreedyVerifier
-from specdecode.simulator.verifier.tensorGreedyVerifier import TensorGreedyVerifier
-from specdecode.simulator.drafter.tensorNGramDrafter import TensorNGramDrafter, PAD_ID
+from specdecode.simulator.drafter.tensorNGramDrafter import PAD_ID, TensorNGramDrafter
 from specdecode.simulator.metrics.playbackMetrics import PlaybackMetrics
 from specdecode.simulator.playback.speculativePlayback import SpeculativePlayback
-
+from specdecode.simulator.verifier.greedyVerifier import GreedyVerifier
+from specdecode.simulator.verifier.tensorGreedyVerifier import TensorGreedyVerifier
 
 # =============================================================================
 # ABC instantiation prevention

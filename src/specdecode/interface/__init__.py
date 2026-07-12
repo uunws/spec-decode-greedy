@@ -6,10 +6,10 @@ any code importing from this sub-package gets the same symbols.
 """
 
 from specdecode.interface.abstractDrafter import AbstractDrafter
-from specdecode.interface.abstractVerifier import AbstractVerifier
 from specdecode.interface.abstractPlayback import AbstractPlayback
 from specdecode.interface.abstractTensorDrafter import AbstractTensorDrafter
 from specdecode.interface.abstractTensorVerifier import AbstractTensorVerifier
+from specdecode.interface.abstractVerifier import AbstractVerifier
 
 __all__ = [
     "AbstractDrafter",

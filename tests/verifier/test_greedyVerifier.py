@@ -1,9 +1,8 @@
 import torch
 
+from specdecode.simulator.drafter.tensorNGramDrafter import PAD_ID
 from specdecode.simulator.verifier.greedyVerifier import GreedyVerifier
 from specdecode.simulator.verifier.tensorGreedyVerifier import TensorGreedyVerifier
-from specdecode.simulator.drafter.tensorNGramDrafter import PAD_ID
-
 
 # =============================================================================
 # GreedyVerifier

@@ -1,8 +1,7 @@
 import torch
 
 from specdecode.simulator.drafter.nGramDrafter import NGramDrafter
-from specdecode.simulator.drafter.tensorNGramDrafter import TensorNGramDrafter, PAD_ID
-
+from specdecode.simulator.drafter.tensorNGramDrafter import PAD_ID, TensorNGramDrafter
 
 # =============================================================================
 # NGramDrafter
