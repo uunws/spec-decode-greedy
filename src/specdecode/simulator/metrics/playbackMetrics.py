@@ -33,6 +33,58 @@ class PlaybackMetrics:
         # N-gram size usage counter
         self.n_gram_usage: Dict[int, int] = {}
 
+        # Drafter generation timing. Store nanoseconds internally to preserve
+        # precision for fast CPU drafters; summaries expose milliseconds.
+        self.drafter_calls = 0
+        self.drafter_wall_time_ns = 0
+        self.min_drafter_wall_time_ns: Optional[int] = None
+        self.max_drafter_wall_time_ns = 0
+
+        # Playback loop timing. This excludes tokenizer encode/decode, drafter
+        # generation (recorded separately), and any construction/precompute.
+        self.playback_runs = 0
+        self.playback_wall_time_ns = 0
+        self.min_playback_wall_time_ns: Optional[int] = None
+        self.max_playback_wall_time_ns = 0
+
+    def record_drafter_time(self, elapsed_ns: int) -> None:
+        """Record one ``generate_draft`` wall-clock duration in nanoseconds."""
+        if elapsed_ns < 0:
+            raise ValueError("elapsed_ns must be non-negative")
+
+        self.drafter_calls += 1
+        self.drafter_wall_time_ns += elapsed_ns
+        self.max_drafter_wall_time_ns = max(self.max_drafter_wall_time_ns, elapsed_ns)
+        if self.min_drafter_wall_time_ns is None:
+            self.min_drafter_wall_time_ns = elapsed_ns
+        else:
+            self.min_drafter_wall_time_ns = min(self.min_drafter_wall_time_ns, elapsed_ns)
+
+    def record_playback_time(self, elapsed_ns: int, excluded_ns: int = 0) -> None:
+        """Record playback time after subtracting explicitly excluded intervals."""
+        if elapsed_ns < 0:
+            raise ValueError("elapsed_ns must be non-negative")
+        if excluded_ns < 0:
+            raise ValueError("excluded_ns must be non-negative")
+
+        effective_elapsed_ns = max(0, elapsed_ns - excluded_ns)
+        self.playback_runs += 1
+        self.playback_wall_time_ns += effective_elapsed_ns
+        self.max_playback_wall_time_ns = max(self.max_playback_wall_time_ns, effective_elapsed_ns)
+        if self.min_playback_wall_time_ns is None:
+            self.min_playback_wall_time_ns = effective_elapsed_ns
+        else:
+            self.min_playback_wall_time_ns = min(
+                self.min_playback_wall_time_ns, effective_elapsed_ns
+            )
+
+    @property
+    def average_drafter_wall_time_ns(self) -> float:
+        """Average wall-clock duration of one drafter call in nanoseconds."""
+        if self.drafter_calls == 0:
+            return 0.0
+        return self.drafter_wall_time_ns / self.drafter_calls
+
     def record_step(
         self,
         accepted_count: int,
@@ -118,4 +170,24 @@ class PlaybackMetrics:
             "speedup_ratio": round(self.speedup_ratio, 2),
             "step_types": dict(self.step_types),
             "n_gram_usage": dict(self.n_gram_usage),
+            "drafter_calls": self.drafter_calls,
+            "drafter_wall_time_ms": round(self.drafter_wall_time_ns / 1_000_000, 6),
+            "average_drafter_wall_time_ms": round(
+                self.average_drafter_wall_time_ns / 1_000_000, 6
+            ),
+            "min_drafter_wall_time_ms": round(
+                (self.min_drafter_wall_time_ns or 0) / 1_000_000, 6
+            ),
+            "max_drafter_wall_time_ms": round(self.max_drafter_wall_time_ns / 1_000_000, 6),
+            "playback_runs": self.playback_runs,
+            "playback_wall_time_ms": round(self.playback_wall_time_ns / 1_000_000, 6),
+            "average_playback_wall_time_ms": round(
+                (self.playback_wall_time_ns / self.playback_runs) / 1_000_000, 6
+            )
+            if self.playback_runs
+            else 0.0,
+            "min_playback_wall_time_ms": round(
+                (self.min_playback_wall_time_ns or 0) / 1_000_000, 6
+            ),
+            "max_playback_wall_time_ms": round(self.max_playback_wall_time_ns / 1_000_000, 6),
         }
