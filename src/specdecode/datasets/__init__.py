@@ -3,6 +3,12 @@ from .squad import load as load_squad
 from .samsum import load as load_samsum
 from .xsum import load as load_xsum
 from .cnn_dailymail import load as load_cnn_dailymail
+from .wiki import (
+    concatenate_articles,
+    load_articles,
+    split_tail_holdout,
+    stream_tail_holdout_tokens,
+)
 
 REGISTRY = {
     "wiki_demo": load_wiki_demo,
