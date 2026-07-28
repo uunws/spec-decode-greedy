@@ -14,7 +14,7 @@ python -m pytest tests/ -v
 python -m pytest tests/ --cov=specdecode --cov-report=term   # with coverage
 ```
 
-Linting and type checking (ruff / pyright) are coming soon — config is being added in a separate branch.
+Linting, formatting, type checking, and tests (ruff, pyright, pytest) all run automatically on every commit via the pre-commit hooks installed above. This means commits can be slower and will fail if any check fails — fix the reported issue and commit again.
 
 ## Adding a new drafter
 

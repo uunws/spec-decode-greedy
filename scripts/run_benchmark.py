@@ -1,11 +1,12 @@
-import os
-import json
 import argparse
+import json
+import os
+
 import matplotlib.pyplot as plt
 from transformers import AutoTokenizer
 
-from specdecode.simulator import NGramDrafter, GreedyVerifier, PlaybackMetrics, SpeculativePlayback
-from specdecode.datasets import get_dataset, REGISTRY
+from specdecode.datasets import REGISTRY, get_dataset
+from specdecode.simulator import GreedyVerifier, NGramDrafter, PlaybackMetrics, SpeculativePlayback
 
 # This script lives in <repo>/scripts/, so anchor experiments/ and configs/ to the
 # repo root — the benchmark then works regardless of the current working directory.

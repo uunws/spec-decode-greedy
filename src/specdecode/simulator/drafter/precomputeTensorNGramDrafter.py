@@ -4,7 +4,7 @@ from typing import List, Optional
 
 import torch
 
-from specdecode.simulator.drafter.tensorNGramDrafter import NGramIndex, PAD_ID
+from specdecode.simulator.drafter.tensorNGramDrafter import PAD_ID, NGramIndex
 from specdecode.simulator.drafter.vectorizeTensorNGramDrafter import (
     VectorizeTensorNGramDrafter,
 )

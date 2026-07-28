@@ -2,10 +2,10 @@
 
 from specdecode.simulator.drafter.nGramDrafter import NGramDrafter
 from specdecode.simulator.drafter.tensorNGramDrafter import (
+    PAD_ID,
+    IndexedTensorNGramDrafter,
     NGramIndex,
     TensorNGramDrafter,
-    IndexedTensorNGramDrafter,
-    PAD_ID,
 )
 
 __all__ = [
