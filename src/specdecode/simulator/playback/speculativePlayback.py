@@ -138,7 +138,9 @@ class TensorSpeculativePlayback(AbstractPlayback):
         reconstructed = self.run_tokens(complete_tokens, use_drafter=use_drafter)
         return self.tokenizer.decode(reconstructed)
 
-    def run_tokens(self, complete_tokens: List[int], use_drafter: bool = True) -> List[int]:
+    def run_tokens(  # noqa: C901
+        self, complete_tokens: List[int], use_drafter: bool = True
+    ) -> List[int]:
         """Token-level driver (skips encode/decode) — used by the analysis harness."""
         if not complete_tokens:
             return []
