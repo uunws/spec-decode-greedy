@@ -54,6 +54,32 @@ def test_playback_metrics_max_accepted_tracked_correctly():
     assert metrics.get_summary()["max_accepted_in_single_step"] == 5
 
 
+def test_playback_metrics_drafter_timing():
+    metrics = PlaybackMetrics()
+    metrics.record_drafter_time(1_000_000)
+    metrics.record_drafter_time(3_000_000)
+
+    summary = metrics.get_summary()
+    assert summary["drafter_calls"] == 2
+    assert summary["drafter_wall_time_ms"] == 4.0
+    assert summary["average_drafter_wall_time_ms"] == 2.0
+    assert summary["min_drafter_wall_time_ms"] == 1.0
+    assert summary["max_drafter_wall_time_ms"] == 3.0
+
+
+def test_playback_metrics_playback_timing():
+    metrics = PlaybackMetrics()
+    metrics.record_playback_time(3_000_000, excluded_ns=1_000_000)
+    metrics.record_playback_time(6_000_000, excluded_ns=2_000_000)
+
+    summary = metrics.get_summary()
+    assert summary["playback_runs"] == 2
+    assert summary["playback_wall_time_ms"] == 6.0
+    assert summary["average_playback_wall_time_ms"] == 3.0
+    assert summary["min_playback_wall_time_ms"] == 2.0
+    assert summary["max_playback_wall_time_ms"] == 4.0
+
+
 # =============================================================================
 # SpeculativePlayback — end-to-end
 # =============================================================================
@@ -74,6 +100,10 @@ def test_end_to_end_speculative_playback_with_drafter():
     assert summary["accepted_tokens"] > 0
     assert summary["speculative_steps"] < summary["normal_steps"]
     assert summary["speedup_ratio"] > 1.0
+    assert summary["drafter_calls"] > 0
+    assert summary["drafter_wall_time_ms"] >= 0.0
+    assert summary["playback_runs"] == 1
+    assert summary["playback_wall_time_ms"] >= 0.0
 
 
 def test_end_to_end_playback_without_drafter():
