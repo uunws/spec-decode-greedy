@@ -1,0 +1,6209 @@
+{
+  "config": {
+    "tokenizer": "Qwen/Qwen2.5-0.5B-Instruct",
+    "n_gram": 6,
+    "budget": 4,
+    "num_sequences": 1,
+    "n_requests": 200,
+    "target_tokens": 200,
+    "seed": 20260803,
+    "timer_overhead_ns": 49.1792,
+    "target_latency_model": {
+      "t_verify_1_ns": 20000000,
+      "beta": 0.0,
+      "source": "assumed",
+      "model_name": "assumed-7b",
+      "hardware": "assumed-gpu",
+      "fit_r2": null,
+      "max_calibrated_budget": null
+    },
+    "sensitivity_betas": [
+      0.005,
+      0.01
+    ],
+    "arm_pairs": {
+      "torch": [
+        "torch_scan",
+        "torch_index"
+      ],
+      "python": [
+        "python_scan",
+        "python_index"
+      ]
+    },
+    "axes": {
+      "codesearch": {
+        "coverage": 0.8719798982024354,
+        "mean_support": 326.45056893749074,
+        "normalized_branch_entropy": 0.6311268566456504,
+        "structure": 0.3688731433543496,
+        "n_positions": 15521,
+        "n_covered": 13534
+      },
+      "gsm8k": {
+        "coverage": 0.9784533155169534,
+        "mean_support": 134.5914988050529,
+        "normalized_branch_entropy": 0.5760890929247056,
+        "structure": 0.42391090707529444,
+        "n_positions": 11974,
+        "n_covered": 11716
+      },
+      "swetraj": {
+        "coverage": 0.9753457606734817,
+        "mean_support": 121.32899198520346,
+        "normalized_branch_entropy": 0.40244093620853916,
+        "structure": 0.5975590637914608,
+        "n_positions": 13304,
+        "n_covered": 12976
+      },
+      "wildchat": {
+        "coverage": 0.8618890554722639,
+        "mean_support": 405.29828833843584,
+        "normalized_branch_entropy": 0.6320418865631712,
+        "structure": 0.3679581134368288,
+        "n_positions": 16675,
+        "n_covered": 14372
+      },
+      "cnn": {
+        "coverage": 0.9269988412514485,
+        "mean_support": 313.6478125,
+        "normalized_branch_entropy": 0.6828318084687147,
+        "structure": 0.3171681915312853,
+        "n_positions": 6904,
+        "n_covered": 6400
+      },
+      "samsum": {
+        "coverage": 0.9397794741306191,
+        "mean_support": 317.5442238267148,
+        "normalized_branch_entropy": 0.6903457159404223,
+        "structure": 0.30965428405957773,
+        "n_positions": 3537,
+        "n_covered": 3324
+      },
+      "xsum": {
+        "coverage": 0.9421544856252165,
+        "mean_support": 275.3463235294118,
+        "normalized_branch_entropy": 0.683892370766143,
+        "structure": 0.31610762923385705,
+        "n_positions": 2887,
+        "n_covered": 2720
+      },
+      "dolly": {
+        "coverage": 0.9274014583113178,
+        "mean_support": 592.2791704649043,
+        "normalized_branch_entropy": 0.6964368645147074,
+        "structure": 0.30356313548529257,
+        "n_positions": 9463,
+        "n_covered": 8776
+      }
+    },
+    "pairs": [
+      {
+        "high": "wildchat",
+        "low": "xsum",
+        "support_ratio": 1.471958234790605,
+        "structure_ratio": 1.164027943041554
+      },
+      {
+        "high": "wildchat",
+        "low": "samsum",
+        "support_ratio": 1.2763522619123715,
+        "structure_ratio": 1.1882868488460292
+      },
+      {
+        "high": "wildchat",
+        "low": "cnn",
+        "support_ratio": 1.2922082418108236,
+        "structure_ratio": 1.1601356102588039
+      },
+      {
+        "high": "codesearch",
+        "low": "xsum",
+        "support_ratio": 1.1855998829147982,
+        "structure_ratio": 1.1669226214134065
+      }
+    ],
+    "labels": {
+      "codesearch": "high",
+      "gsm8k": "mixed",
+      "swetraj": "mixed",
+      "wildchat": "high",
+      "cnn": "low",
+      "samsum": "mixed",
+      "xsum": "low",
+      "dolly": "mixed"
+    }
+  },
+  "cells": {
+    "cnn|50000|B4|S1": {
+      "dataset": "cnn",
+      "label": "low",
+      "axes": {
+        "coverage": 0.9269988412514485,
+        "mean_support": 313.6478125,
+        "normalized_branch_entropy": 0.6828318084687147,
+        "structure": 0.3171681915312853,
+        "n_positions": 6904,
+        "n_covered": 6400
+      },
+      "store_tokens": 50000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "cnn",
+        "store_tokens": 50000,
+        "n_requests": 200,
+        "n_docs_in_store": 66,
+        "mean_target_tokens": 53.46,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 10492,
+        "speculative_steps": 9616,
+        "accepted_tokens": 878,
+        "rejected_tokens": 30442,
+        "acceptance_rate": 0.028033205619412516,
+        "token_speedup": 1.091098169717138,
+        "token_speedup_median": 1.0693342946407114,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 203208.0,
+            "mean_ns": 198024.5186440678,
+            "p95_ns": 289292.0,
+            "calls": 885
+          },
+          "build_ns": 1474833,
+          "build_bytes": 400000,
+          "retrieval": "on_the_fly",
+          "rho": 0.01015794104,
+          "drafter_cost_fraction": 0.010055794868614281,
+          "speedup_excluding_build": 1.0801263103409422,
+          "speedup_including_build": 1.080126269341906,
+          "sensitivity": {
+            "beta_0.005": 1.0643220191127267,
+            "beta_0.01": 1.048973551676398
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.080118110595652
+            ],
+            [
+              10,
+              1.0801254903608108
+            ],
+            [
+              100,
+              1.0801262283428732
+            ],
+            [
+              1000,
+              1.0801263021411347
+            ],
+            [
+              10000,
+              1.0801263095209614
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11042.0,
+            "mean_ns": 12756.693785310734,
+            "p95_ns": 18333.0,
+            "calls": 885
+          },
+          "build_ns": 28983083,
+          "build_bytes": 34271560,
+          "retrieval": "precomputed",
+          "rho": 0.00054964104,
+          "drafter_cost_fraction": 0.0005493391006853866,
+          "speedup_excluding_build": 1.0904987868298264,
+          "speedup_including_build": 1.0904979655779898,
+          "sensitivity": {
+            "beta_0.005": 1.074391763459018,
+            "beta_0.01": 1.058753626478424
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0903345610744435
+            ],
+            [
+              10,
+              1.090482362028116
+            ],
+            [
+              100,
+              1.0904971443273903
+            ],
+            [
+              1000,
+              1.09049862257936
+            ],
+            [
+              10000,
+              1.0904987704047775
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 876292.0,
+            "mean_ns": 1046502.1570621469,
+            "p95_ns": 2341584.0,
+            "calls": 885
+          },
+          "build_ns": 66083,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.04381214104,
+          "drafter_cost_fraction": 0.04197320506001,
+          "speedup_excluding_build": 1.0453012824989991,
+          "speedup_including_build": 1.0453012807785,
+          "sensitivity": {
+            "beta_0.005": 1.0304926883870316,
+            "beta_0.01": 1.0160978145212594
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0453009383992973
+            ],
+            [
+              10,
+              1.045301248089019
+            ],
+            [
+              100,
+              1.0453012790580012
+            ],
+            [
+              1000,
+              1.0453012821548993
+            ],
+            [
+              10000,
+              1.045301282464589
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 2542.0,
+            "mean_ns": 3044.146892655367,
+            "p95_ns": 5917.0,
+            "calls": 885
+          },
+          "build_ns": 36573750,
+          "build_bytes": 34271560,
+          "retrieval": "precomputed",
+          "rho": 0.00012464104,
+          "drafter_cost_fraction": 0.00012462550654725342,
+          "speedup_excluding_build": 1.0909621910550444,
+          "speedup_including_build": 1.0909611538366617,
+          "sensitivity": {
+            "beta_0.005": 1.0748415766947625,
+            "beta_0.01": 1.0591904379799906
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0907547866187266
+            ],
+            [
+              10,
+              1.0909414470621086
+            ],
+            [
+              100,
+              1.0909601166202512
+            ],
+            [
+              1000,
+              1.09096198361121
+            ],
+            [
+              10000,
+              1.0909621703106576
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 295,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 17.327645778656006
+    },
+    "cnn|200000|B4|S1": {
+      "dataset": "cnn",
+      "label": "low",
+      "axes": {
+        "coverage": 0.9269988412514485,
+        "mean_support": 313.6478125,
+        "normalized_branch_entropy": 0.6828318084687147,
+        "structure": 0.3171681915312853,
+        "n_positions": 6904,
+        "n_covered": 6400
+      },
+      "store_tokens": 200000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "cnn",
+        "store_tokens": 200000,
+        "n_requests": 200,
+        "n_docs_in_store": 247,
+        "mean_target_tokens": 53.46,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 10492,
+        "speculative_steps": 9280,
+        "accepted_tokens": 1219,
+        "rejected_tokens": 32489,
+        "acceptance_rate": 0.036163522012578615,
+        "token_speedup": 1.130603448275862,
+        "token_speedup_median": 1.0949519230769231,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 776333.0,
+            "mean_ns": 759794.1062146893,
+            "p95_ns": 1083917.0,
+            "calls": 885
+          },
+          "build_ns": 5848750,
+          "build_bytes": 1600000,
+          "retrieval": "on_the_fly",
+          "rho": 0.03881419104,
+          "drafter_cost_fraction": 0.037363939937267804,
+          "speedup_excluding_build": 1.088359648941615,
+          "speedup_including_build": 1.088359483863469,
+          "sensitivity": {
+            "beta_0.005": 1.0728679286052123,
+            "beta_0.01": 1.0578110374598775
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0883266343088978
+            ],
+            [
+              10,
+              1.0883563473882079
+            ],
+            [
+              100,
+              1.0883593187853728
+            ],
+            [
+              1000,
+              1.0883596159259818
+            ],
+            [
+              10000,
+              1.0883596456400515
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11083.0,
+            "mean_ns": 15793.515254237289,
+            "p95_ns": 28625.0,
+            "calls": 885
+          },
+          "build_ns": 143003958,
+          "build_bytes": 127739632,
+          "retrieval": "precomputed",
+          "rho": 0.0005516910399999999,
+          "drafter_cost_fraction": 0.00055138684481814,
+          "speedup_excluding_build": 1.1299800484077769,
+          "speedup_including_build": 1.1299756976023336,
+          "sensitivity": {
+            "beta_0.005": 1.113289907594995,
+            "beta_0.01": 1.0970856271507285
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1291105535411663
+            ],
+            [
+              10,
+              1.1298930386642352
+            ],
+            [
+              100,
+              1.1299713468303945
+            ],
+            [
+              1000,
+              1.1299791782440078
+            ],
+            [
+              10000,
+              1.1299799613913395
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 3264917.0,
+            "mean_ns": 4005875.4937853105,
+            "p95_ns": 9662875.0,
+            "calls": 885
+          },
+          "build_ns": 296833,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.16324339104,
+          "drafter_cost_fraction": 0.14033468171613847,
+          "speedup_excluding_build": 0.9719405732149003,
+          "speedup_including_build": 0.9719405665334103,
+          "sensitivity": {
+            "beta_0.005": 0.9595669764613851,
+            "beta_0.01": 0.9475044712298448
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.9719392369187092
+            ],
+            [
+              10,
+              0.971940439585116
+            ],
+            [
+              100,
+              0.9719405598519204
+            ],
+            [
+              1000,
+              0.9719405718786024
+            ],
+            [
+              10000,
+              0.9719405730812707
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1542.0,
+            "mean_ns": 1670.1751412429378,
+            "p95_ns": 2208.0,
+            "calls": 885
+          },
+          "build_ns": 186356041,
+          "build_bytes": 127739632,
+          "retrieval": "precomputed",
+          "rho": 7.464104e-05,
+          "drafter_cost_fraction": 7.463546913096318e-05,
+          "speedup_excluding_build": 1.130519065157099,
+          "speedup_including_build": 1.1305133899880364,
+          "sensitivity": {
+            "beta_0.005": 1.113813115375926,
+            "beta_0.01": 1.0975937113978116
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1293851640817578
+            ],
+            [
+              10,
+              1.1304055726006967
+            ],
+            [
+              100,
+              1.1305077148759517
+            ],
+            [
+              1000,
+              1.1305179301187283
+            ],
+            [
+              10000,
+              1.1305189516531593
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 295,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 18.627324104309082
+    },
+    "cnn|500000|B4|S1": {
+      "dataset": "cnn",
+      "label": "low",
+      "axes": {
+        "coverage": 0.9269988412514485,
+        "mean_support": 313.6478125,
+        "normalized_branch_entropy": 0.6828318084687147,
+        "structure": 0.3171681915312853,
+        "n_positions": 6904,
+        "n_covered": 6400
+      },
+      "store_tokens": 500000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "cnn",
+        "store_tokens": 500000,
+        "n_requests": 200,
+        "n_docs_in_store": 612,
+        "mean_target_tokens": 53.46,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 10492,
+        "speculative_steps": 9098,
+        "accepted_tokens": 1401,
+        "rejected_tokens": 33275,
+        "acceptance_rate": 0.04040258391971392,
+        "token_speedup": 1.1532204880193448,
+        "token_speedup_median": 1.1169008587041374,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 1907458.0,
+            "mean_ns": 1851992.575028637,
+            "p95_ns": 2659209.0,
+            "calls": 873
+          },
+          "build_ns": 14336500,
+          "build_bytes": 4000000,
+          "retrieval": "on_the_fly",
+          "rho": 0.09537044104,
+          "drafter_cost_fraction": 0.08706683827386331,
+          "speedup_excluding_build": 1.0528132262948589,
+          "speedup_including_build": 1.0528128476540894,
+          "sensitivity": {
+            "beta_0.005": 1.0385907670049381,
+            "beta_0.01": 1.0247474484522692
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0527375035603994
+            ],
+            [
+              10,
+              1.0528056535312145
+            ],
+            [
+              100,
+              1.052812469013592
+            ],
+            [
+              1000,
+              1.0528131505666831
+            ],
+            [
+              10000,
+              1.052813218722041
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11000.0,
+            "mean_ns": 21029.801832760597,
+            "p95_ns": 37667.0,
+            "calls": 873
+          },
+          "build_ns": 398622042,
+          "build_bytes": 300110928,
+          "retrieval": "precomputed",
+          "rho": 0.00054754104,
+          "drafter_cost_fraction": 0.0005472414028731398,
+          "speedup_excluding_build": 1.1525893980216593,
+          "speedup_including_build": 1.1525767801088298,
+          "sensitivity": {
+            "beta_0.005": 1.1355652408338828,
+            "beta_0.01": 1.1190366694345288
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1500713012359254
+            ],
+            [
+              10,
+              1.1523370922450566
+            ],
+            [
+              100,
+              1.1525641624722653
+            ],
+            [
+              1000,
+              1.1525868744169918
+            ],
+            [
+              10000,
+              1.1525891456606951
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 6754042.0,
+            "mean_ns": 8832537.596792668,
+            "p95_ns": 23755166.0,
+            "calls": 873
+          },
+          "build_ns": 777333,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.33769964104,
+          "drafter_cost_fraction": 0.25244803144108946,
+          "speedup_excluding_build": 0.8620922460013288,
+          "speedup_including_build": 0.8620922322356921,
+          "sensitivity": {
+            "beta_0.005": 0.8525325600979026,
+            "beta_0.01": 0.8431825624684928
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.8620894928827422
+            ],
+            [
+              10,
+              0.8620919706886789
+            ],
+            [
+              100,
+              0.8620922184700559
+            ],
+            [
+              1000,
+              0.8620922432482014
+            ],
+            [
+              10000,
+              0.8620922457260161
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1541.0,
+            "mean_ns": 1672.709049255441,
+            "p95_ns": 2250.0,
+            "calls": 873
+          },
+          "build_ns": 484901500,
+          "build_bytes": 300110928,
+          "retrieval": "precomputed",
+          "rho": 7.459104e-05,
+          "drafter_cost_fraction": 7.458547659173214e-05,
+          "speedup_excluding_build": 1.1531344745196306,
+          "speedup_including_build": 1.153119111047378,
+          "sensitivity": {
+            "beta_0.005": 1.1360943306026476,
+            "beta_0.01": 1.1195504656172641
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1500699052295584
+            ],
+            [
+              10,
+              1.1528272828374837
+            ],
+            [
+              100,
+              1.153103747984502
+            ],
+            [
+              1000,
+              1.1531314017924292
+            ],
+            [
+              10000,
+              1.1531341672461737
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 291,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 31.897085905075073
+    },
+    "cnn|1000000|B4|S1": {
+      "dataset": "cnn",
+      "label": "low",
+      "axes": {
+        "coverage": 0.9269988412514485,
+        "mean_support": 313.6478125,
+        "normalized_branch_entropy": 0.6828318084687147,
+        "structure": 0.3171681915312853,
+        "n_positions": 6904,
+        "n_covered": 6400
+      },
+      "store_tokens": 1000000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "cnn",
+        "store_tokens": 1000000,
+        "n_requests": 200,
+        "n_docs_in_store": 1195,
+        "mean_target_tokens": 53.46,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 10492,
+        "speculative_steps": 8969,
+        "accepted_tokens": 1531,
+        "rejected_tokens": 33469,
+        "acceptance_rate": 0.043742857142857146,
+        "token_speedup": 1.1698071133905674,
+        "token_speedup_median": 1.127659574468085,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 3795625.0,
+            "mean_ns": 3636463.3037542664,
+            "p95_ns": 5309416.0,
+            "calls": 879
+          },
+          "build_ns": 29201041,
+          "build_bytes": 8000000,
+          "retrieval": "on_the_fly",
+          "rho": 0.18977879104,
+          "drafter_cost_fraction": 0.15950762651779335,
+          "speedup_excluding_build": 0.983213957250007,
+          "speedup_including_build": 0.9832132846206262,
+          "sensitivity": {
+            "beta_0.005": 0.9709725321282892,
+            "beta_0.01": 0.9590321802473497
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.9830794496854874
+            ],
+            [
+              10,
+              0.983200504837246
+            ],
+            [
+              100,
+              0.9832126119921656
+            ],
+            [
+              1000,
+              0.9832138227240573
+            ],
+            [
+              10000,
+              0.9832139437974103
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11541.0,
+            "mean_ns": 35531.36405005688,
+            "p95_ns": 107125.0,
+            "calls": 879
+          },
+          "build_ns": 912060000,
+          "build_bytes": 544329712,
+          "retrieval": "precomputed",
+          "rho": 0.00057459104,
+          "drafter_cost_fraction": 0.0005742610747318383,
+          "speedup_excluding_build": 1.1691353387004029,
+          "speedup_including_build": 1.1691056341025319,
+          "sensitivity": {
+            "beta_0.005": 1.1518672520081719,
+            "beta_0.01": 1.135101838878117
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1632243056465557
+            ],
+            [
+              10,
+              1.168541533396029
+            ],
+            [
+              100,
+              1.169075931014051
+            ],
+            [
+              1000,
+              1.169129397660072
+            ],
+            [
+              10000,
+              1.1691347445936529
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 13990312.5,
+            "mean_ns": 17760737.955631398,
+            "p95_ns": 48408708.0,
+            "calls": 586
+          },
+          "build_ns": 2696000,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.69951316604,
+          "drafter_cost_fraction": 0.41159620297024296,
+          "speedup_excluding_build": 0.6883189473114295,
+          "speedup_including_build": 0.6883189168758872,
+          "sensitivity": {
+            "beta_0.005": 0.6822969555214694,
+            "beta_0.01": 0.6763794207297248
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.6883128602565305
+            ],
+            [
+              10,
+              0.6883183386010949
+            ],
+            [
+              100,
+              0.6883188864403477
+            ],
+            [
+              1000,
+              0.6883189412243209
+            ],
+            [
+              10000,
+              0.6883189467027188
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1542.0,
+            "mean_ns": 1739.094425483504,
+            "p95_ns": 2417.0,
+            "calls": 879
+          },
+          "build_ns": 1020694667,
+          "build_bytes": 544329712,
+          "retrieval": "precomputed",
+          "rho": 7.464104e-05,
+          "drafter_cost_fraction": 7.463546913096318e-05,
+          "speedup_excluding_build": 1.169719804287867,
+          "speedup_including_build": 1.16968652845737,
+          "sensitivity": {
+            "beta_0.005": 1.1524345758377295,
+            "beta_0.01": 1.1356527641623027
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1631021016056402
+            ],
+            [
+              10,
+              1.1690546471994425
+            ],
+            [
+              100,
+              1.1696532545200604
+            ],
+            [
+              1000,
+              1.1697131489703048
+            ],
+            [
+              10000,
+              1.1697191387527026
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 293,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 36.99813175201416
+    },
+    "codesearch|50000|B4|S1": {
+      "dataset": "codesearch",
+      "label": "high",
+      "axes": {
+        "coverage": 0.8719798982024354,
+        "mean_support": 326.45056893749074,
+        "normalized_branch_entropy": 0.6311268566456504,
+        "structure": 0.3688731433543496,
+        "n_positions": 15521,
+        "n_covered": 13534
+      },
+      "store_tokens": 50000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "codesearch",
+        "store_tokens": 50000,
+        "n_requests": 200,
+        "n_docs_in_store": 275,
+        "mean_target_tokens": 145.78,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 28956,
+        "speculative_steps": 24494,
+        "accepted_tokens": 4483,
+        "rejected_tokens": 70953,
+        "acceptance_rate": 0.05942785937748555,
+        "token_speedup": 1.18216706132114,
+        "token_speedup_median": 1.1436781609195403,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 202250.0,
+            "mean_ns": 194273.5264367816,
+            "p95_ns": 283875.0,
+            "calls": 870
+          },
+          "build_ns": 1402209,
+          "build_bytes": 400000,
+          "retrieval": "on_the_fly",
+          "rho": 0.01011004104,
+          "drafter_cost_fraction": 0.010008851144169198,
+          "speedup_excluding_build": 1.1703349271768366,
+          "speedup_including_build": 1.1703349105949281,
+          "sensitivity": {
+            "beta_0.005": 1.1532099130760654,
+            "beta_0.01": 1.136578837503672
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1703316108044652
+            ],
+            [
+              10,
+              1.1703345955387536
+            ],
+            [
+              100,
+              1.1703348940130198
+            ],
+            [
+              1000,
+              1.170334923860455
+            ],
+            [
+              10000,
+              1.1703349268451986
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11208.0,
+            "mean_ns": 12451.718390804597,
+            "p95_ns": 17791.0,
+            "calls": 870
+          },
+          "build_ns": 28885625,
+          "build_bytes": 23401008,
+          "retrieval": "precomputed",
+          "rho": 0.00055794104,
+          "drafter_cost_fraction": 0.000557629915385075,
+          "speedup_excluding_build": 1.1815078496027644,
+          "speedup_including_build": 1.1815075014608571,
+          "sensitivity": {
+            "beta_0.005": 1.1640567352666467,
+            "beta_0.01": 1.147113630630163
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.181438225303887
+            ],
+            [
+              10,
+              1.181500886803601
+            ],
+            [
+              100,
+              1.181507153319155
+            ],
+            [
+              1000,
+              1.1815077799743665
+            ],
+            [
+              10000,
+              1.1815078426399244
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 747750.5,
+            "mean_ns": 953735.9241379311,
+            "p95_ns": 2301208.0,
+            "calls": 870
+          },
+          "build_ns": 78416,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.03738506604,
+          "drafter_cost_fraction": 0.036037790849168146,
+          "speedup_excluding_build": 1.139564372016473,
+          "speedup_including_build": 1.1395643711372807,
+          "sensitivity": {
+            "beta_0.005": 1.1233217759061276,
+            "beta_0.01": 1.1075356953484288
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.13956419617805
+            ],
+            [
+              10,
+              1.1395643544326284
+            ],
+            [
+              100,
+              1.1395643702580884
+            ],
+            [
+              1000,
+              1.1395643718406345
+            ],
+            [
+              10000,
+              1.139564371998889
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 2625.0,
+            "mean_ns": 2856.190804597701,
+            "p95_ns": 3709.0,
+            "calls": 870
+          },
+          "build_ns": 27893750,
+          "build_bytes": 23401008,
+          "retrieval": "precomputed",
+          "rho": 0.00012879104,
+          "drafter_cost_fraction": 0.0001287744550040146,
+          "speedup_excluding_build": 1.1820148284020946,
+          "speedup_including_build": 1.1820144919261113,
+          "sensitivity": {
+            "beta_0.005": 1.1645488451864412,
+            "beta_0.01": 1.1475915163264632
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.181947537017363
+            ],
+            [
+              10,
+              1.1820080989188266
+            ],
+            [
+              100,
+              1.1820141554503196
+            ],
+            [
+              1000,
+              1.1820147611068825
+            ],
+            [
+              10000,
+              1.182014821672573
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 290,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 21.586514949798584
+    },
+    "codesearch|200000|B4|S1": {
+      "dataset": "codesearch",
+      "label": "high",
+      "axes": {
+        "coverage": 0.8719798982024354,
+        "mean_support": 326.45056893749074,
+        "normalized_branch_entropy": 0.6311268566456504,
+        "structure": 0.3688731433543496,
+        "n_positions": 15521,
+        "n_covered": 13534
+      },
+      "store_tokens": 200000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "codesearch",
+        "store_tokens": 200000,
+        "n_requests": 200,
+        "n_docs_in_store": 861,
+        "mean_target_tokens": 145.78,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 28956,
+        "speculative_steps": 24068,
+        "accepted_tokens": 4917,
+        "rejected_tokens": 78247,
+        "acceptance_rate": 0.05912414025299408,
+        "token_speedup": 1.2030912414824664,
+        "token_speedup_median": 1.164108187134503,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 780625.0,
+            "mean_ns": 761218.731981982,
+            "p95_ns": 1076625.0,
+            "calls": 888
+          },
+          "build_ns": 5500250,
+          "build_bytes": 1600000,
+          "retrieval": "on_the_fly",
+          "rho": 0.03902879104,
+          "drafter_cost_fraction": 0.03756276185661297,
+          "speedup_excluding_build": 1.1578998116868835,
+          "speedup_including_build": 1.1578997480182085,
+          "sensitivity": {
+            "beta_0.005": 1.1414216117335734,
+            "beta_0.01": 1.1254058371169258
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1578870780911823
+            ],
+            [
+              10,
+              1.1578985383147105
+            ],
+            [
+              100,
+              1.1578996843495402
+            ],
+            [
+              1000,
+              1.157899798953148
+            ],
+            [
+              10000,
+              1.1578998104135099
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11375.0,
+            "mean_ns": 16354.228603603604,
+            "p95_ns": 36167.0,
+            "calls": 888
+          },
+          "build_ns": 121186667,
+          "build_bytes": 85888440,
+          "retrieval": "precomputed",
+          "rho": 0.00056629104,
+          "drafter_cost_fraction": 0.0005659705359565838,
+          "speedup_excluding_build": 1.2024103272877198,
+          "speedup_including_build": 1.202408814558726,
+          "sensitivity": {
+            "beta_0.005": 1.1846506250718798,
+            "beta_0.01": 1.167407911497243
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.202107857214766
+            ],
+            [
+              10,
+              1.2023800734310175
+            ],
+            [
+              100,
+              1.2024073018335386
+            ],
+            [
+              1000,
+              1.2024100247416165
+            ],
+            [
+              10000,
+              1.2024102970331028
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 3702687.5,
+            "mean_ns": 4186968.7984234234,
+            "p95_ns": 9649542.0,
+            "calls": 888
+          },
+          "build_ns": 304584,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.18513191603999998,
+          "drafter_cost_fraction": 0.15621207524188516,
+          "speedup_excluding_build": 1.0151538619451543,
+          "speedup_including_build": 1.0151538592351357,
+          "sensitivity": {
+            "beta_0.005": 1.0024658334662337,
+            "beta_0.01": 0.9900910556305911
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.015153319941727
+            ],
+            [
+              10,
+              1.0151538077447855
+            ],
+            [
+              100,
+              1.0151538565251172
+            ],
+            [
+              1000,
+              1.0151538614031506
+            ],
+            [
+              10000,
+              1.015153861890954
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 2500.0,
+            "mean_ns": 2810.463963963964,
+            "p95_ns": 7583.0,
+            "calls": 888
+          },
+          "build_ns": 181096458,
+          "build_bytes": 85888440,
+          "retrieval": "precomputed",
+          "rho": 0.00012254104,
+          "drafter_cost_fraction": 0.00012252602553340408,
+          "speedup_excluding_build": 1.2029438314942935,
+          "speedup_including_build": 1.2029415689281766,
+          "sensitivity": {
+            "beta_0.005": 1.1851684824670443,
+            "beta_0.01": 1.1679108004644176
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.202491487579018
+            ],
+            [
+              10,
+              1.2028985817890119
+            ],
+            [
+              100,
+              1.2029393063705707
+            ],
+            [
+              1000,
+              1.2029433789803892
+            ],
+            [
+              10000,
+              1.2029437862428876
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 296,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 26.754973888397217
+    },
+    "codesearch|500000|B4|S1": {
+      "dataset": "codesearch",
+      "label": "high",
+      "axes": {
+        "coverage": 0.8719798982024354,
+        "mean_support": 326.45056893749074,
+        "normalized_branch_entropy": 0.6311268566456504,
+        "structure": 0.3688731433543496,
+        "n_positions": 15521,
+        "n_covered": 13534
+      },
+      "store_tokens": 500000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "codesearch",
+        "store_tokens": 500000,
+        "n_requests": 200,
+        "n_docs_in_store": 2067,
+        "mean_target_tokens": 145.78,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 28956,
+        "speculative_steps": 23829,
+        "accepted_tokens": 5160,
+        "rejected_tokens": 82032,
+        "acceptance_rate": 0.059179741260666115,
+        "token_speedup": 1.2151580007553822,
+        "token_speedup_median": 1.173494983277592,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 1908250.0,
+            "mean_ns": 1835740.3015873015,
+            "p95_ns": 2669458.0,
+            "calls": 882
+          },
+          "build_ns": 14207792,
+          "build_bytes": 4000000,
+          "retrieval": "on_the_fly",
+          "rho": 0.09541004104,
+          "drafter_cost_fraction": 0.08709984158025079,
+          "speedup_excluding_build": 1.109317931394614,
+          "speedup_including_build": 1.1093177804422085,
+          "sensitivity": {
+            "beta_0.005": 1.0943326841832919,
+            "beta_0.01": 1.0797468979683578
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1092877417310114
+            ],
+            [
+              10,
+              1.109314912354308
+            ],
+            [
+              100,
+              1.109317629489844
+            ],
+            [
+              1000,
+              1.1093179012041297
+            ],
+            [
+              10000,
+              1.1093179283755656
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11729.5,
+            "mean_ns": 25385.320861678003,
+            "p95_ns": 88125.0,
+            "calls": 882
+          },
+          "build_ns": 349879500,
+          "build_bytes": 197472088,
+          "retrieval": "precomputed",
+          "rho": 0.00058401604,
+          "drafter_cost_fraction": 0.0005836751643418747,
+          "speedup_excluding_build": 1.2144487432095898,
+          "speedup_including_build": 1.2144442879119346,
+          "sensitivity": {
+            "beta_0.005": 1.1965115456361435,
+            "beta_0.01": 1.1790964946502898
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.2135583337190017
+            ],
+            [
+              10,
+              1.2143596434669992
+            ],
+            [
+              100,
+              1.2144398326469683
+            ],
+            [
+              1000,
+              1.2144478521474436
+            ],
+            [
+              10000,
+              1.2144486541033164
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 6815250.0,
+            "mean_ns": 8804052.354875283,
+            "p95_ns": 24512625.0,
+            "calls": 882
+          },
+          "build_ns": 715834,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.34076004104,
+          "drafter_cost_fraction": 0.2541543830435754,
+          "speedup_excluding_build": 0.9063202687729336,
+          "speedup_including_build": 0.9063202636962844,
+          "sensitivity": {
+            "beta_0.005": 0.8962928276181069,
+            "beta_0.01": 0.8864848437173861
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.9063192534442457
+            ],
+            [
+              10,
+              0.9063201672399623
+            ],
+            [
+              100,
+              0.9063202586196355
+            ],
+            [
+              1000,
+              0.9063202677576038
+            ],
+            [
+              10000,
+              0.9063202686714006
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1583.0,
+            "mean_ns": 1881.9478458049887,
+            "p95_ns": 3334.0,
+            "calls": 882
+          },
+          "build_ns": 423223250,
+          "build_bytes": 197472088,
+          "retrieval": "precomputed",
+          "rho": 7.669104e-05,
+          "drafter_cost_fraction": 7.668515893540869e-05,
+          "speedup_excluding_build": 1.2150648161709625,
+          "speedup_including_build": 1.215059421463226,
+          "sensitivity": {
+            "beta_0.005": 1.1971095499300535,
+            "beta_0.01": 1.1796772136728166
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.2139868270599357
+            ],
+            [
+              10,
+              1.214956931117112
+            ],
+            [
+              100,
+              1.2150540268033927
+            ],
+            [
+              1000,
+              1.215063737225583
+            ],
+            [
+              10000,
+              1.2150647082763384
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 294,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 34.98879790306091
+    },
+    "codesearch|1000000|B4|S1": {
+      "dataset": "codesearch",
+      "label": "high",
+      "axes": {
+        "coverage": 0.8719798982024354,
+        "mean_support": 326.45056893749074,
+        "normalized_branch_entropy": 0.6311268566456504,
+        "structure": 0.3688731433543496,
+        "n_positions": 15521,
+        "n_covered": 13534
+      },
+      "store_tokens": 1000000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "codesearch",
+        "store_tokens": 1000000,
+        "n_requests": 200,
+        "n_docs_in_store": 3698,
+        "mean_target_tokens": 145.78,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 28956,
+        "speculative_steps": 23640,
+        "accepted_tokens": 5349,
+        "rejected_tokens": 83963,
+        "acceptance_rate": 0.059891168040128985,
+        "token_speedup": 1.2248730964467005,
+        "token_speedup_median": 1.1816307597154934,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 3812229.0,
+            "mean_ns": 3636370.361872146,
+            "p95_ns": 5327750.0,
+            "calls": 876
+          },
+          "build_ns": 28940250,
+          "build_bytes": 8000000,
+          "retrieval": "on_the_fly",
+          "rho": 0.19060899103999998,
+          "drafter_cost_fraction": 0.16009369362606826,
+          "speedup_excluding_build": 1.028778638213349,
+          "speedup_including_build": 1.028778373760967,
+          "sensitivity": {
+            "beta_0.005": 1.0159787340256006,
+            "beta_0.01": 1.003493424542996
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0287257504423506
+            ],
+            [
+              10,
+              1.0287733491915394
+            ],
+            [
+              100,
+              1.028778109308721
+            ],
+            [
+              1000,
+              1.0287785853228617
+            ],
+            [
+              10000,
+              1.0287786329243
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11917.0,
+            "mean_ns": 38773.48515981735,
+            "p95_ns": 166625.0,
+            "calls": 876
+          },
+          "build_ns": 739035333,
+          "build_bytes": 379920544,
+          "retrieval": "precomputed",
+          "rho": 0.00059339104,
+          "drafter_cost_fraction": 0.0005930391358903933,
+          "speedup_excluding_build": 1.2241466987640084,
+          "speedup_including_build": 1.2241371371725764,
+          "sensitivity": {
+            "beta_0.005": 1.2060664309683935,
+            "beta_0.01": 1.1885124697050964
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.222237348283197
+            ],
+            [
+              10,
+              1.2239554953110336
+            ],
+            [
+              100,
+              1.224127575730511
+            ],
+            [
+              1000,
+              1.2241447864337724
+            ],
+            [
+              10000,
+              1.2241465075307159
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 15730666.5,
+            "mean_ns": 20113970.87328767,
+            "p95_ns": 51105625.0,
+            "calls": 584
+          },
+          "build_ns": 1610875,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.78653086604,
+          "drafter_cost_fraction": 0.44025596254231736,
+          "speedup_excluding_build": 0.6856154123783698,
+          "speedup_including_build": 0.6856154058406783,
+          "sensitivity": {
+            "beta_0.005": 0.6799068056708524,
+            "beta_0.01": 0.6742924765803175
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.6856141048425556
+            ],
+            [
+              10,
+              0.6856152816245639
+            ],
+            [
+              100,
+              0.6856153993029869
+            ],
+            [
+              1000,
+              0.6856154110708315
+            ],
+            [
+              10000,
+              0.6856154122476159
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1583.0,
+            "mean_ns": 2249.7305936073058,
+            "p95_ns": 4666.0,
+            "calls": 876
+          },
+          "build_ns": 902774208,
+          "build_bytes": 379920544,
+          "retrieval": "precomputed",
+          "rho": 7.669104e-05,
+          "drafter_cost_fraction": 7.668515893540869e-05,
+          "speedup_excluding_build": 1.2247791668586239,
+          "speedup_including_build": 1.2247674747721484,
+          "sensitivity": {
+            "beta_0.005": 1.2066803496312708,
+            "beta_0.01": 1.189108643172993
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.2224451834550907
+            ],
+            [
+              10,
+              1.2245453675354818
+            ],
+            [
+              100,
+              1.2247557829089026
+            ],
+            [
+              1000,
+              1.2247768284234701
+            ],
+            [
+              10000,
+              1.2247789330147067
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 292,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 45.287081241607666
+    },
+    "dolly|50000|B4|S1": {
+      "dataset": "dolly",
+      "label": "mixed",
+      "axes": {
+        "coverage": 0.9274014583113178,
+        "mean_support": 592.2791704649043,
+        "normalized_branch_entropy": 0.6964368645147074,
+        "structure": 0.30356313548529257,
+        "n_positions": 9463,
+        "n_covered": 8776
+      },
+      "store_tokens": 50000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "dolly",
+        "store_tokens": 50000,
+        "n_requests": 200,
+        "n_docs_in_store": 309,
+        "mean_target_tokens": 96.07,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 19014,
+        "speculative_steps": 17672,
+        "accepted_tokens": 1357,
+        "rejected_tokens": 57035,
+        "acceptance_rate": 0.023239484860939855,
+        "token_speedup": 1.0759393390674514,
+        "token_speedup_median": 1.0663522012578617,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 202416.5,
+            "mean_ns": 195534.20486111112,
+            "p95_ns": 281750.0,
+            "calls": 864
+          },
+          "build_ns": 1461666,
+          "build_bytes": 400000,
+          "retrieval": "on_the_fly",
+          "rho": 0.01011836604,
+          "drafter_cost_fraction": 0.010017010263527195,
+          "speedup_excluding_build": 1.0651616436650801,
+          "speedup_including_build": 1.0651616218606021,
+          "sensitivity": {
+            "beta_0.005": 1.0495757121431464,
+            "beta_0.01": 1.0344393236356657
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0651572827872517
+            ],
+            [
+              10,
+              1.0651612075756904
+            ],
+            [
+              100,
+              1.0651616000561253
+            ],
+            [
+              1000,
+              1.0651616393041845
+            ],
+            [
+              10000,
+              1.0651616432289905
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11166.0,
+            "mean_ns": 12746.827546296296,
+            "p95_ns": 17708.0,
+            "calls": 864
+          },
+          "build_ns": 30977750,
+          "build_bytes": 34034912,
+          "retrieval": "precomputed",
+          "rho": 0.00055584104,
+          "drafter_cost_fraction": 0.0005555322523750863,
+          "speedup_excluding_build": 1.0753416200630004,
+          "speedup_including_build": 1.075341149075795,
+          "sensitivity": {
+            "beta_0.005": 1.0594585699646164,
+            "beta_0.01": 1.0440378834606887
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0752474308313975
+            ],
+            [
+              10,
+              1.075332200397278
+            ],
+            [
+              100,
+              1.0753406780890018
+            ],
+            [
+              1000,
+              1.0753415258655263
+            ],
+            [
+              10000,
+              1.075341610643252
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 900041.5,
+            "mean_ns": 1075291.5509259258,
+            "p95_ns": 2411208.0,
+            "calls": 864
+          },
+          "build_ns": 92833,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.04499961604,
+          "drafter_cost_fraction": 0.04306184935313653,
+          "speedup_excluding_build": 1.0296074013354155,
+          "speedup_including_build": 1.0296074000414814,
+          "sensitivity": {
+            "beta_0.005": 1.015037480001172,
+            "beta_0.01": 1.0008741612679948
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0296071425486262
+            ],
+            [
+              10,
+              1.0296073754567308
+            ],
+            [
+              100,
+              1.029607398747547
+            ],
+            [
+              1000,
+              1.0296074010766287
+            ],
+            [
+              10000,
+              1.0296074013095369
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1584.0,
+            "mean_ns": 1730.2997685185185,
+            "p95_ns": 2250.0,
+            "calls": 864
+          },
+          "build_ns": 31554708,
+          "build_bytes": 34034912,
+          "retrieval": "precomputed",
+          "rho": 7.674103999999999e-05,
+          "drafter_cost_fraction": 7.67351512646874e-05,
+          "speedup_excluding_build": 1.0758567766995166,
+          "speedup_including_build": 1.0758562964804377,
+          "sensitivity": {
+            "beta_0.005": 1.0599586174786102,
+            "beta_0.01": 1.0445234769412879
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0757607414141095
+            ],
+            [
+              10,
+              1.0758471723993894
+            ],
+            [
+              100,
+              1.0758558162617873
+            ],
+            [
+              1000,
+              1.0758566806556664
+            ],
+            [
+              10000,
+              1.0758567670951307
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 288,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 9.625815868377686
+    },
+    "dolly|200000|B4|S1": {
+      "dataset": "dolly",
+      "label": "mixed",
+      "axes": {
+        "coverage": 0.9274014583113178,
+        "mean_support": 592.2791704649043,
+        "normalized_branch_entropy": 0.6964368645147074,
+        "structure": 0.30356313548529257,
+        "n_positions": 9463,
+        "n_covered": 8776
+      },
+      "store_tokens": 200000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "dolly",
+        "store_tokens": 200000,
+        "n_requests": 200,
+        "n_docs_in_store": 1171,
+        "mean_target_tokens": 96.07,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 19014,
+        "speculative_steps": 17328,
+        "accepted_tokens": 1709,
+        "rejected_tokens": 62419,
+        "acceptance_rate": 0.0266498253493014,
+        "token_speedup": 1.0972991689750693,
+        "token_speedup_median": 1.081301410105758,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 806875.0,
+            "mean_ns": 787943.4172335601,
+            "p95_ns": 1112750.0,
+            "calls": 882
+          },
+          "build_ns": 5714167,
+          "build_bytes": 1600000,
+          "retrieval": "on_the_fly",
+          "rho": 0.04034129104,
+          "drafter_cost_fraction": 0.03877697769707088,
+          "speedup_excluding_build": 1.0547492235727087,
+          "speedup_including_build": 1.0547491399897302,
+          "sensitivity": {
+            "beta_0.005": 1.0397576388712333,
+            "beta_0.01": 1.025186244948913
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0547325072406624
+            ],
+            [
+              10,
+              1.0547475519156597
+            ],
+            [
+              100,
+              1.0547490564067654
+            ],
+            [
+              1000,
+              1.054749206856112
+            ],
+            [
+              10000,
+              1.054749221901049
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11334.0,
+            "mean_ns": 17856.985260770976,
+            "p95_ns": 25750.0,
+            "calls": 882
+          },
+          "build_ns": 123838833,
+          "build_bytes": 128820648,
+          "retrieval": "precomputed",
+          "rho": 0.00056424104,
+          "drafter_cost_fraction": 0.0005639228515837427,
+          "speedup_excluding_build": 1.0966803768986604,
+          "speedup_including_build": 1.0966784185828076,
+          "sensitivity": {
+            "beta_0.005": 1.0804822822939963,
+            "beta_0.01": 1.0647557185447492
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0962888528559667
+            ],
+            [
+              10,
+              1.0966412119103863
+            ],
+            [
+              100,
+              1.0966764602739485
+            ],
+            [
+              1000,
+              1.0966799852349303
+            ],
+            [
+              10000,
+              1.0966803377322747
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 3271479.0,
+            "mean_ns": 4000027.022675737,
+            "p95_ns": 9667208.0,
+            "calls": 882
+          },
+          "build_ns": 404917,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.16357149104,
+          "drafter_cost_fraction": 0.14057708726930035,
+          "speedup_excluding_build": 0.9430440479375303,
+          "speedup_including_build": 0.9430440432027863,
+          "sensitivity": {
+            "beta_0.005": 0.9310416697817678,
+            "beta_0.01": 0.9193409671832515
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.9430431009897161
+            ],
+            [
+              10,
+              0.9430439532426632
+            ],
+            [
+              100,
+              0.9430440384680427
+            ],
+            [
+              1000,
+              0.9430440469905815
+            ],
+            [
+              10000,
+              0.9430440478428354
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1500.0,
+            "mean_ns": 1741.0408163265306,
+            "p95_ns": 2375.0,
+            "calls": 882
+          },
+          "build_ns": 125106167,
+          "build_bytes": 128820648,
+          "retrieval": "precomputed",
+          "rho": 7.254104e-05,
+          "drafter_cost_fraction": 7.253577817921368e-05,
+          "speedup_excluding_build": 1.0972195755259522,
+          "speedup_including_build": 1.0972175952233956,
+          "sensitivity": {
+            "beta_0.005": 1.0810056666992722,
+            "beta_0.01": 1.0652639743868861
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0968236572136465
+            ],
+            [
+              10,
+              1.097179970832938
+            ],
+            [
+              100,
+              1.097215614927987
+            ],
+            [
+              1000,
+              1.0972191794648691
+            ],
+            [
+              10000,
+              1.0972195359198311
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 294,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 13.552978992462158
+    },
+    "dolly|500000|B4|S1": {
+      "dataset": "dolly",
+      "label": "mixed",
+      "axes": {
+        "coverage": 0.9274014583113178,
+        "mean_support": 592.2791704649043,
+        "normalized_branch_entropy": 0.6964368645147074,
+        "structure": 0.30356313548529257,
+        "n_positions": 9463,
+        "n_covered": 8776
+      },
+      "store_tokens": 500000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "dolly",
+        "store_tokens": 500000,
+        "n_requests": 200,
+        "n_docs_in_store": 2828,
+        "mean_target_tokens": 96.07,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 19014,
+        "speculative_steps": 16992,
+        "accepted_tokens": 2050,
+        "rejected_tokens": 63470,
+        "acceptance_rate": 0.03128815628815629,
+        "token_speedup": 1.1189971751412429,
+        "token_speedup_median": 1.0979134357817566,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 1910979.5,
+            "mean_ns": 1861888.9367816092,
+            "p95_ns": 2688833.0,
+            "calls": 870
+          },
+          "build_ns": 14881292,
+          "build_bytes": 4000000,
+          "retrieval": "on_the_fly",
+          "rho": 0.09554651604,
+          "drafter_cost_fraction": 0.08721356386159278,
+          "speedup_excluding_build": 1.0214054435461204,
+          "speedup_including_build": 1.0214052394177318,
+          "sensitivity": {
+            "beta_0.005": 1.0076094598282805,
+            "beta_0.01": 0.9941811903769207
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0213646194920107
+            ],
+            [
+              10,
+              1.0214013609938533
+            ],
+            [
+              100,
+              1.021405035289425
+            ],
+            [
+              1000,
+              1.0214054027204362
+            ],
+            [
+              10000,
+              1.0214054394635517
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11959.0,
+            "mean_ns": 25886.108045977013,
+            "p95_ns": 63541.0,
+            "calls": 870
+          },
+          "build_ns": 546341375,
+          "build_bytes": 300044168,
+          "retrieval": "precomputed",
+          "rho": 0.00059549104,
+          "drafter_cost_fraction": 0.0005951366414624334,
+          "speedup_excluding_build": 1.1183312189206236,
+          "speedup_including_build": 1.1183222349562938,
+          "sensitivity": {
+            "beta_0.005": 1.1018138471601098,
+            "beta_0.01": 1.0857772859184884
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1165372938948086
+            ],
+            [
+              10,
+              1.1181515670550064
+            ],
+            [
+              100,
+              1.118313251136306
+            ],
+            [
+              1000,
+              1.1183294221162101
+            ],
+            [
+              10000,
+              1.1183310392399224
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 7622083.5,
+            "mean_ns": 9131858.347126437,
+            "p95_ns": 24631208.0,
+            "calls": 870
+          },
+          "build_ns": 1245500,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.38110171604,
+          "drafter_cost_fraction": 0.27594036819585155,
+          "speedup_excluding_build": 0.8102206826226507,
+          "speedup_including_build": 0.810220671872442,
+          "sensitivity": {
+            "beta_0.005": 0.8015155072763929,
+            "beta_0.01": 0.7929954038192971
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.8102185325865864
+            ],
+            [
+              10,
+              0.8102204676185307
+            ],
+            [
+              100,
+              0.8102206611222336
+            ],
+            [
+              1000,
+              0.8102206804726089
+            ],
+            [
+              10000,
+              0.8102206824076464
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1542.0,
+            "mean_ns": 1735.6206896551723,
+            "p95_ns": 2375.0,
+            "calls": 870
+          },
+          "build_ns": 413789458,
+          "build_bytes": 300044168,
+          "retrieval": "precomputed",
+          "rho": 7.464104e-05,
+          "drafter_cost_fraction": 7.463546913096318e-05,
+          "speedup_excluding_build": 1.1189136582621202,
+          "speedup_including_build": 1.1189068468611358,
+          "sensitivity": {
+            "beta_0.005": 1.1023792043457699,
+            "beta_0.01": 1.0863263015692375
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1175530263551705
+            ],
+            [
+              10,
+              1.118777445997118
+            ],
+            [
+              100,
+              1.11890003554308
+            ],
+            [
+              1000,
+              1.1189122959752889
+            ],
+            [
+              10000,
+              1.1189135220332878
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 290,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 23.50649905204773
+    },
+    "dolly|1000000|B4|S1": {
+      "error": "NotEnoughData: dolly: datastore reached 640952 of 1000000 tokens; raise --sample-limit"
+    },
+    "gsm8k|50000|B4|S1": {
+      "dataset": "gsm8k",
+      "label": "mixed",
+      "axes": {
+        "coverage": 0.9784533155169534,
+        "mean_support": 134.5914988050529,
+        "normalized_branch_entropy": 0.5760890929247056,
+        "structure": 0.42391090707529444,
+        "n_positions": 11974,
+        "n_covered": 11716
+      },
+      "store_tokens": 50000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "gsm8k",
+        "store_tokens": 50000,
+        "n_requests": 200,
+        "n_docs_in_store": 268,
+        "mean_target_tokens": 120.985,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 23997,
+        "speculative_steps": 17900,
+        "accepted_tokens": 6127,
+        "rejected_tokens": 60505,
+        "acceptance_rate": 0.0919528154640413,
+        "token_speedup": 1.3406145251396648,
+        "token_speedup_median": 1.3561160313181877,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 204875.0,
+            "mean_ns": 198685.75757575757,
+            "p95_ns": 290917.0,
+            "calls": 858
+          },
+          "build_ns": 1450916,
+          "build_bytes": 400000,
+          "retrieval": "on_the_fly",
+          "rho": 0.01024129104,
+          "drafter_cost_fraction": 0.010137470256691875,
+          "speedup_excluding_build": 1.3270240852653723,
+          "speedup_including_build": 1.327024058646912,
+          "sensitivity": {
+            "beta_0.005": 1.3076087910776126,
+            "beta_0.01": 1.288753423544033
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.3270187615945854
+            ],
+            [
+              10,
+              1.3270235528963716
+            ],
+            [
+              100,
+              1.3270240320284532
+            ],
+            [
+              1000,
+              1.3270240799416801
+            ],
+            [
+              10000,
+              1.327024084733003
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11500.0,
+            "mean_ns": 14831.98717948718,
+            "p95_ns": 31750.0,
+            "calls": 858
+          },
+          "build_ns": 30074375,
+          "build_bytes": 23666952,
+          "retrieval": "precomputed",
+          "rho": 0.0005725410399999999,
+          "drafter_cost_fraction": 0.0005722134243309316,
+          "speedup_excluding_build": 1.3398474075115268,
+          "speedup_including_build": 1.339846845053439,
+          "sensitivity": {
+            "beta_0.005": 1.3200578697872287,
+            "beta_0.01": 1.3008444061461084
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.339734925290584
+            ],
+            [
+              10,
+              1.3398361584394936
+            ],
+            [
+              100,
+              1.3398462825958235
+            ],
+            [
+              1000,
+              1.3398472950198714
+            ],
+            [
+              10000,
+              1.3398473962623605
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 523083.0,
+            "mean_ns": 784666.8216783217,
+            "p95_ns": 2299583.0,
+            "calls": 858
+          },
+          "build_ns": 129875,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.02615169104,
+          "drafter_cost_fraction": 0.025485209709585316,
+          "speedup_excluding_build": 1.3064486828267643,
+          "speedup_including_build": 1.3064486805173954,
+          "sensitivity": {
+            "beta_0.005": 1.2876265165554635,
+            "beta_0.01": 1.2693389941169835
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.3064482209531312
+            ],
+            [
+              10,
+              1.3064486366393864
+            ],
+            [
+              100,
+              1.3064486782080262
+            ],
+            [
+              1000,
+              1.3064486823648904
+            ],
+            [
+              10000,
+              1.306448682780577
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1542.0,
+            "mean_ns": 1659.7494172494173,
+            "p95_ns": 2167.0,
+            "calls": 858
+          },
+          "build_ns": 29176334,
+          "build_bytes": 23666952,
+          "retrieval": "precomputed",
+          "rho": 7.464104e-05,
+          "drafter_cost_fraction": 7.463546913096318e-05,
+          "speedup_excluding_build": 1.3405144677456573,
+          "speedup_including_build": 1.3405139215394726,
+          "sensitivity": {
+            "beta_0.005": 1.3207053658301735,
+            "beta_0.01": 1.3014731862403026
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.3404052353657963
+            ],
+            [
+              10,
+              1.3405035437065362
+            ],
+            [
+              100,
+              1.340513375333733
+            ],
+            [
+              1000,
+              1.3405143585043848
+            ],
+            [
+              10000,
+              1.340514456821529
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 286,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 8.678606748580933
+    },
+    "gsm8k|200000|B4|S1": {
+      "dataset": "gsm8k",
+      "label": "mixed",
+      "axes": {
+        "coverage": 0.9784533155169534,
+        "mean_support": 134.5914988050529,
+        "normalized_branch_entropy": 0.5760890929247056,
+        "structure": 0.42391090707529444,
+        "n_positions": 11974,
+        "n_covered": 11716
+      },
+      "store_tokens": 200000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "gsm8k",
+        "store_tokens": 200000,
+        "n_requests": 200,
+        "n_docs_in_store": 1121,
+        "mean_target_tokens": 120.985,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 23997,
+        "speculative_steps": 16917,
+        "accepted_tokens": 7126,
+        "rejected_tokens": 58374,
+        "acceptance_rate": 0.10879389312977099,
+        "token_speedup": 1.4185139209079625,
+        "token_speedup_median": 1.4444169960474307,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 796396.5,
+            "mean_ns": 788987.4054373523,
+            "p95_ns": 1088542.0,
+            "calls": 846
+          },
+          "build_ns": 5669667,
+          "build_bytes": 1600000,
+          "retrieval": "on_the_fly",
+          "rho": 0.039817366039999996,
+          "drafter_cost_fraction": 0.03829265344128547,
+          "speedup_excluding_build": 1.3641952589329949,
+          "speedup_including_build": 1.3641951490087108,
+          "sensitivity": {
+            "beta_0.005": 1.3447957595098703,
+            "beta_0.01": 1.3259402641393698
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.3641732744286983
+            ],
+            [
+              10,
+              1.3641930604506787
+            ],
+            [
+              100,
+              1.3641950390844444
+            ],
+            [
+              1000,
+              1.3641952369481367
+            ],
+            [
+              10000,
+              1.364195256734509
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11625.0,
+            "mean_ns": 22451.775413711584,
+            "p95_ns": 62958.0,
+            "calls": 846
+          },
+          "build_ns": 130248833,
+          "build_bytes": 80783320,
+          "retrieval": "precomputed",
+          "rho": 0.00057879104,
+          "drafter_cost_fraction": 0.0005784562347143152,
+          "speedup_excluding_build": 1.4176933726863843,
+          "speedup_including_build": 1.4176906454631961,
+          "sensitivity": {
+            "beta_0.005": 1.3967541794126466,
+            "beta_0.01": 1.3764245230357215
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.41714813677441
+            ],
+            [
+              10,
+              1.4176388302161664
+            ],
+            [
+              100,
+              1.4176879182505002
+            ],
+            [
+              1000,
+              1.417692827240907
+            ],
+            [
+              10000,
+              1.4176933181418176
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 1773646.0,
+            "mean_ns": 3118825.3664302602,
+            "p95_ns": 9786000.0,
+            "calls": 846
+          },
+          "build_ns": 520333,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.08867984104,
+          "drafter_cost_fraction": 0.08145630854640006,
+          "speedup_excluding_build": 1.3029670132891198,
+          "speedup_including_build": 1.3029670040860808,
+          "sensitivity": {
+            "beta_0.005": 1.285258521684417,
+            "beta_0.01": 1.2680249244405948
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.3029651726838911
+            ],
+            [
+              10,
+              1.302966829228363
+            ],
+            [
+              100,
+              1.3029669948830418
+            ],
+            [
+              1000,
+              1.302967011448512
+            ],
+            [
+              10000,
+              1.302967013105059
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1584.0,
+            "mean_ns": 1736.225768321513,
+            "p95_ns": 2250.0,
+            "calls": 846
+          },
+          "build_ns": 196107375,
+          "build_bytes": 80783320,
+          "retrieval": "precomputed",
+          "rho": 7.674103999999999e-05,
+          "drafter_cost_fraction": 7.67351512646874e-05,
+          "speedup_excluding_build": 1.4184050710276705,
+          "speedup_including_build": 1.4184009607016002,
+          "sensitivity": {
+            "beta_0.005": 1.3974450044581062,
+            "beta_0.01": 1.3770953797828531
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.4175834796025788
+            ],
+            [
+              10,
+              1.4183228690322343
+            ],
+            [
+              100,
+              1.4183968503993518
+            ],
+            [
+              1000,
+              1.4184042489605506
+            ],
+            [
+              10000,
+              1.4184049888209158
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 282,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 11.503724098205566
+    },
+    "gsm8k|500000|B4|S1": {
+      "dataset": "gsm8k",
+      "label": "mixed",
+      "axes": {
+        "coverage": 0.9784533155169534,
+        "mean_support": 134.5914988050529,
+        "normalized_branch_entropy": 0.5760890929247056,
+        "structure": 0.42391090707529444,
+        "n_positions": 11974,
+        "n_covered": 11716
+      },
+      "store_tokens": 500000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "gsm8k",
+        "store_tokens": 500000,
+        "n_requests": 200,
+        "n_docs_in_store": 2814,
+        "mean_target_tokens": 120.985,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 23997,
+        "speculative_steps": 16386,
+        "accepted_tokens": 7665,
+        "rejected_tokens": 56799,
+        "acceptance_rate": 0.11890357408786299,
+        "token_speedup": 1.464481874771146,
+        "token_speedup_median": 1.4807692307692308,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 1923500.0,
+            "mean_ns": 1899081.175059952,
+            "p95_ns": 2685625.0,
+            "calls": 834
+          },
+          "build_ns": 14161708,
+          "build_bytes": 4000000,
+          "retrieval": "on_the_fly",
+          "rho": 0.09617254104,
+          "drafter_cost_fraction": 0.08773485691290511,
+          "speedup_excluding_build": 1.3359957670365565,
+          "speedup_including_build": 1.335995503701444,
+          "sensitivity": {
+            "beta_0.005": 1.3179608212784553,
+            "beta_0.01": 1.3004063066736857
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.335943102079756
+            ],
+            [
+              10,
+              1.3359905003540253
+            ],
+            [
+              100,
+              1.3359952403664348
+            ],
+            [
+              1000,
+              1.3359957143695258
+            ],
+            [
+              10000,
+              1.3359957617698535
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11875.0,
+            "mean_ns": 49042.13788968825,
+            "p95_ns": 275042.0,
+            "calls": 834
+          },
+          "build_ns": 369194125,
+          "build_bytes": 193631056,
+          "retrieval": "precomputed",
+          "rho": 0.0005912910399999999,
+          "drafter_cost_fraction": 0.0005909416215140357,
+          "speedup_excluding_build": 1.463616451477391,
+          "speedup_including_build": 1.4636082121841734,
+          "sensitivity": {
+            "beta_0.005": 1.441999244864996,
+            "beta_0.01": 1.4210113043874981
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.46197043678523
+            ],
+            [
+              10,
+              1.4634516832364428
+            ],
+            [
+              100,
+              1.46359997298372
+            ],
+            [
+              1000,
+              1.4636148036113263
+            ],
+            [
+              10000,
+              1.4636162866906177
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 2839479.5,
+            "mean_ns": 7140541.057553957,
+            "p95_ns": 24099542.0,
+            "calls": 834
+          },
+          "build_ns": 1086000,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.14197151604,
+          "drafter_cost_fraction": 0.12432141611755151,
+          "speedup_excluding_build": 1.2824154142211106,
+          "speedup_including_build": 1.2824153956143685,
+          "sensitivity": {
+            "beta_0.005": 1.2657890487949703,
+            "beta_0.01": 1.2495882832711802
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.2824116928834615
+            ],
+            [
+              10,
+              1.2824150420863738
+            ],
+            [
+              100,
+              1.2824153770076272
+            ],
+            [
+              1000,
+              1.282415410499762
+            ],
+            [
+              10000,
+              1.2824154138489758
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1625.0,
+            "mean_ns": 1765.4076738609112,
+            "p95_ns": 2334.0,
+            "calls": 834
+          },
+          "build_ns": 450556292,
+          "build_bytes": 193631056,
+          "retrieval": "precomputed",
+          "rho": 7.879104e-05,
+          "drafter_cost_fraction": 7.878483246111417e-05,
+          "speedup_excluding_build": 1.464366495812,
+          "speedup_including_build": 1.4643564304662289,
+          "sensitivity": {
+            "beta_0.005": 1.4427272914161766,
+            "beta_0.01": 1.4217183069001538
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.4623561764321134
+            ],
+            [
+              10,
+              1.4641652151831848
+            ],
+            [
+              100,
+              1.4643463652588258
+            ],
+            [
+              1000,
+              1.4643644827317763
+            ],
+            [
+              10000,
+              1.4643662945037286
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 278,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 19.374398946762085
+    },
+    "gsm8k|1000000|B4|S1": {
+      "error": "NotEnoughData: gsm8k: datastore reached 682201 of 1000000 tokens; raise --sample-limit"
+    },
+    "samsum|50000|B4|S1": {
+      "dataset": "samsum",
+      "label": "mixed",
+      "axes": {
+        "coverage": 0.9397794741306191,
+        "mean_support": 317.5442238267148,
+        "normalized_branch_entropy": 0.6903457159404223,
+        "structure": 0.30965428405957773,
+        "n_positions": 3537,
+        "n_covered": 3324
+      },
+      "store_tokens": 50000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "samsum",
+        "store_tokens": 50000,
+        "n_requests": 200,
+        "n_docs_in_store": 299,
+        "mean_target_tokens": 37.015,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 7203,
+        "speculative_steps": 6681,
+        "accepted_tokens": 538,
+        "rejected_tokens": 22358,
+        "acceptance_rate": 0.023497554157931515,
+        "token_speedup": 1.0781320161652448,
+        "token_speedup_median": 1.0714285714285714,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 200896.0,
+            "mean_ns": 193188.33561643836,
+            "p95_ns": 283958.0,
+            "calls": 876
+          },
+          "build_ns": 1416750,
+          "build_bytes": 400000,
+          "retrieval": "on_the_fly",
+          "rho": 0.01004234104,
+          "drafter_cost_fraction": 0.00994249511328387,
+          "speedup_excluding_build": 1.067412693863047,
+          "speedup_including_build": 1.0674126378377047,
+          "sensitivity": {
+            "beta_0.005": 1.0517926655316312,
+            "beta_0.01": 1.0366231965971275
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.067401488911617
+            ],
+            [
+              10,
+              1.067411573357318
+            ],
+            [
+              100,
+              1.0674125818123683
+            ],
+            [
+              1000,
+              1.0674126826579782
+            ],
+            [
+              10000,
+              1.06741269274254
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 10958.5,
+            "mean_ns": 12485.126712328767,
+            "p95_ns": 17417.0,
+            "calls": 876
+          },
+          "build_ns": 29021459,
+          "build_bytes": 32658560,
+          "retrieval": "precomputed",
+          "rho": 0.0005454660399999999,
+          "drafter_cost_fraction": 0.0005451686690049858,
+          "speedup_excluding_build": 1.0775442523689804,
+          "speedup_including_build": 1.077543082827596,
+          "sensitivity": {
+            "beta_0.005": 1.0616285062738686,
+            "beta_0.01": 1.046176080234579
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0773103946030493
+            ],
+            [
+              10,
+              1.0775208620236538
+            ],
+            [
+              100,
+              1.0775419132887505
+            ],
+            [
+              1000,
+              1.0775440184605005
+            ],
+            [
+              10000,
+              1.0775442289781278
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 781562.0,
+            "mean_ns": 965861.9052511415,
+            "p95_ns": 2362083.0,
+            "calls": 876
+          },
+          "build_ns": 93166,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.03907564104,
+          "drafter_cost_fraction": 0.037606156372686786,
+          "speedup_excluding_build": 1.0375876149749343,
+          "speedup_including_build": 1.0375876114936975,
+          "sensitivity": {
+            "beta_0.005": 1.0228222474636732,
+            "beta_0.01": 1.008471220162153
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0375869187279834
+            ],
+            [
+              10,
+              1.0375875453501973
+            ],
+            [
+              100,
+              1.0375876080124602
+            ],
+            [
+              1000,
+              1.037587614278687
+            ],
+            [
+              10000,
+              1.0375876149053098
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1583.0,
+            "mean_ns": 1679.7077625570776,
+            "p95_ns": 2167.0,
+            "calls": 876
+          },
+          "build_ns": 27609875,
+          "build_bytes": 32658560,
+          "retrieval": "precomputed",
+          "rho": 7.669104e-05,
+          "drafter_cost_fraction": 7.668515893540869e-05,
+          "speedup_excluding_build": 1.078049339440232,
+          "speedup_including_build": 1.0780482257411508,
+          "sensitivity": {
+            "beta_0.005": 1.0621187794792544,
+            "beta_0.01": 1.0466521818649508
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0778266454056276
+            ],
+            [
+              10,
+              1.0780270658958042
+            ],
+            [
+              100,
+              1.0780471120443709
+            ],
+            [
+              1000,
+              1.0780491167002315
+            ],
+            [
+              10000,
+              1.0780493171662278
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 292,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 7.853180170059204
+    },
+    "samsum|200000|B4|S1": {
+      "dataset": "samsum",
+      "label": "mixed",
+      "axes": {
+        "coverage": 0.9397794741306191,
+        "mean_support": 317.5442238267148,
+        "normalized_branch_entropy": 0.6903457159404223,
+        "structure": 0.30965428405957773,
+        "n_positions": 3537,
+        "n_covered": 3324
+      },
+      "store_tokens": 200000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "samsum",
+        "store_tokens": 200000,
+        "n_requests": 200,
+        "n_docs_in_store": 1168,
+        "mean_target_tokens": 37.015,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 7203,
+        "speculative_steps": 6557,
+        "accepted_tokens": 668,
+        "rejected_tokens": 23956,
+        "acceptance_rate": 0.027128005198180635,
+        "token_speedup": 1.098520664938234,
+        "token_speedup_median": 1.0869565217391304,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 777791.5,
+            "mean_ns": 759739.0968468469,
+            "p95_ns": 1080167.0,
+            "calls": 888
+          },
+          "build_ns": 5673417,
+          "build_bytes": 1600000,
+          "retrieval": "on_the_fly",
+          "rho": 0.03888711604,
+          "drafter_cost_fraction": 0.037431512470987985,
+          "speedup_excluding_build": 1.0574013749689604,
+          "speedup_including_build": 1.0574011548026063,
+          "sensitivity": {
+            "beta_0.005": 1.0423513564393363,
+            "beta_0.01": 1.027723740377768
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0573573435225634
+            ],
+            [
+              10,
+              1.0573969716592977
+            ],
+            [
+              100,
+              1.057400934636344
+            ],
+            [
+              1000,
+              1.0574013309356822
+            ],
+            [
+              10000,
+              1.0574013705656324
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11208.0,
+            "mean_ns": 17047.26463963964,
+            "p95_ns": 26875.0,
+            "calls": 888
+          },
+          "build_ns": 125012500,
+          "build_bytes": 119994656,
+          "retrieval": "precomputed",
+          "rho": 0.00055794104,
+          "drafter_cost_fraction": 0.000557629915385075,
+          "speedup_excluding_build": 1.0979080969527957,
+          "speedup_including_build": 1.0979028668534152,
+          "sensitivity": {
+            "beta_0.005": 1.081691768185353,
+            "beta_0.01": 1.0659475039604747
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.096863067738577
+            ],
+            [
+              10,
+              1.0978035044318744
+            ],
+            [
+              100,
+              1.0978976368038635
+            ],
+            [
+              1000,
+              1.0979070509289333
+            ],
+            [
+              10000,
+              1.0979079923503199
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 2955125.0,
+            "mean_ns": 3723540.3513513515,
+            "p95_ns": 9493375.0,
+            "calls": 888
+          },
+          "build_ns": 394625,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.14775379104,
+          "drafter_cost_fraction": 0.12873300196736243,
+          "speedup_excluding_build": 0.957104802017552,
+          "speedup_including_build": 0.957104789470833,
+          "sensitivity": {
+            "beta_0.005": 0.9447577581799894,
+            "beta_0.01": 0.9327252209209191
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.9571022926802868
+            ],
+            [
+              10,
+              0.9571045510832333
+            ],
+            [
+              100,
+              0.9571047769241142
+            ],
+            [
+              1000,
+              0.9571047995082081
+            ],
+            [
+              10000,
+              0.9571048017666177
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1583.0,
+            "mean_ns": 1705.349099099099,
+            "p95_ns": 2291.0,
+            "calls": 888
+          },
+          "build_ns": 160765042,
+          "build_bytes": 119994656,
+          "retrieval": "precomputed",
+          "rho": 7.669104e-05,
+          "drafter_cost_fraction": 7.668515893540869e-05,
+          "speedup_excluding_build": 1.0984364247064493,
+          "speedup_including_build": 1.0984296923763492,
+          "sensitivity": {
+            "beta_0.005": 1.0822046005339176,
+            "beta_0.01": 1.0664455127405423
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0970915989346472
+            ],
+            [
+              10,
+              1.0983017937823836
+            ],
+            [
+              100,
+              1.0984229601287736
+            ],
+            [
+              1000,
+              1.0984350782338272
+            ],
+            [
+              10000,
+              1.0984362900590385
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 296,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 11.690316915512085
+    },
+    "samsum|500000|B4|S1": {
+      "dataset": "samsum",
+      "label": "mixed",
+      "axes": {
+        "coverage": 0.9397794741306191,
+        "mean_support": 317.5442238267148,
+        "normalized_branch_entropy": 0.6903457159404223,
+        "structure": 0.30965428405957773,
+        "n_positions": 3537,
+        "n_covered": 3324
+      },
+      "store_tokens": 500000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "samsum",
+        "store_tokens": 500000,
+        "n_requests": 200,
+        "n_docs_in_store": 2959,
+        "mean_target_tokens": 37.015,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 7203,
+        "speculative_steps": 6494,
+        "accepted_tokens": 737,
+        "rejected_tokens": 24335,
+        "acceptance_rate": 0.029395341416719848,
+        "token_speedup": 1.1091777024946103,
+        "token_speedup_median": 1.0980392156862746,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 1908604.5,
+            "mean_ns": 1834625.704954955,
+            "p95_ns": 2664209.0,
+            "calls": 888
+          },
+          "build_ns": 13954417,
+          "build_bytes": 4000000,
+          "retrieval": "on_the_fly",
+          "rho": 0.09542776604,
+          "drafter_cost_fraction": 0.08711461312047428,
+          "speedup_excluding_build": 1.0125521160599358,
+          "speedup_including_build": 1.0125516194986592,
+          "sensitivity": {
+            "beta_0.005": 0.9988742504612909,
+            "beta_0.01": 0.9855609893093644
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0124528134956066
+            ],
+            [
+              10,
+              1.0125421849269374
+            ],
+            [
+              100,
+              1.0125511229378694
+            ],
+            [
+              1000,
+              1.0125520167476416
+            ],
+            [
+              10000,
+              1.0125521061287055
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11542.0,
+            "mean_ns": 26037.850225225226,
+            "p95_ns": 70500.0,
+            "calls": 888
+          },
+          "build_ns": 446779709,
+          "build_bytes": 270513176,
+          "retrieval": "precomputed",
+          "rho": 0.0005746410399999999,
+          "drafter_cost_fraction": 0.000574311017319724,
+          "speedup_excluding_build": 1.1085406895199024,
+          "speedup_including_build": 1.10852163421743,
+          "sensitivity": {
+            "beta_0.005": 1.092167584411872,
+            "beta_0.01": 1.0762710999518565
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1047426211466034
+            ],
+            [
+              10,
+              1.1081597078995167
+            ],
+            [
+              100,
+              1.1085025795700498
+            ],
+            [
+              1000,
+              1.1085368784069989
+            ],
+            [
+              10000,
+              1.1085403084074328
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 6324645.5,
+            "mean_ns": 8454481.501126125,
+            "p95_ns": 24803500.0,
+            "calls": 888
+          },
+          "build_ns": 869416,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.31622981604,
+          "drafter_cost_fraction": 0.2402542566551234,
+          "speedup_excluding_build": 0.8426930380833302,
+          "speedup_including_build": 0.8426930166547685,
+          "sensitivity": {
+            "beta_0.005": 0.833197761295697,
+            "beta_0.01": 0.8239140815921833
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.842688752392664
+            ],
+            [
+              10,
+              0.8426926095123018
+            ],
+            [
+              100,
+              0.8426929952262077
+            ],
+            [
+              1000,
+              0.8426930337976178
+            ],
+            [
+              10000,
+              0.842693037654759
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1542.0,
+            "mean_ns": 1713.4042792792793,
+            "p95_ns": 2292.0,
+            "calls": 888
+          },
+          "build_ns": 544216667,
+          "build_bytes": 270513176,
+          "retrieval": "precomputed",
+          "rho": 7.464104e-05,
+          "drafter_cost_fraction": 7.463546913096318e-05,
+          "speedup_excluding_build": 1.1090949184964352,
+          "speedup_including_build": 1.1090716843477058,
+          "sensitivity": {
+            "beta_0.005": 1.0927055584387342,
+            "beta_0.01": 1.0767935237923585
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1044673800358178
+            ],
+            [
+              10,
+              1.1086304204042539
+            ],
+            [
+              100,
+              1.1090484511724086
+            ],
+            [
+              1000,
+              1.1090902715888118
+            ],
+            [
+              10000,
+              1.1090944538039205
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 296,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 20.14113473892212
+    },
+    "samsum|1000000|B4|S1": {
+      "error": "NotEnoughData: samsum: datastore reached 596823 of 1000000 tokens; raise --sample-limit"
+    },
+    "swetraj|50000|B4|S1": {
+      "dataset": "swetraj",
+      "label": "mixed",
+      "axes": {
+        "coverage": 0.9753457606734817,
+        "mean_support": 121.32899198520346,
+        "normalized_branch_entropy": 0.40244093620853916,
+        "structure": 0.5975590637914608,
+        "n_positions": 13304,
+        "n_covered": 12976
+      },
+      "store_tokens": 50000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "swetraj",
+        "store_tokens": 50000,
+        "n_requests": 200,
+        "n_docs_in_store": 172,
+        "mean_target_tokens": 101.64,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 20128,
+        "speculative_steps": 12791,
+        "accepted_tokens": 7447,
+        "rejected_tokens": 40305,
+        "acceptance_rate": 0.1559515831797621,
+        "token_speedup": 1.5736064420295521,
+        "token_speedup_median": 1.6565040650406504,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 201916.5,
+            "mean_ns": 191788.64452214452,
+            "p95_ns": 280500.0,
+            "calls": 858
+          },
+          "build_ns": 1451791,
+          "build_bytes": 400000,
+          "retrieval": "on_the_fly",
+          "rho": 0.01009336604,
+          "drafter_cost_fraction": 0.009992507999107381,
+          "speedup_excluding_build": 1.5578821670701248,
+          "speedup_including_build": 1.5578821233065607,
+          "sensitivity": {
+            "beta_0.005": 1.5350859679333335,
+            "beta_0.01": 1.5129472924347391
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.5578734144062172
+            ],
+            [
+              10,
+              1.5578812917993083
+            ],
+            [
+              100,
+              1.557882079542999
+            ],
+            [
+              1000,
+              1.557882158317412
+            ],
+            [
+              10000,
+              1.5578821661948536
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11666.5,
+            "mean_ns": 13837.459207459207,
+            "p95_ns": 25750.0,
+            "calls": 858
+          },
+          "build_ns": 29292416,
+          "build_bytes": 11391664,
+          "retrieval": "precomputed",
+          "rho": 0.0005808660399999999,
+          "drafter_cost_fraction": 0.0005805288305171116,
+          "speedup_excluding_build": 1.5726929181220666,
+          "speedup_including_build": 1.5726920182470556,
+          "sensitivity": {
+            "beta_0.005": 1.5494644440924055,
+            "beta_0.01": 1.5269121462308186
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.572512963610426
+            ],
+            [
+              10,
+              1.5726749208175042
+            ],
+            [
+              100,
+              1.572691118373074
+            ],
+            [
+              1000,
+              1.572692738146982
+            ],
+            [
+              10000,
+              1.5726929001245562
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 669270.5,
+            "mean_ns": 810013.303030303,
+            "p95_ns": 2249458.0,
+            "calls": 858
+          },
+          "build_ns": 88250,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.03346106604,
+          "drafter_cost_fraction": 0.03237767453418985,
+          "speedup_excluding_build": 1.5226567248046148,
+          "speedup_including_build": 1.522656722263302,
+          "sensitivity": {
+            "beta_0.005": 1.5008725578842976,
+            "beta_0.01": 1.4797029174647416
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.5226562165422421
+            ],
+            [
+              10,
+              1.5226566739783622
+            ],
+            [
+              100,
+              1.5226567197219893
+            ],
+            [
+              1000,
+              1.5226567242963522
+            ],
+            [
+              10000,
+              1.5226567247537885
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1542.0,
+            "mean_ns": 1652.590909090909,
+            "p95_ns": 2125.0,
+            "calls": 858
+          },
+          "build_ns": 27678167,
+          "build_bytes": 11391664,
+          "retrieval": "precomputed",
+          "rho": 7.464104e-05,
+          "drafter_cost_fraction": 7.463546913096318e-05,
+          "speedup_excluding_build": 1.5734889951745237,
+          "speedup_including_build": 1.573488144028852,
+          "sensitivity": {
+            "beta_0.005": 1.5502371731179352,
+            "beta_0.01": 1.527662539523139
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.5733187843624747
+            ],
+            [
+              10,
+              1.5734719724360406
+            ],
+            [
+              100,
+              1.5734872928841008
+            ],
+            [
+              1000,
+              1.5734888249453158
+            ],
+            [
+              10000,
+              1.5734889781516013
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 286,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 12.167357206344604
+    },
+    "swetraj|200000|B4|S1": {
+      "dataset": "swetraj",
+      "label": "mixed",
+      "axes": {
+        "coverage": 0.9753457606734817,
+        "mean_support": 121.32899198520346,
+        "normalized_branch_entropy": 0.40244093620853916,
+        "structure": 0.5975590637914608,
+        "n_positions": 13304,
+        "n_covered": 12976
+      },
+      "store_tokens": 200000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "swetraj",
+        "store_tokens": 200000,
+        "n_requests": 200,
+        "n_docs_in_store": 344,
+        "mean_target_tokens": 101.64,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 20128,
+        "speculative_steps": 12232,
+        "accepted_tokens": 8033,
+        "rejected_tokens": 38507,
+        "acceptance_rate": 0.17260421143102708,
+        "token_speedup": 1.645519947678221,
+        "token_speedup_median": 1.7032967032967032,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 783896.0,
+            "mean_ns": 766563.6850574713,
+            "p95_ns": 1084625.0,
+            "calls": 870
+          },
+          "build_ns": 5629500,
+          "build_bytes": 1600000,
+          "retrieval": "on_the_fly",
+          "rho": 0.03919234104,
+          "drafter_cost_fraction": 0.03771423199749259,
+          "speedup_excluding_build": 1.583460426614983,
+          "speedup_including_build": 1.5834602512981613,
+          "sensitivity": {
+            "beta_0.005": 1.5609295226475035,
+            "beta_0.01": 1.5390308034545301
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.5834253640231954
+            ],
+            [
+              10,
+              1.5834569202859274
+            ],
+            [
+              100,
+              1.5834600759813786
+            ],
+            [
+              1000,
+              1.5834603915516154
+            ],
+            [
+              10000,
+              1.583460423108646
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 12333.0,
+            "mean_ns": 20015.275862068964,
+            "p95_ns": 49333.0,
+            "calls": 870
+          },
+          "build_ns": 119068417,
+          "build_bytes": 30564904,
+          "retrieval": "precomputed",
+          "rho": 0.00061419104,
+          "drafter_cost_fraction": 0.0006138140409158433,
+          "speedup_excluding_build": 1.6445099044297293,
+          "speedup_including_build": 1.6445059049095219,
+          "sensitivity": {
+            "beta_0.005": 1.6202214996554853,
+            "beta_0.01": 1.5966401025564334
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.6437103873359216
+            ],
+            [
+              10,
+              1.6444299177216741
+            ],
+            [
+              100,
+              1.6445019054087684
+            ],
+            [
+              1000,
+              1.6445091045241316
+            ],
+            [
+              10000,
+              1.6445098244391345
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 2498270.5,
+            "mean_ns": 2672843.9459770117,
+            "p95_ns": 7359250.0,
+            "calls": 870
+          },
+          "build_ns": 331708,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.12491106603999999,
+          "drafter_cost_fraction": 0.11104083674785217,
+          "speedup_excluding_build": 1.4628000358027495,
+          "speedup_including_build": 1.4628000269868782,
+          "sensitivity": {
+            "beta_0.005": 1.4435511652629922,
+            "beta_0.01": 1.4248023038868598
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.4627982726305586
+            ],
+            [
+              10,
+              1.4627998594853393
+            ],
+            [
+              100,
+              1.4628000181710066
+            ],
+            [
+              1000,
+              1.4628000340395753
+            ],
+            [
+              10000,
+              1.4628000356264323
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1583.0,
+            "mean_ns": 1696.319540229885,
+            "p95_ns": 2208.0,
+            "calls": 870
+          },
+          "build_ns": 112868250,
+          "build_bytes": 30564904,
+          "retrieval": "precomputed",
+          "rho": 7.669104e-05,
+          "drafter_cost_fraction": 7.668515893540869e-05,
+          "speedup_excluding_build": 1.6453937607195022,
+          "speedup_including_build": 1.6453899653866746,
+          "sensitivity": {
+            "beta_0.005": 1.6210794339019832,
+            "beta_0.01": 1.5974732386351245
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.644635042422066
+            ],
+            [
+              10,
+              1.6453178573895049
+            ],
+            [
+              100,
+              1.6453861700713561
+            ],
+            [
+              1000,
+              1.645393001651536
+            ],
+            [
+              10000,
+              1.645393684812674
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 290,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 14.87031865119934
+    },
+    "swetraj|500000|B4|S1": {
+      "dataset": "swetraj",
+      "label": "mixed",
+      "axes": {
+        "coverage": 0.9753457606734817,
+        "mean_support": 121.32899198520346,
+        "normalized_branch_entropy": 0.40244093620853916,
+        "structure": 0.5975590637914608,
+        "n_positions": 13304,
+        "n_covered": 12976
+      },
+      "store_tokens": 500000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "swetraj",
+        "store_tokens": 500000,
+        "n_requests": 200,
+        "n_docs_in_store": 761,
+        "mean_target_tokens": 101.64,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 20128,
+        "speculative_steps": 11941,
+        "accepted_tokens": 8324,
+        "rejected_tokens": 37868,
+        "acceptance_rate": 0.18020436439210252,
+        "token_speedup": 1.6856209697680262,
+        "token_speedup_median": 1.791891891891892,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 1912541.0,
+            "mean_ns": 1843735.473265074,
+            "p95_ns": 2673916.0,
+            "calls": 879
+          },
+          "build_ns": 14657583,
+          "build_bytes": 4000000,
+          "retrieval": "on_the_fly",
+          "rho": 0.09562459104000001,
+          "drafter_cost_fraction": 0.08727860968256496,
+          "speedup_excluding_build": 1.538502315074896,
+          "speedup_including_build": 1.5385018841536235,
+          "sensitivity": {
+            "beta_0.005": 1.5177234354135758,
+            "beta_0.01": 1.4974983517467648
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.5384161356239001
+            ],
+            [
+              10,
+              1.5384936966953127
+            ],
+            [
+              100,
+              1.5385014532325927
+            ],
+            [
+              1000,
+              1.5385022288906223
+            ],
+            [
+              10000,
+              1.5385023064564682
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 15291.0,
+            "mean_ns": 37689.128555176336,
+            "p95_ns": 132416.0,
+            "calls": 879
+          },
+          "build_ns": 302626292,
+          "build_bytes": 56707776,
+          "retrieval": "precomputed",
+          "rho": 0.00076209104,
+          "drafter_cost_fraction": 0.0007615106995190324,
+          "speedup_excluding_build": 1.6843373513642141,
+          "speedup_including_build": 1.6843266878230192,
+          "sensitivity": {
+            "beta_0.005": 1.659464341735951,
+            "beta_0.01": 1.6353152530738673
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.6822073266776107
+            ],
+            [
+              10,
+              1.6841241061913628
+            ],
+            [
+              100,
+              1.6843160244168447
+            ],
+            [
+              1000,
+              1.6843352186451734
+            ],
+            [
+              10000,
+              1.684337138092067
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 3474083.0,
+            "mean_ns": 5962001.944254835,
+            "p95_ns": 14723417.0,
+            "calls": 879
+          },
+          "build_ns": 851291,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.17370169104,
+          "drafter_cost_fraction": 0.14799475230037834,
+          "speedup_excluding_build": 1.4361579118748835,
+          "speedup_including_build": 1.4361578900665837,
+          "sensitivity": {
+            "beta_0.005": 1.4180353090044566,
+            "beta_0.01": 1.400364377914637
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.4361535502280864
+            ],
+            [
+              10,
+              1.4361574757090119
+            ],
+            [
+              100,
+              1.4361578682582847
+            ],
+            [
+              1000,
+              1.4361579075132236
+            ],
+            [
+              10000,
+              1.4361579114387177
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1542.0,
+            "mean_ns": 1727.0125142207053,
+            "p95_ns": 2375.0,
+            "calls": 879
+          },
+          "build_ns": 296162167,
+          "build_bytes": 56707776,
+          "retrieval": "precomputed",
+          "rho": 7.464104e-05,
+          "drafter_cost_fraction": 7.463546913096318e-05,
+          "speedup_excluding_build": 1.6854951626561705,
+          "speedup_including_build": 1.685484712535816,
+          "sensitivity": {
+            "beta_0.005": 1.660588198756512,
+            "beta_0.01": 1.6364066278402536
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.6834077140917065
+            ],
+            [
+              10,
+              1.6852861848667815
+            ],
+            [
+              100,
+              1.6854742625450427
+            ],
+            [
+              1000,
+              1.6854930726217332
+            ],
+            [
+              10000,
+              1.6854949536524935
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 293,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 20.940261125564575
+    },
+    "swetraj|1000000|B4|S1": {
+      "dataset": "swetraj",
+      "label": "mixed",
+      "axes": {
+        "coverage": 0.9753457606734817,
+        "mean_support": 121.32899198520346,
+        "normalized_branch_entropy": 0.40244093620853916,
+        "structure": 0.5975590637914608,
+        "n_positions": 13304,
+        "n_covered": 12976
+      },
+      "store_tokens": 1000000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "swetraj",
+        "store_tokens": 1000000,
+        "n_requests": 200,
+        "n_docs_in_store": 1530,
+        "mean_target_tokens": 101.64,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 20128,
+        "speculative_steps": 11832,
+        "accepted_tokens": 8431,
+        "rejected_tokens": 37549,
+        "acceptance_rate": 0.18336233144845585,
+        "token_speedup": 1.7011494252873562,
+        "token_speedup_median": 1.8458110516934045,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 3831375.0,
+            "mean_ns": 3676922.419279907,
+            "p95_ns": 5236333.0,
+            "calls": 861
+          },
+          "build_ns": 29387458,
+          "build_bytes": 8000000,
+          "retrieval": "on_the_fly",
+          "rho": 0.19156629104,
+          "drafter_cost_fraction": 0.16076847128060395,
+          "speedup_excluding_build": 1.4276582327640301,
+          "speedup_including_build": 1.427657488803855,
+          "sensitivity": {
+            "beta_0.005": 1.4099096236320763,
+            "beta_0.01": 1.3925968961038175
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.4275094561570516
+            ],
+            [
+              10,
+              1.4276433537078375
+            ],
+            [
+              100,
+              1.4276567448444544
+            ],
+            [
+              1000,
+              1.427658083971933
+            ],
+            [
+              10000,
+              1.4276582178848192
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 23750.0,
+            "mean_ns": 98915.62369337979,
+            "p95_ns": 547250.0,
+            "calls": 861
+          },
+          "build_ns": 661826917,
+          "build_bytes": 104580104,
+          "retrieval": "precomputed",
+          "rho": 0.00118504104,
+          "drafter_cost_fraction": 0.0011836383799432482,
+          "speedup_excluding_build": 1.6991358795375677,
+          "speedup_including_build": 1.699112147557949,
+          "sensitivity": {
+            "beta_0.005": 1.674054779970329,
+            "beta_0.01": 1.6497033583532834
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.6944026394200238
+            ],
+            [
+              10,
+              1.6986613658690926
+            ],
+            [
+              100,
+              1.6990884162412536
+            ],
+            [
+              1000,
+              1.6991311330886087
+            ],
+            [
+              10000,
+              1.6991354048914786
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 11331667.0,
+            "mean_ns": 10461234.020905923,
+            "p95_ns": 46047041.0,
+            "calls": 861
+          },
+          "build_ns": 1998666,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.5665808910400001,
+          "drafter_cost_fraction": 0.3616671786822742,
+          "speedup_excluding_build": 1.085899512126706,
+          "speedup_including_build": 1.0858994828542694,
+          "sensitivity": {
+            "beta_0.005": 1.0756006442191723,
+            "beta_0.01": 1.0654952936203823
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0858936576707952
+            ],
+            [
+              10,
+              1.0858989266782744
+            ],
+            [
+              100,
+              1.0858994535818345
+            ],
+            [
+              1000,
+              1.0858995062722185
+            ],
+            [
+              10000,
+              1.0858995115412573
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1542.0,
+            "mean_ns": 1689.8257839721255,
+            "p95_ns": 2333.0,
+            "calls": 861
+          },
+          "build_ns": 688364083,
+          "build_bytes": 104580104,
+          "retrieval": "precomputed",
+          "rho": 7.464104e-05,
+          "drafter_cost_fraction": 7.463546913096318e-05,
+          "speedup_excluding_build": 1.701022459201938,
+          "speedup_including_build": 1.7009977208156726,
+          "sensitivity": {
+            "beta_0.005": 1.6758860447389714,
+            "beta_0.01": 1.6514817058012567
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.696089059728575
+            ],
+            [
+              10,
+              1.7005278281538967
+            ],
+            [
+              100,
+              1.7009729831489495
+            ],
+            [
+              1000,
+              1.70101751146712
+            ],
+            [
+              10000,
+              1.7010219644271611
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 287,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 31.158743143081665
+    },
+    "wildchat|50000|B4|S1": {
+      "dataset": "wildchat",
+      "label": "high",
+      "axes": {
+        "coverage": 0.8618890554722639,
+        "mean_support": 405.29828833843584,
+        "normalized_branch_entropy": 0.6320418865631712,
+        "structure": 0.3679581134368288,
+        "n_positions": 16675,
+        "n_covered": 14372
+      },
+      "store_tokens": 50000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "wildchat",
+        "store_tokens": 50000,
+        "n_requests": 200,
+        "n_docs_in_store": 136,
+        "mean_target_tokens": 147.78,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 29356,
+        "speculative_steps": 27324,
+        "accepted_tokens": 2041,
+        "rejected_tokens": 72575,
+        "acceptance_rate": 0.027353382652514205,
+        "token_speedup": 1.0743668569755527,
+        "token_speedup_median": 1.0630933134353109,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 202708.0,
+            "mean_ns": 192877.8361774744,
+            "p95_ns": 286125.0,
+            "calls": 879
+          },
+          "build_ns": 1378791,
+          "build_bytes": 400000,
+          "retrieval": "on_the_fly",
+          "rho": 0.01013294104,
+          "drafter_cost_fraction": 0.010031294524033098,
+          "speedup_excluding_build": 1.063589566606371,
+          "speedup_including_build": 1.063589553323569,
+          "sensitivity": {
+            "beta_0.005": 1.0480268597023181,
+            "beta_0.01": 1.0329130196581633
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0635869100525606
+            ],
+            [
+              10,
+              1.063589300950393
+            ],
+            [
+              100,
+              1.0635895400407673
+            ],
+            [
+              1000,
+              1.0635895639498107
+            ],
+            [
+              10000,
+              1.063589566340715
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11500.0,
+            "mean_ns": 13247.06029579067,
+            "p95_ns": 19333.0,
+            "calls": 879
+          },
+          "build_ns": 29273333,
+          "build_bytes": 24397968,
+          "retrieval": "precomputed",
+          "rho": 0.0005725410399999999,
+          "drafter_cost_fraction": 0.0005722134243309316,
+          "speedup_excluding_build": 1.073752089837335,
+          "speedup_including_build": 1.0737518024132016,
+          "sensitivity": {
+            "beta_0.005": 1.0578927782700234,
+            "beta_0.01": 1.0424951317753506
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.073694608072623
+            ],
+            [
+              10,
+              1.0737463413839021
+            ],
+            [
+              100,
+              1.0737515149892218
+            ],
+            [
+              1000,
+              1.073752032352496
+            ],
+            [
+              10000,
+              1.0737520840888508
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 818625.0,
+            "mean_ns": 986998.9806598407,
+            "p95_ns": 2384625.0,
+            "calls": 879
+          },
+          "build_ns": 117250,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.04092879104,
+          "drafter_cost_fraction": 0.03931949177724994,
+          "speedup_excluding_build": 1.0321232981769526,
+          "speedup_including_build": 1.0321232971132526,
+          "sensitivity": {
+            "beta_0.005": 1.0174614671860522,
+            "beta_0.01": 1.0032103590493762
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0321230854370038
+            ],
+            [
+              10,
+              1.0321232769029538
+            ],
+            [
+              100,
+              1.0321232960495526
+            ],
+            [
+              1000,
+              1.0321232979642125
+            ],
+            [
+              10000,
+              1.0321232981556785
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 2583.0,
+            "mean_ns": 2827.14220705347,
+            "p95_ns": 4709.0,
+            "calls": 879
+          },
+          "build_ns": 28149459,
+          "build_bytes": 24397968,
+          "retrieval": "precomputed",
+          "rho": 0.00012669103999999999,
+          "drafter_cost_fraction": 0.00012667499141359582,
+          "speedup_excluding_build": 1.0742307615631703,
+          "speedup_including_build": 1.074230484927461,
+          "sensitivity": {
+            "beta_0.005": 1.05835741140336,
+            "beta_0.01": 1.0429463349705932
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0741754372565164
+            ],
+            [
+              10,
+              1.074225228876058
+            ],
+            [
+              100,
+              1.0742302082918944
+            ],
+            [
+              1000,
+              1.074230706236017
+            ],
+            [
+              10000,
+              1.0742307560304547
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 293,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 15.806670665740967
+    },
+    "wildchat|200000|B4|S1": {
+      "dataset": "wildchat",
+      "label": "high",
+      "axes": {
+        "coverage": 0.8618890554722639,
+        "mean_support": 405.29828833843584,
+        "normalized_branch_entropy": 0.6320418865631712,
+        "structure": 0.3679581134368288,
+        "n_positions": 16675,
+        "n_covered": 14372
+      },
+      "store_tokens": 200000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "wildchat",
+        "store_tokens": 200000,
+        "n_requests": 200,
+        "n_docs_in_store": 446,
+        "mean_target_tokens": 147.78,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 29356,
+        "speculative_steps": 26560,
+        "accepted_tokens": 2811,
+        "rejected_tokens": 86345,
+        "acceptance_rate": 0.03152900533895644,
+        "token_speedup": 1.1052710843373494,
+        "token_speedup_median": 1.0934869224342907,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 777625.0,
+            "mean_ns": 769779.0415224914,
+            "p95_ns": 1072459.0,
+            "calls": 867
+          },
+          "build_ns": 5422666,
+          "build_bytes": 1600000,
+          "retrieval": "on_the_fly",
+          "rho": 0.03887879104,
+          "drafter_cost_fraction": 0.03742379897955107,
+          "speedup_excluding_build": 1.063907641459198,
+          "speedup_including_build": 1.0639075891878356,
+          "sensitivity": {
+            "beta_0.005": 1.0487648994687844,
+            "beta_0.01": 1.034047165686523
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.063897187288915
+            ],
+            [
+              10,
+              1.0639065960329244
+            ],
+            [
+              100,
+              1.063907536916478
+            ],
+            [
+              1000,
+              1.0639076310049251
+            ],
+            [
+              10000,
+              1.0639076404137706
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11166.0,
+            "mean_ns": 14763.861591695502,
+            "p95_ns": 22041.0,
+            "calls": 867
+          },
+          "build_ns": 139324500,
+          "build_bytes": 95922792,
+          "retrieval": "precomputed",
+          "rho": 0.00055584104,
+          "drafter_cost_fraction": 0.0005555322523750863,
+          "speedup_excluding_build": 1.1046570706023824,
+          "speedup_including_build": 1.1046556227475934,
+          "sensitivity": {
+            "beta_0.005": 1.0883410243650167,
+            "beta_0.01": 1.0724999464579712
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1043675751524602
+            ],
+            [
+              10,
+              1.1046281142277006
+            ],
+            [
+              100,
+              1.1046541748965997
+            ],
+            [
+              1000,
+              1.104656781031121
+            ],
+            [
+              10000,
+              1.1046570416452495
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 3523041.0,
+            "mean_ns": 4229434.065743945,
+            "p95_ns": 9726042.0,
+            "calls": 867
+          },
+          "build_ns": 478959,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.17614959104,
+          "drafter_cost_fraction": 0.14976801623018146,
+          "speedup_excluding_build": 0.939736826639563,
+          "speedup_including_build": 0.939736823037478,
+          "sensitivity": {
+            "beta_0.005": 0.9279028365969808,
+            "beta_0.01": 0.9163631879063456
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.9397361062231085
+            ],
+            [
+              10,
+              0.9397367545978678
+            ],
+            [
+              100,
+              0.939736819435393
+            ],
+            [
+              1000,
+              0.939736825919146
+            ],
+            [
+              10000,
+              0.9397368265675213
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1542.0,
+            "mean_ns": 1685.2456747404844,
+            "p95_ns": 2292.0,
+            "calls": 867
+          },
+          "build_ns": 182713333,
+          "build_bytes": 95922792,
+          "retrieval": "precomputed",
+          "rho": 7.464104e-05,
+          "drafter_cost_fraction": 7.463546913096318e-05,
+          "speedup_excluding_build": 1.105188591911453,
+          "speedup_including_build": 1.105186691334715,
+          "sensitivity": {
+            "beta_0.005": 1.0888569565731032,
+            "beta_0.01": 1.073000965465404
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1048086066014382
+            ],
+            [
+              10,
+              1.105150581618642
+            ],
+            [
+              100,
+              1.1051847907645138
+            ],
+            [
+              1000,
+              1.1051882117955825
+            ],
+            [
+              10000,
+              1.105188553899854
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 289,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 19.66485095024109
+    },
+    "wildchat|500000|B4|S1": {
+      "dataset": "wildchat",
+      "label": "high",
+      "axes": {
+        "coverage": 0.8618890554722639,
+        "mean_support": 405.29828833843584,
+        "normalized_branch_entropy": 0.6320418865631712,
+        "structure": 0.3679581134368288,
+        "n_positions": 16675,
+        "n_covered": 14372
+      },
+      "store_tokens": 500000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "wildchat",
+        "store_tokens": 500000,
+        "n_requests": 200,
+        "n_docs_in_store": 1200,
+        "mean_target_tokens": 147.78,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 29356,
+        "speculative_steps": 26045,
+        "accepted_tokens": 3327,
+        "rejected_tokens": 90273,
+        "acceptance_rate": 0.03554487179487179,
+        "token_speedup": 1.1271261278556344,
+        "token_speedup_median": 1.1242937853107344,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 1897750.0,
+            "mean_ns": 1832884.6994350282,
+            "p95_ns": 2691000.0,
+            "calls": 885
+          },
+          "build_ns": 14346458,
+          "build_bytes": 4000000,
+          "retrieval": "on_the_fly",
+          "rho": 0.09488504104,
+          "drafter_cost_fraction": 0.08666210376741601,
+          "speedup_excluding_build": 1.0294470064044439,
+          "speedup_including_build": 1.029446876926511,
+          "sensitivity": {
+            "beta_0.005": 1.0155341194611285,
+            "beta_0.01": 1.0019922807521404
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.029421111466049
+            ],
+            [
+              10,
+              1.0294444168519798
+            ],
+            [
+              100,
+              1.0294467474486113
+            ],
+            [
+              1000,
+              1.0294469805088546
+            ],
+            [
+              10000,
+              1.0294470038148849
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11583.0,
+            "mean_ns": 22250.306214689266,
+            "p95_ns": 41916.0,
+            "calls": 885
+          },
+          "build_ns": 367197625,
+          "build_bytes": 234510216,
+          "retrieval": "precomputed",
+          "rho": 0.00057669104,
+          "drafter_cost_fraction": 0.0005763586591254559,
+          "speedup_excluding_build": 1.1264764989519185,
+          "speedup_including_build": 1.1264725308233516,
+          "sensitivity": {
+            "beta_0.005": 1.109838516184733,
+            "beta_0.01": 1.093684863683655
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1256834291787663
+            ],
+            [
+              10,
+              1.126397141691921
+            ],
+            [
+              100,
+              1.126468562722741
+            ],
+            [
+              1000,
+              1.1264757053239685
+            ],
+            [
+              10000,
+              1.126476419589073
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 8112458.0,
+            "mean_ns": 9799905.911864407,
+            "p95_ns": 24630625.0,
+            "calls": 885
+          },
+          "build_ns": 843583,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.40562044104,
+          "drafter_cost_fraction": 0.2885703915488642,
+          "speedup_excluding_build": 0.8018708998153788,
+          "speedup_including_build": 0.8018708951960397,
+          "sensitivity": {
+            "beta_0.005": 0.7934041319513144,
+            "beta_0.01": 0.7851142931895813
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.801869975948601
+            ],
+            [
+              10,
+              0.8018708074286053
+            ],
+            [
+              100,
+              0.8018708905767006
+            ],
+            [
+              1000,
+              0.8018708988915111
+            ],
+            [
+              10000,
+              0.8018708997229922
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1541.0,
+            "mean_ns": 1713.1593220338982,
+            "p95_ns": 2375.0,
+            "calls": 885
+          },
+          "build_ns": 436884167,
+          "build_bytes": 234510216,
+          "retrieval": "precomputed",
+          "rho": 7.459104e-05,
+          "drafter_cost_fraction": 7.458547659173214e-05,
+          "speedup_excluding_build": 1.1270420606162095,
+          "speedup_including_build": 1.1270373346799223,
+          "sensitivity": {
+            "beta_0.005": 1.110387490539815,
+            "beta_0.01": 1.0942179699022068
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1260976614136096
+            ],
+            [
+              10,
+              1.126947549420288
+            ],
+            [
+              100,
+              1.127032608783269
+            ],
+            [
+              1000,
+              1.1270411154257813
+            ],
+            [
+              10000,
+              1.1270419660970954
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 295,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 31.51805591583252
+    },
+    "wildchat|1000000|B4|S1": {
+      "dataset": "wildchat",
+      "label": "high",
+      "axes": {
+        "coverage": 0.8618890554722639,
+        "mean_support": 405.29828833843584,
+        "normalized_branch_entropy": 0.6320418865631712,
+        "structure": 0.3679581134368288,
+        "n_positions": 16675,
+        "n_covered": 14372
+      },
+      "store_tokens": 1000000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "wildchat",
+        "store_tokens": 1000000,
+        "n_requests": 200,
+        "n_docs_in_store": 2647,
+        "mean_target_tokens": 147.78,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 29356,
+        "speculative_steps": 25598,
+        "accepted_tokens": 3773,
+        "rejected_tokens": 91919,
+        "acceptance_rate": 0.03942858337165071,
+        "token_speedup": 1.1468083444019064,
+        "token_speedup_median": 1.1436781609195403,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 3788395.5,
+            "mean_ns": 3606498.029279279,
+            "p95_ns": 5291917.0,
+            "calls": 888
+          },
+          "build_ns": 30009125,
+          "build_bytes": 8000000,
+          "retrieval": "on_the_fly",
+          "rho": 0.18941731604,
+          "drafter_cost_fraction": 0.15925219305755417,
+          "speedup_excluding_build": 0.9641766005392,
+          "speedup_including_build": 0.9641763629593904,
+          "sensitivity": {
+            "beta_0.005": 0.952168595659596,
+            "beta_0.01": 0.9404560106839488
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.9641290869070974
+            ],
+            [
+              10,
+              0.9641718489652523
+            ],
+            [
+              100,
+              0.9641761253796978
+            ],
+            [
+              1000,
+              0.9641765530232287
+            ],
+            [
+              10000,
+              0.9641765957876026
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11584.0,
+            "mean_ns": 37926.68918918919,
+            "p95_ns": 116834.0,
+            "calls": 888
+          },
+          "build_ns": 763119458,
+          "build_bytes": 426115768,
+          "retrieval": "precomputed",
+          "rho": 0.00057674104,
+          "drafter_cost_fraction": 0.0005764086015037038,
+          "speedup_excluding_build": 1.146147314207917,
+          "speedup_including_build": 1.1461387770502107,
+          "sensitivity": {
+            "beta_0.005": 1.1292187956446493,
+            "beta_0.01": 1.1127830647959434
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1444424097873251
+            ],
+            [
+              10,
+              1.1459765952144259
+            ],
+            [
+              100,
+              1.1461302400196829
+            ],
+            [
+              1000,
+              1.1461456067662013
+            ],
+            [
+              10000,
+              1.1461471434635164
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 16955854.5,
+            "mean_ns": 19611815.091216218,
+            "p95_ns": 48872250.0,
+            "calls": 592
+          },
+          "build_ns": 1738792,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.84779026604,
+          "drafter_cost_fraction": 0.4588130382659173,
+          "speedup_excluding_build": 0.6206377235981613,
+          "speedup_including_build": 0.6206377178943244,
+          "sensitivity": {
+            "beta_0.005": 0.6156400778493659,
+            "beta_0.01": 0.6107222756140741
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.6206365828328696
+            ],
+            [
+              10,
+              0.6206376095214434
+            ],
+            [
+              100,
+              0.6206377121904876
+            ],
+            [
+              1000,
+              0.6206377224573939
+            ],
+            [
+              10000,
+              0.6206377234840845
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1583.0,
+            "mean_ns": 2021.3186936936936,
+            "p95_ns": 2625.0,
+            "calls": 888
+          },
+          "build_ns": 912016625,
+          "build_bytes": 426115768,
+          "retrieval": "precomputed",
+          "rho": 7.669104e-05,
+          "drafter_cost_fraction": 7.668515893540869e-05,
+          "speedup_excluding_build": 1.1467204012217476,
+          "speedup_including_build": 1.1467101881332558,
+          "sensitivity": {
+            "beta_0.005": 1.129775074656616,
+            "beta_0.01": 1.1133232645464972
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1446813973779915
+            ],
+            [
+              10,
+              1.1465161740113559
+            ],
+            [
+              100,
+              1.1466999752266849
+            ],
+            [
+              1000,
+              1.1467183585894953
+            ],
+            [
+              10000,
+              1.1467201969581948
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 296,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 44.805102825164795
+    },
+    "xsum|50000|B4|S1": {
+      "dataset": "xsum",
+      "label": "low",
+      "axes": {
+        "coverage": 0.9421544856252165,
+        "mean_support": 275.3463235294118,
+        "normalized_branch_entropy": 0.683892370766143,
+        "structure": 0.31610762923385705,
+        "n_positions": 2887,
+        "n_covered": 2720
+      },
+      "store_tokens": 50000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "xsum",
+        "store_tokens": 50000,
+        "n_requests": 200,
+        "n_docs_in_store": 100,
+        "mean_target_tokens": 29.545,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 5709,
+        "speculative_steps": 5288,
+        "accepted_tokens": 429,
+        "rejected_tokens": 17243,
+        "acceptance_rate": 0.024275690357627885,
+        "token_speedup": 1.0796142208774584,
+        "token_speedup_median": 1.0701970443349753,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 203083.5,
+            "mean_ns": 193629.46734234234,
+            "p95_ns": 284417.0,
+            "calls": 888
+          },
+          "build_ns": 1477250,
+          "build_bytes": 400000,
+          "retrieval": "on_the_fly",
+          "rho": 0.01015171604,
+          "drafter_cost_fraction": 0.010049694396200988,
+          "speedup_excluding_build": 1.0687644278918473,
+          "speedup_including_build": 1.0687643539997633,
+          "sensitivity": {
+            "beta_0.005": 1.0531262875390177,
+            "beta_0.01": 1.03793918159141
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0687496496783664
+            ],
+            [
+              10,
+              1.068762950052108
+            ],
+            [
+              100,
+              1.0687642801076895
+            ],
+            [
+              1000,
+              1.0687644131134297
+            ],
+            [
+              10000,
+              1.0687644264140055
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11125.0,
+            "mean_ns": 13035.097972972973,
+            "p95_ns": 20375.0,
+            "calls": 888
+          },
+          "build_ns": 28848583,
+          "build_bytes": 36154904,
+          "retrieval": "precomputed",
+          "rho": 0.0005537910399999999,
+          "drafter_cost_fraction": 0.0005534845252291495,
+          "speedup_excluding_build": 1.0790166711129854,
+          "speedup_including_build": 1.0790152002908096,
+          "sensitivity": {
+            "beta_0.005": 1.0630793074701204,
+            "beta_0.01": 1.047605889439258
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.078722586451089
+            ],
+            [
+              10,
+              1.0789872554313087
+            ],
+            [
+              100,
+              1.0790137294726434
+            ],
+            [
+              1000,
+              1.0790163769482295
+            ],
+            [
+              10000,
+              1.0790166416965026
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 771479.5,
+            "mean_ns": 975616.1813063063,
+            "p95_ns": 2359208.0,
+            "calls": 888
+          },
+          "build_ns": 82042,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.038571516039999997,
+          "drafter_cost_fraction": 0.03713900818989382,
+          "speedup_excluding_build": 1.0395184194863647,
+          "speedup_including_build": 1.0395184156041406,
+          "sensitivity": {
+            "beta_0.005": 1.0247184974545855,
+            "beta_0.01": 1.0103340812212376
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0395176430421575
+            ],
+            [
+              10,
+              1.0395183418418918
+            ],
+            [
+              100,
+              1.039518411721917
+            ],
+            [
+              1000,
+              1.0395184187099198
+            ],
+            [
+              10000,
+              1.0395184194087204
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 2500.0,
+            "mean_ns": 5656.717342342342,
+            "p95_ns": 7042.0,
+            "calls": 888
+          },
+          "build_ns": 27171250,
+          "build_bytes": 36154904,
+          "retrieval": "precomputed",
+          "rho": 0.00012254104,
+          "drafter_cost_fraction": 0.00012252602553340408,
+          "speedup_excluding_build": 1.079481940037865,
+          "speedup_including_build": 1.079480553538139,
+          "sensitivity": {
+            "beta_0.005": 1.0635309307301821,
+            "beta_0.01": 1.048044458659736
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0792047109519154
+            ],
+            [
+              10,
+              1.079454210720051
+            ],
+            [
+              100,
+              1.079479167041975
+            ],
+            [
+              1000,
+              1.079481662737635
+            ],
+            [
+              10000,
+              1.0794819123078356
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 296,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 16.163789749145508
+    },
+    "xsum|200000|B4|S1": {
+      "dataset": "xsum",
+      "label": "low",
+      "axes": {
+        "coverage": 0.9421544856252165,
+        "mean_support": 275.3463235294118,
+        "normalized_branch_entropy": 0.683892370766143,
+        "structure": 0.31610762923385705,
+        "n_positions": 2887,
+        "n_covered": 2720
+      },
+      "store_tokens": 200000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "xsum",
+        "store_tokens": 200000,
+        "n_requests": 200,
+        "n_docs_in_store": 407,
+        "mean_target_tokens": 29.545,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 5709,
+        "speculative_steps": 5120,
+        "accepted_tokens": 600,
+        "rejected_tokens": 18640,
+        "acceptance_rate": 0.031185031185031187,
+        "token_speedup": 1.1150390625,
+        "token_speedup_median": 1.0971675845790716,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 783625.0,
+            "mean_ns": 769265.8192090396,
+            "p95_ns": 1090708.0,
+            "calls": 885
+          },
+          "build_ns": 5651500,
+          "build_bytes": 1600000,
+          "retrieval": "on_the_fly",
+          "rho": 0.03917879104,
+          "drafter_cost_fraction": 0.03770168461655212,
+          "speedup_excluding_build": 1.073000211430489,
+          "speedup_including_build": 1.0729999264971959,
+          "sensitivity": {
+            "beta_0.005": 1.0577323998331996,
+            "beta_0.01": 1.0428929865091985
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.07294322778313
+            ],
+            [
+              10,
+              1.0729945127933802
+            ],
+            [
+              100,
+              1.0729996415640544
+            ],
+            [
+              1000,
+              1.0730001544438184
+            ],
+            [
+              10000,
+              1.0730002057318218
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11333.0,
+            "mean_ns": 17278.654237288134,
+            "p95_ns": 27834.0,
+            "calls": 885
+          },
+          "build_ns": 136007833,
+          "build_bytes": 130640080,
+          "retrieval": "precomputed",
+          "rho": 0.00056419104,
+          "drafter_cost_fraction": 0.0005638729079576316,
+          "speedup_excluding_build": 1.1144103221813417,
+          "speedup_including_build": 1.1144029255962746,
+          "sensitivity": {
+            "beta_0.005": 1.0979503534465231,
+            "beta_0.01": 1.081969538816162
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1129329564821542
+            ],
+            [
+              10,
+              1.1142624091328908
+            ],
+            [
+              100,
+              1.114395529109392
+            ],
+            [
+              1000,
+              1.1144088428564736
+            ],
+            [
+              10000,
+              1.1144101742486783
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 3335125.0,
+            "mean_ns": 4046473.8768361583,
+            "p95_ns": 9741833.0,
+            "calls": 885
+          },
+          "build_ns": 332250,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.16675379104,
+          "drafter_cost_fraction": 0.14292114782105145,
+          "speedup_excluding_build": 0.9556763998221909,
+          "speedup_including_build": 0.9556763865339751,
+          "sensitivity": {
+            "beta_0.005": 0.943545999982545,
+            "beta_0.01": 0.931719682735253
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.9556737421863875
+            ],
+            [
+              10,
+              0.9556761340579454
+            ],
+            [
+              100,
+              0.9556763732457597
+            ],
+            [
+              1000,
+              0.9556763971645477
+            ],
+            [
+              10000,
+              0.9556763995564265
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1542.0,
+            "mean_ns": 1669.902824858757,
+            "p95_ns": 2209.0,
+            "calls": 885
+          },
+          "build_ns": 176155875,
+          "build_bytes": 130640080,
+          "retrieval": "precomputed",
+          "rho": 7.464104e-05,
+          "drafter_cost_fraction": 7.463546913096318e-05,
+          "speedup_excluding_build": 1.1149558410364708,
+          "speedup_including_build": 1.114946251696929,
+          "sensitivity": {
+            "beta_0.005": 1.0984798727289466,
+            "beta_0.01": 1.082483752220341
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1130412500050042
+            ],
+            [
+              10,
+              1.1147640855808267
+            ],
+            [
+              100,
+              1.114936662522335
+            ],
+            [
+              1000,
+              1.1149539231553667
+            ],
+            [
+              10000,
+              1.1149556492480637
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 295,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 19.03309416770935
+    },
+    "xsum|500000|B4|S1": {
+      "dataset": "xsum",
+      "label": "low",
+      "axes": {
+        "coverage": 0.9421544856252165,
+        "mean_support": 275.3463235294118,
+        "normalized_branch_entropy": 0.683892370766143,
+        "structure": 0.31610762923385705,
+        "n_positions": 2887,
+        "n_covered": 2720
+      },
+      "store_tokens": 500000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "xsum",
+        "store_tokens": 500000,
+        "n_requests": 200,
+        "n_docs_in_store": 1003,
+        "mean_target_tokens": 29.545,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 5709,
+        "speculative_steps": 4992,
+        "accepted_tokens": 732,
+        "rejected_tokens": 18700,
+        "acceptance_rate": 0.03766982297241663,
+        "token_speedup": 1.1436298076923077,
+        "token_speedup_median": 1.1304347826086956,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 1908209.0,
+            "mean_ns": 1848601.4402730376,
+            "p95_ns": 2667084.0,
+            "calls": 879
+          },
+          "build_ns": 14928708,
+          "build_bytes": 4000000,
+          "retrieval": "on_the_fly",
+          "rho": 0.09540799104,
+          "drafter_cost_fraction": 0.08709813313432008,
+          "speedup_excluding_build": 1.0440217864455463,
+          "speedup_including_build": 1.0440210738862412,
+          "sensitivity": {
+            "beta_0.005": 1.0299185676979796,
+            "beta_0.01": 1.0161912984423265
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.0438792939378856
+            ],
+            [
+              10,
+              1.0440075354442468
+            ],
+            [
+              100,
+              1.0440203613279087
+            ],
+            [
+              1000,
+              1.0440216439336074
+            ],
+            [
+              10000,
+              1.0440217721943506
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11500.0,
+            "mean_ns": 25916.0204778157,
+            "p95_ns": 82958.0,
+            "calls": 879
+          },
+          "build_ns": 391575458,
+          "build_bytes": 308889888,
+          "retrieval": "precomputed",
+          "rho": 0.0005725410399999999,
+          "drafter_cost_fraction": 0.0005722134243309316,
+          "speedup_excluding_build": 1.1429754073638811,
+          "speedup_including_build": 1.142953006710255,
+          "sensitivity": {
+            "beta_0.005": 1.1260936678350624,
+            "beta_0.01": 1.1097033562899088
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.138512681760333
+            ],
+            [
+              10,
+              1.1425275610569252
+            ],
+            [
+              100,
+              1.1429306069346514
+            ],
+            [
+              1000,
+              1.1429709271629116
+            ],
+            [
+              10000,
+              1.1429749593422036
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 6349416.0,
+            "mean_ns": 8630809.89533561,
+            "p95_ns": 24082041.0,
+            "calls": 879
+          },
+          "build_ns": 801500,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.31746834104,
+          "drafter_cost_fraction": 0.24096847806558508,
+          "speedup_excluding_build": 0.8680510734622546,
+          "speedup_including_build": 0.8680510470153995,
+          "sensitivity": {
+            "beta_0.005": 0.8582791594130466,
+            "beta_0.01": 0.8487248070033571
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.8680457841232996
+            ],
+            [
+              10,
+              0.8680505445254584
+            ],
+            [
+              100,
+              0.868051020568546
+            ],
+            [
+              1000,
+              0.8680510681728835
+            ],
+            [
+              10000,
+              0.8680510729333175
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1542.0,
+            "mean_ns": 1738.8339021615473,
+            "p95_ns": 2375.0,
+            "calls": 879
+          },
+          "build_ns": 450082750,
+          "build_bytes": 308889888,
+          "retrieval": "precomputed",
+          "rho": 7.464104e-05,
+          "drafter_cost_fraction": 7.463546913096318e-05,
+          "speedup_excluding_build": 1.1435444523450986,
+          "speedup_including_build": 1.1435186791270224,
+          "sensitivity": {
+            "beta_0.005": 1.12664602331174,
+            "beta_0.01": 1.1102397458670163
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1384128244111396
+            ],
+            [
+              10,
+              1.143029208622389
+            ],
+            [
+              100,
+              1.1434929070706745
+            ],
+            [
+              1000,
+              1.1435392976085412
+            ],
+            [
+              10000,
+              1.1435439368693516
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 293,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 26.206748723983765
+    },
+    "xsum|1000000|B4|S1": {
+      "dataset": "xsum",
+      "label": "low",
+      "axes": {
+        "coverage": 0.9421544856252165,
+        "mean_support": 275.3463235294118,
+        "normalized_branch_entropy": 0.683892370766143,
+        "structure": 0.31610762923385705,
+        "n_positions": 2887,
+        "n_covered": 2720
+      },
+      "store_tokens": 1000000,
+      "budget": 4,
+      "num_sequences": 1,
+      "workload_shape": {
+        "dataset": "xsum",
+        "store_tokens": 1000000,
+        "n_requests": 200,
+        "n_docs_in_store": 1936,
+        "mean_target_tokens": 29.545,
+        "samples_scanned": 4000
+      },
+      "accounting": {
+        "target_tokens": 5709,
+        "speculative_steps": 4882,
+        "accepted_tokens": 844,
+        "rejected_tokens": 18480,
+        "acceptance_rate": 0.04367625750362244,
+        "token_speedup": 1.1693977877918886,
+        "token_speedup_median": 1.1550480769230769,
+        "n_requests": 200
+      },
+      "arms": {
+        "torch_scan": {
+          "latency": {
+            "median_ns": 3804229.0,
+            "mean_ns": 3648135.5331050227,
+            "p95_ns": 5307958.0,
+            "calls": 876
+          },
+          "build_ns": 59402375,
+          "build_bytes": 8000000,
+          "retrieval": "on_the_fly",
+          "rho": 0.19020899104,
+          "drafter_cost_fraction": 0.1598114217519027,
+          "speedup_excluding_build": 0.9825146647313371,
+          "speedup_including_build": 0.9825121536501906,
+          "sensitivity": {
+            "beta_0.005": 0.970286312569566,
+            "beta_0.01": 0.9583586060902531
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.9820127037984585
+            ],
+            [
+              10,
+              0.9824644455470333
+            ],
+            [
+              100,
+              0.9825096425818797
+            ],
+            [
+              1000,
+              0.982514162514081
+            ],
+            [
+              10000,
+              0.9825146145095883
+            ]
+          ]
+        },
+        "torch_index": {
+          "latency": {
+            "median_ns": 11833.5,
+            "mean_ns": 39711.97260273973,
+            "p95_ns": 94500.0,
+            "calls": 876
+          },
+          "build_ns": 938592709,
+          "build_bytes": 595939880,
+          "retrieval": "precomputed",
+          "rho": 0.00058921604,
+          "drafter_cost_fraction": 0.0005888690688991447,
+          "speedup_excluding_build": 1.168709165605419,
+          "speedup_including_build": 1.1686530286078833,
+          "sensitivity": {
+            "beta_0.005": 1.1514476220529608,
+            "beta_0.01": 1.134688554461355
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1575880685881355
+            ],
+            [
+              10,
+              1.1675874493703469
+            ],
+            [
+              100,
+              1.1685968970029832
+            ],
+            [
+              1000,
+              1.1686979377744637
+            ],
+            [
+              10000,
+              1.1687080428126153
+            ]
+          ]
+        },
+        "python_scan": {
+          "latency": {
+            "median_ns": 12223042.0,
+            "mean_ns": 17178785.12328767,
+            "p95_ns": 48425125.0,
+            "calls": 584
+          },
+          "build_ns": 1636917,
+          "build_bytes": 48,
+          "retrieval": "on_the_fly",
+          "rho": 0.61114964104,
+          "drafter_cost_fraction": 0.3793251883453246,
+          "speedup_excluding_build": 0.7258157516871246,
+          "speedup_including_build": 0.7258157139247428,
+          "sensitivity": {
+            "beta_0.005": 0.7191206505718644,
+            "beta_0.01": 0.7125479350261069
+          },
+          "reuse_curve": [
+            [
+              1,
+              0.7258081992889356
+            ],
+            [
+              10,
+              0.7258149964402328
+            ],
+            [
+              100,
+              0.7258156761623646
+            ],
+            [
+              1000,
+              0.7258157441346479
+            ],
+            [
+              10000,
+              0.7258157509318769
+            ]
+          ]
+        },
+        "python_index": {
+          "latency": {
+            "median_ns": 1500.0,
+            "mean_ns": 1725.0011415525114,
+            "p95_ns": 2458.0,
+            "calls": 876
+          },
+          "build_ns": 1101828500,
+          "build_bytes": 595939880,
+          "retrieval": "precomputed",
+          "rho": 7.254104e-05,
+          "drafter_cost_fraction": 7.253577817921368e-05,
+          "speedup_excluding_build": 1.16931296461335,
+          "speedup_including_build": 1.1692469969660615,
+          "sensitivity": {
+            "beta_0.005": 1.1520337123825395,
+            "beta_0.01": 1.1352577039003686
+          },
+          "reuse_curve": [
+            [
+              1,
+              1.1562659109145155
+            ],
+            [
+              10,
+              1.1679950243662987
+            ],
+            [
+              100,
+              1.1691810367615791
+            ],
+            [
+              1000,
+              1.1692997704884074
+            ],
+            [
+              10000,
+              1.1693116451874566
+            ]
+          ]
+        }
+      },
+      "equivalence": {
+        "prompts_checked": 292,
+        "arms": [
+          "torch_scan",
+          "torch_index",
+          "python_scan",
+          "python_index"
+        ]
+      },
+      "seconds": 36.163331031799316
+    }
+  }
+}

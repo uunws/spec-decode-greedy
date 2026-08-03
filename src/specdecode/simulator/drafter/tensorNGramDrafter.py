@@ -10,6 +10,17 @@ from specdecode.interface.abstractTensorDrafter import AbstractTensorDrafter
 PAD_ID = -1
 
 
+def clamp_size_limit(size_limit: Optional[int], corpus_len: int) -> int:
+    """Resolve a corpus-size limit to a valid token count.
+
+    ``None`` means the whole corpus. Every drafter shares this rule so that the
+    scanning and index-backed arms see exactly the same corpus slice -- their
+    retrieval cost may differ, their drafts must not.
+    """
+    requested = corpus_len if size_limit is None else size_limit
+    return max(0, min(requested, corpus_len))
+
+
 class NGramIndex:
     """
     Pre-built ``k-gram -> [corpus positions]`` index over a token corpus, for every
@@ -19,9 +30,13 @@ class NGramIndex:
 
     Positions for each key are stored in ascending (corpus) order, so a consumer can
     iterate them and stop early (depth needs only the first; width needs the first few).
-    ``cap_positions`` bounds memory/iteration for very frequent grams (the earliest
-    occurrences are kept, which is all depth/width drafting ever needs). A ``size_limit``
-    at query time restricts matches to the first N corpus tokens (for corpus-size sweeps).
+    ``cap_positions`` bounds memory/iteration for very frequent grams by keeping only
+    the earliest occurrences. That is lossless for *depth* drafting, which only ever
+    needs the first match, but **lossy for width drafting**: distinct continuations
+    occurring beyond the cap become invisible, so an index-backed drafter can find
+    fewer branches than a scanning one. Width experiments must set
+    ``cap_positions >= len(corpus_tokens)``. A ``size_limit`` at query time restricts
+    matches to the first N corpus tokens (for corpus-size sweeps).
     """
 
     def __init__(
@@ -71,11 +86,16 @@ class TensorNGramDrafter(AbstractTensorDrafter):
         n: int = 3,
         num_sequences: int = 1,
         draft_depth: int = 3,
+        size_limit: Optional[int] = None,
     ) -> None:
         self.corpus_tokens = corpus_tokens
         self.n = n
         self.num_sequences = num_sequences  # S — number of candidate sequences
         self.draft_depth = draft_depth  # T — token depth per candidate
+        # Restrict matching to the first N corpus tokens. Mirrors
+        # IndexedTensorNGramDrafter.size_limit so the scanning and index-backed
+        # drafters stay draft-equivalent under a corpus-size sweep.
+        self.size_limit = clamp_size_limit(size_limit, len(corpus_tokens))
         self.last_n_used: int = 0  # which n-gram size was used in last call
         self.last_match_corpus_idx: int = -1  # where in corpus the first match was found
 
@@ -112,12 +132,14 @@ class TensorNGramDrafter(AbstractTensorDrafter):
             candidates: List[List[int]] = []
             seen_continuations: set = set()  # dedupe identical continuations
             seen_first_tokens: set = set()  # encourage diverse first tokens (branching)
+            lim = self.size_limit
 
-            for i in range(len(self.corpus_tokens) - prefix_len):
+            for i in range(min(lim, len(self.corpus_tokens) - prefix_len)):
                 if self.corpus_tokens[i : i + prefix_len] != search_prefix:
                     continue
 
-                draft = self.corpus_tokens[i + prefix_len : i + prefix_len + self.draft_depth]
+                start = i + prefix_len
+                draft = self.corpus_tokens[start : min(start + self.draft_depth, lim)]
                 if not draft:
                     continue
 
@@ -175,7 +197,7 @@ class IndexedTensorNGramDrafter(AbstractTensorDrafter):
         self.n = n
         self.num_sequences = num_sequences
         self.draft_depth = draft_depth
-        self.size_limit = size_limit if size_limit is not None else len(self.corpus_tokens)
+        self.size_limit = clamp_size_limit(size_limit, len(self.corpus_tokens))
         self.last_n_used: int = 0
         self.last_match_corpus_idx: int = -1
 

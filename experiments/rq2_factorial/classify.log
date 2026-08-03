@@ -1,0 +1,48 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+tokenizer     Qwen/Qwen2.5-0.5B-Instruct
+datasets      ['codesearch', 'gsm8k', 'swetraj', 'wildchat', 'cnn', 'samsum', 'xsum', 'dolly']
+datastore     200,000 tokens (identical for every dataset)
+requests      100 x <= 200 tokens
+n-gram        6   (control variable)
+output        /Users/faith/Chula/LLM/spec-decode-greedy/experiments/rq2_factorial/classification.json
+
+[1/8] codesearch
+        support=326.45  structure=0.369  coverage=0.872  (0s)
+[2/8] gsm8k
+        support=134.59  structure=0.424  coverage=0.978  (8s)
+[3/8] swetraj
+        support=121.33  structure=0.598  coverage=0.975  (0s)
+[4/8] wildchat
+        support=405.30  structure=0.368  coverage=0.862  (0s)
+[5/8] cnn
+        support=313.65  structure=0.317  coverage=0.927  (0s)
+[6/8] samsum
+        support=317.54  structure=0.310  coverage=0.940  (7s)
+[7/8] xsum
+        support=275.35  structure=0.316  coverage=0.942  (13s)
+[8/8] dolly
+        support=592.28  structure=0.304  coverage=0.927  (8s)
+
+==============================================================================
+dataset         support  structure  coverage  positions  label
+------------------------------------------------------------------------------
+swetraj          121.33      0.598     0.975     13,304  mixed
+gsm8k            134.59      0.424     0.978     11,974  mixed
+codesearch       326.45      0.369     0.872     15,521  high
+wildchat         405.30      0.368     0.862     16,675  high
+cnn              313.65      0.317     0.927      6,904  low
+xsum             275.35      0.316     0.942      2,887  low
+samsum           317.54      0.310     0.940      3,537  mixed
+dolly            592.28      0.304     0.927      9,463  mixed
+==============================================================================
+
+dominance pairs (high beats low on BOTH axes by > 5%):
+  wildchat     > xsum          support x1.47  structure x1.16
+  wildchat     > samsum        support x1.28  structure x1.19
+  wildchat     > cnn           support x1.29  structure x1.16
+  codesearch   > xsum          support x1.19  structure x1.17
+
+pairs available for the factorial: 4
+
+written to /Users/faith/Chula/LLM/spec-decode-greedy/experiments/rq2_factorial/classification.json
+This file is the pre-registration. Do not edit it after seeing speedups.

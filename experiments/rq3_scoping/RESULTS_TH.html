@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RQ3 History Scoping</title>
+<style>
+  :root {
+    --ink: #14140f; --muted: #55544d; --line: #e2e1da; --bg: #fbfbf8;
+    --card: #ffffff; --blue: #2a78d6; --orange: #eb6834; --aqua: #1baf7a;
+    --warn: #e34948;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px 24px 80px; background: var(--bg); color: var(--ink);
+    font: 15px/1.75 "IBM Plex Sans Thai", "Noto Sans Thai", -apple-system,
+          BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; }
+  h1 { font-size: 30px; line-height: 1.3; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 0 0 40px; }
+  h2 {
+    font-size: 21px; margin: 52px 0 14px; padding-top: 22px;
+    border-top: 1px solid var(--line);
+  }
+  h3 { font-size: 16px; margin: 30px 0 10px; }
+  h4 { font-size: 14px; margin: 22px 0 8px; color: var(--muted);
+       text-transform: uppercase; letter-spacing: 0.06em; }
+  p { margin: 0 0 14px; }
+  ul, ol { margin: 0 0 16px; padding-left: 22px; }
+  li { margin: 0 0 7px; }
+  code {
+    font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: #f2f1ec; padding: 1px 5px; border-radius: 4px;
+  }
+  pre {
+    background: #f7f6f2; border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px; overflow-x: auto;
+    font: 13px/1.65 ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  pre code { background: none; padding: 0; }
+  .scroll { overflow-x: auto; margin: 0 0 20px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td {
+    text-align: right; padding: 7px 11px; border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+  thead th {
+    color: var(--muted); font-weight: 600; font-size: 12px;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  tbody tr:hover { background: #f7f6f2; }
+  .scope { font: 12.5px ui-monospace, Menlo, monospace; color: var(--muted); }
+  .hot { color: var(--aqua); }
+  .warn { color: var(--warn); }
+  .callout {
+    background: var(--card); border: 1px solid var(--line);
+    border-left: 3px solid var(--blue); border-radius: 6px;
+    padding: 16px 18px; margin: 0 0 20px;
+  }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.key { border-left-color: var(--aqua); }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  figure { margin: 0 0 26px; }
+  figure img {
+    width: 100%; height: auto; border: 1px solid var(--line);
+    border-radius: 8px; background: #fff;
+  }
+  figcaption { color: var(--muted); font-size: 13px; margin-top: 8px; }
+  .meta { color: var(--muted); font-size: 13px; }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #f2f1ea; --muted: #a5a49a; --line: #33322c; --bg: #161613;
+      --card: #1e1e1a; --blue: #3987e5; --aqua: #199e70; --warn: #e66767;
+    }
+    code { background: #26251f; }
+    pre { background: #1c1b17; }
+    tbody tr:hover { background: #1e1e1a; }
+    figure img { background: #fff; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>RQ3 · History Scoping</h1>
+<p class="sub">การจำกัดขอบเขต history ยกระดับ speculatability ได้ไหม โดยไม่แตะอัลกอริทึม</p>
+
+
+<div class="callout key">
+<p><b>คำถาม</b> การจำกัดขอบเขต history ยกระดับ speculatability ได้ไหม โดยไม่แตะอัลกอริทึม</p>
+<p><b>สิ่งที่ทำ</b> เปลี่ยน scope หลายแบบบน 6 dataset แล้ววัดสองแกนของ speculatability
+คือ historical support กับ prefix branching entropy ดูว่า workload ขยับไปทางไหนบนระนาบ</p>
+<p><b>คำตอบมีสองท่อน</b></p>
+<ol>
+<li><b>แคบ scope ลงเฉย ๆ ไม่ได้ยกระดับ</b> ทั้ง 6 dataset วิ่งไปมุมขวาล่างหมด
+คือ support ลดแต่ structure เพิ่ม เป็นการแลก ไม่ใช่การยกระดับ</li>
+<li><b>ความเกี่ยวข้องต่างหากที่ยกระดับ</b> พอตรึงขนาด corpus ไว้เท่ากันเป๊ะแล้วเปลี่ยนแค่เนื้อหา
+workload ขยับไปทางขวาทั้ง 11 คู่ และ coverage เพิ่มทั้ง 11 คู่</li>
+</ol>
+<p>ตัวแปรที่ใช้งานได้จริงคือ <b>ความเกี่ยวข้องของ history ไม่ใช่ความแคบของ scope</b></p>
+</div>
+
+
+<h2>1. วิธีทำ</h2>
+
+<h4>สองแกนที่ใช้วัด</h4>
+<ul>
+<li><code>mean_support</code> คือแกน <b>History</b> ในสไลด์หน้า 2 ก็คือ historical support ของ RQ1 สูงคือดี</li>
+<li><code>1 - normalized_branch_entropy</code> คือแกน <b>Structure</b> ก็คือ prefix branching entropy ของ RQ1
+แต่กลับด้าน เพราะ entropy ต่ำคือดี แกนที่ชี้ไปขวาจึงควรหมายถึงดีขึ้น</li>
+<li><code>coverage</code> ต้องรายงานคู่กับ support เสมอ เพราะ support เฉลี่ยเฉพาะตำแหน่งที่หา match เจอ
+ตำแหน่งที่หาไม่เจอถูกโยนทิ้งก่อนหาค่าเฉลี่ย datastore ที่เจอน้อยมากแต่บังเอิญไปเจอ token พื้น ๆ
+จึงโชว์ support สูงได้ทั้งที่ใช้งานแทบไม่ได้</li>
+</ul>
+<p><b>speculatability สูงสุดอยู่มุมขวาบน ต่ำสุดอยู่มุมซ้ายล่าง</b></p>
+<p>ทั้งสามตัววัดจาก <b>ข้อความล้วน ๆ ไม่ต้องรัน drafter และไม่เกี่ยวกับความเร็วเลย</b>
+ข้อนี้ตั้งใจ ถ้านิยาม high-speculatability ว่าเป็น dataset ที่ทดลองแล้วเร็ว ข้อสรุปจะกลายเป็น circular ทันที
+ในการทดลองนี้ scope ถูกนิยามด้วยการก่อสร้าง ส่วนสองแกนวัดแยกจากข้อมูล ไม่มีจุดไหนที่เอาผลลัพธ์มานิยามตัวแปรต้น</p>
+
+<h4>scope ที่เทียบกัน</h4>
+<pre><code>global      history ของทุก group          เทียบได้กับ REST
+group       เฉพาะ group เดียวกับ request   เทียบได้กับ DAS
+local       prompt ของ request เอง        เทียบได้กับ Fast Context
+narrow(N)   N เอกสารล่าสุดใน group         หั่นด้วยความใหม่แทนความเกี่ยวข้อง
+control_*   สุ่มมา ขนาดเท่า treatment เป๊ะ   คู่เทียบ</code></pre>
+<p>เปลี่ยนแค่ก้อน token ที่เอาไป build index เท่านั้น drafter คลาสเดียว พารามิเตอร์ชุดเดียว
+ตลอดทั้ง 54 cells นี่คือความหมายของคำว่าไม่แตะอัลกอริทึม</p>
+
+<h4>ทำไมต้องมีคู่เทียบขนาดเท่ากัน</h4>
+<p>ถ้าดูแค่ global ไป group ไป local อย่างเดียว corpus หดจาก 95,367 เหลือ 87 token
+support ที่ลดลงจึงอธิบายได้ด้วยเหตุผลง่าย ๆ ว่า<b>ข้อความน้อยลง</b> ไม่ใช่ว่า history เกี่ยวข้องขึ้น
+คนอ่านจะแย้งได้ทันทีและแย้งถูก</p>
+<p>คู่เทียบแก้ตรงนี้ ตรึงจำนวน token ไว้เท่ากันเป๊ะ ใช้ scope key เดียวกัน มี R เท่ากัน
+ต่างกันแค่ว่า token ไหนอยู่ข้างใน สิ่งที่เหลือให้อธิบายจึงมีแค่ความเกี่ยวข้องอย่างเดียว</p>
+
+<h4>ตรวจอะไรก่อนบันทึกผลทุก cell</h4>
+<ul>
+<li>ไม่มี document จากอนาคตหลุดเข้า datastore</li>
+<li>scope key หนึ่งอันต้อง map ไป datastore เดียวเท่านั้น</li>
+<li>คู่เทียบมีขนาดต่างจาก treatment ไม่เกิน 1 เปอร์เซ็นต์</li>
+<li>playback ต้อง reconstruct target ได้ครบ ถ้า speculation ทำให้ output เปลี่ยน ตัวเลขอื่นไม่มีความหมาย</li>
+</ul>
+
+
+<h2>2. ข้อมูลที่ใช้</h2>
+
+<p>เกณฑ์แรกคือต้องมี group key จริงที่หลาย request แชร์กัน ถ้า group มีสมาชิกเดียว
+scope กลางจะกลายเป็น local โดยปริยาย</p>
+
+<div class="scroll"><table class=""><thead><tr><th>dataset</th><th>group key</th><th>จำนวน group</th><th>จำนวน request</th><th>history (tok)</th><th>target กลาง (tok)</th></tr></thead><tbody><tr><td>wildchat</td><td>natural</td><td>12</td><td>96</td><td>94,129</td><td>175</td></tr><tr><td>swetraj</td><td>natural</td><td>12</td><td>96</td><td>207,147</td><td>66</td></tr><tr><td>squad</td><td>natural</td><td>12</td><td>93</td><td>69,529</td><td>4</td></tr><tr><td>spider</td><td>natural</td><td>12</td><td>96</td><td>13,272</td><td>24</td></tr><tr><td>samsum</td><td>none</td><td>360</td><td>96</td><td>58,162</td><td>22</td></tr><tr><td>codesearch</td><td>natural</td><td>12</td><td>96</td><td>95,367</td><td>150</td></tr></tbody></table></div>
+
+<h2>3. ผลหลัก</h2>
+
+<h3>A. เปลี่ยน scope แล้ว workload ขยับไปทางไหน</h3>
+
+<figure><img src="artifacts/rq3_A_scope_movement.png" alt="รูป A  เปลี่ยน scope แล้ววัดสองแกน ลูกศรคือ global ไป group ไป local"><figcaption>รูป A  เปลี่ยน scope แล้ววัดสองแกน ลูกศรคือ global ไป group ไป local</figcaption></figure>
+
+<p><b>วิธีอ่าน</b> หนึ่ง panel ต่อหนึ่ง dataset แกนนอนคือ Structure ยิ่งขวายิ่งดี
+แกนตั้งคือ support เป็น log scale ยิ่งสูงยิ่งดี <b>มุมขวาบนคือ speculatability สูงสุด</b>
+สามจุดคือ global สีน้ำเงิน ไป group สีส้ม ไป local สีเขียว ลูกศรบอกทิศ
+ตัวเลขข้างจุดคือ coverage ไม่ใช่ความเร็ว</p>
+
+<p><b>ผล ทั้ง 6 dataset ลูกศรวิ่งลงขวาเหมือนกันหมด ไม่มีตัวไหนวิ่งขึ้นขวาบน</b>
+ตัวอย่าง CodeSearchNet support ไล่จาก 152.7 ลง 33.6 ลง 1.7 ขณะที่ structure ไล่จาก 0.374 ขึ้น 0.425 ขึ้น 0.848</p>
+
+<p>เพราะฉะนั้น <b>สรุปว่าการแคบ scope ยกระดับ speculatability ไม่ได้</b>
+มันแลก support ทิ้งเพื่อซื้อ structure และเมื่อสองแกนสวนทางกัน
+จะจัดอันดับได้ก็ต่อเมื่อมีสูตรรวมสองแกน ซึ่งเป็นงานของ RQ1 และยังไม่เสร็จ
+เราจึงหยุดที่การรายงานทิศทาง ไม่ตัดสินแทน</p>
+
+
+<h3>B. ตรึงขนาดไว้ แล้วเปลี่ยนแค่ความเกี่ยวข้อง</h3>
+
+<figure><img src="artifacts/rq3_B_relevance_fixed_size.png" alt="รูป B  ตรึงขนาด corpus แล้วเปลี่ยนแค่เนื้อหา วงกลมกลวงคือคู่เทียบสุ่ม"><figcaption>รูป B  ตรึงขนาด corpus แล้วเปลี่ยนแค่เนื้อหา วงกลมกลวงคือคู่เทียบสุ่ม</figcaption></figure>
+
+<p><b>วิธีอ่าน</b> แกนเดียวกับรูป A ทุกประการ วงกลม<b>กลวง</b>คือ datastore สุ่มที่ขนาดเท่ากันเป๊ะ
+วงกลม<b>ทึบ</b>คือของจริง ลูกศรวิ่งจากคู่เทียบไปหาของจริง
+ตัวเลขคือ coverage ก่อนและหลัง สองจุดในแต่ละคู่มีจำนวน token เท่ากัน
+ต่างกันแค่ว่า token ไหนอยู่ข้างใน</p>
+
+<p><b>ผล ลูกศรชี้ไปทางขวาทั้ง 11 คู่ และ coverage เพิ่มทั้ง 11 คู่</b>
+ส่วน support ขึ้น 6 คู่ ลง 5 คู่ ซึ่งไม่ขัดกัน เพราะ support เฉลี่ยเฉพาะตำแหน่งที่หาเจอ
+พอ coverage เพิ่มขึ้นมาก ตำแหน่งที่เพิ่งหาเจอใหม่มักเป็นตำแหน่งที่ support ต่ำ ค่าเฉลี่ยจึงถูกดึงลง
+ตัวเลขทุกคู่อยู่ในตารางด้านล่าง</p>
+
+<div class="scroll"><table class=""><thead><tr><th>dataset</th><th>scope</th><th>corpus (tok)</th><th>support</th><th>structure</th><th>coverage</th></tr></thead><tbody><tr><td>codesearch</td><td><span class="scope">group</span></td><td>7,947</td><td><span style="font-weight:600;">26.775 → 33.587  ขึ้น</span></td><td><span style="font-weight:600;">0.368 → 0.425  ขึ้น</span></td><td><span style="font-weight:600;">0.724 → 0.796  ขึ้น</span></td></tr><tr><td>codesearch</td><td><span class="scope">local</span></td><td>87</td><td><span>1.946 → 1.725  ลง</span></td><td><span style="font-weight:600;">0.689 → 0.848  ขึ้น</span></td><td><span style="font-weight:600;">0.120 → 0.448  ขึ้น</span></td></tr><tr><td>samsum</td><td><span class="scope">local</span></td><td>130</td><td><span style="font-weight:600;">1.836 → 1.853  ขึ้น</span></td><td><span style="font-weight:600;">0.537 → 0.806  ขึ้น</span></td><td><span style="font-weight:600;">0.216 → 0.592  ขึ้น</span></td></tr><tr><td>spider</td><td><span class="scope">group</span></td><td>1,106</td><td><span style="font-weight:600;">13.764 → 16.176  ขึ้น</span></td><td><span style="font-weight:600;">0.410 → 0.446  ขึ้น</span></td><td><span style="font-weight:600;">0.792 → 0.835  ขึ้น</span></td></tr><tr><td>spider</td><td><span class="scope">local</span></td><td>16</td><td><span style="font-weight:600;">0.698 → 0.816  ขึ้น</span></td><td><span style="font-weight:600;">0.560 → 0.675  ขึ้น</span></td><td><span style="font-weight:600;">0.101 → 0.147  ขึ้น</span></td></tr><tr><td>squad</td><td><span class="scope">group</span></td><td>5,794</td><td><span style="font-weight:600;">23.806 → 32.462  ขึ้น</span></td><td><span style="font-weight:600;">0.300 → 0.486  ขึ้น</span></td><td><span style="font-weight:600;">0.495 → 0.622  ขึ้น</span></td></tr><tr><td>squad</td><td><span class="scope">local</span></td><td>167</td><td><span style="font-weight:600;">1.534 → 1.634  ขึ้น</span></td><td><span style="font-weight:600;">0.140 → 0.605  ขึ้น</span></td><td><span style="font-weight:600;">0.210 → 0.608  ขึ้น</span></td></tr><tr><td>swetraj</td><td><span class="scope">group</span></td><td>17,262</td><td><span>28.096 → 24.956  ลง</span></td><td><span style="font-weight:600;">0.416 → 0.516  ขึ้น</span></td><td><span style="font-weight:600;">0.879 → 0.960  ขึ้น</span></td></tr><tr><td>swetraj</td><td><span class="scope">local</span></td><td>473</td><td><span>4.037 → 3.803  ลง</span></td><td><span style="font-weight:600;">0.563 → 0.646  ขึ้น</span></td><td><span style="font-weight:600;">0.300 → 0.382  ขึ้น</span></td></tr><tr><td>wildchat</td><td><span class="scope">group</span></td><td>7,844</td><td><span>50.896 → 43.611  ลง</span></td><td><span style="font-weight:600;">0.288 → 0.367  ขึ้น</span></td><td><span style="font-weight:600;">0.670 → 0.781  ขึ้น</span></td></tr><tr><td>wildchat</td><td><span class="scope">local</span></td><td>66</td><td><span>1.843 → 1.603  ลง</span></td><td><span style="font-weight:600;">0.613 → 0.758  ขึ้น</span></td><td><span style="font-weight:600;">0.128 → 0.246  ขึ้น</span></td></tr></tbody></table></div>
+
+<div class="callout key">
+<p><b>ข้อสรุปของ RQ3</b></p>
+<ol>
+<li>ความแคบของ scope ไม่ใช่ตัวแปรที่ยกระดับ speculatability มันแค่แลกแกนหนึ่งกับอีกแกนหนึ่ง</li>
+<li><b>ความเกี่ยวข้องของ history คือตัวแปรที่ยกระดับได้จริง</b> เพราะที่ขนาดเท่ากัน
+มันดัน structure และ coverage ขึ้นทุกคู่โดยไม่ต้องอ้างความเร็วเลยแม้แต่ครั้งเดียว</li>
+<li>เพราะฉะนั้นถ้าจะขยับ workload บน matrix ต้องขยับด้วยความเกี่ยวข้อง ไม่ใช่ด้วยการตัดให้เล็กลง</li>
+</ol>
+</div>
+<p>ตัวคุมที่ยืนยันว่ากลไกไม่ลำเอียง คือ scope <code>global</code> ซึ่ง treatment กับคู่เทียบ
+มี token ชุดเดียวกันทั้งคู่ ต่างแค่ลำดับเอกสาร ผลออกมาแทบไม่ต่างกัน
+ถ้าคู่นี้ออกมาต่างกันมากเมื่อไร แปลว่ากลไกคู่เทียบมีปัญหาและตัวเลขอื่นเชื่อไม่ได้</p>
+
+
+<h2>4. ตารางเต็ม</h2>
+<p class="meta">n-gram = 3</p>
+<h3>CodeSearchNet เขียนฟังก์ชันจาก docstring จับกลุ่มด้วย repository</h3><div class="scroll"><table class=""><thead><tr><th>scope</th><th>corpus (tok)</th><th>support</th><th>structure</th><th>coverage</th><th>L/S</th><th>acc/tok</th><th>R</th><th>speedup รวม build</th></tr></thead><tbody><tr><td><span class="scope">global</span></td><td>95,367</td><td>152.7</td><td>0.374</td><td>0.899</td><td>1.329</td><td>0.249</td><td>96</td><td>1.278</td></tr><tr><td><span class="scope">group</span></td><td>7,947</td><td>33.6</td><td>0.425</td><td>0.796</td><td>1.372</td><td>0.272</td><td>8</td><td>1.319</td></tr><tr><td><span class="scope">narrow(10)</span></td><td>2,837</td><td>17.0</td><td>0.455</td><td>0.710</td><td>1.317</td><td>0.241</td><td>8</td><td>1.267</td></tr><tr><td><span class="scope">narrow(5)</span></td><td>1,191</td><td>9.1</td><td>0.482</td><td>0.630</td><td>1.232</td><td>0.189</td><td>8</td><td>1.185</td></tr><tr><td><span class="scope">narrow(1)</span></td><td>280</td><td>3.8</td><td>0.628</td><td>0.462</td><td>1.178</td><td>0.151</td><td>8</td><td>1.133</td></tr><tr><td><span class="scope">local</span></td><td>87</td><td>1.7</td><td>0.848</td><td>0.448</td><td>1.487</td><td>0.327</td><td>1</td><td>1.429</td></tr></tbody></table></div><h3>SAMSum สรุปบทสนทนา ไม่มี group key</h3><div class="scroll"><table class=""><thead><tr><th>scope</th><th>corpus (tok)</th><th>support</th><th>structure</th><th>coverage</th><th>L/S</th><th>acc/tok</th><th>R</th><th>speedup รวม build</th></tr></thead><tbody><tr><td><span class="scope">global</span></td><td>58,162</td><td>134.0</td><td>0.287</td><td>0.870</td><td>1.079</td><td>0.079</td><td>96</td><td>1.037</td></tr><tr><td><span class="scope">group</span></td><td>0</td><td>0.0</td><td>0.000</td><td>0.000</td><td>1.000</td><td>0.000</td><td>1</td><td>0.961</td></tr><tr><td><span class="scope">narrow(10)</span></td><td>0</td><td>0.0</td><td>0.000</td><td>0.000</td><td>1.000</td><td>0.000</td><td>1</td><td>0.961</td></tr><tr><td><span class="scope">narrow(5)</span></td><td>0</td><td>0.0</td><td>0.000</td><td>0.000</td><td>1.000</td><td>0.000</td><td>1</td><td>0.961</td></tr><tr><td><span class="scope">narrow(1)</span></td><td>0</td><td>0.0</td><td>0.000</td><td>0.000</td><td>1.000</td><td>0.000</td><td>1</td><td>0.961</td></tr><tr><td><span class="scope">local</span></td><td>130</td><td>1.9</td><td>0.806</td><td>0.592</td><td>1.243</td><td>0.195</td><td>1</td><td>1.195</td></tr></tbody></table></div><h3>Spider แปลงคำถามเป็น SQL จับกลุ่มด้วย db_id</h3><div class="scroll"><table class=""><thead><tr><th>scope</th><th>corpus (tok)</th><th>support</th><th>structure</th><th>coverage</th><th>L/S</th><th>acc/tok</th><th>R</th><th>speedup รวม build</th></tr></thead><tbody><tr><td><span class="scope">global</span></td><td>13,272</td><td>110.3</td><td>0.429</td><td>0.912</td><td>1.702</td><td>0.419</td><td>96</td><td>1.637</td></tr><tr><td><span class="scope">group</span></td><td>1,106</td><td>16.2</td><td>0.446</td><td>0.835</td><td>1.608</td><td>0.385</td><td>8</td><td>1.546</td></tr><tr><td><span class="scope">narrow(10)</span></td><td>395</td><td>8.0</td><td>0.497</td><td>0.707</td><td>1.443</td><td>0.311</td><td>8</td><td>1.388</td></tr><tr><td><span class="scope">narrow(5)</span></td><td>195</td><td>5.2</td><td>0.513</td><td>0.584</td><td>1.338</td><td>0.257</td><td>8</td><td>1.287</td></tr><tr><td><span class="scope">narrow(1)</span></td><td>37</td><td>1.6</td><td>0.836</td><td>0.395</td><td>1.207</td><td>0.172</td><td>8</td><td>1.161</td></tr><tr><td><span class="scope">local</span></td><td>16</td><td>0.8</td><td>0.675</td><td>0.147</td><td>1.029</td><td>0.033</td><td>1</td><td>0.989</td></tr></tbody></table></div><h3>SQuAD ถามตอบแบบดึงคำตอบจากย่อหน้า จับกลุ่มด้วย title</h3><div class="scroll"><table class=""><thead><tr><th>scope</th><th>corpus (tok)</th><th>support</th><th>structure</th><th>coverage</th><th>L/S</th><th>acc/tok</th><th>R</th><th>speedup รวม build</th></tr></thead><tbody><tr><td><span class="scope">global</span></td><td>69,529</td><td>230.7</td><td>0.471</td><td>0.745</td><td>1.216</td><td>0.266</td><td>93</td><td>1.162</td></tr><tr><td><span class="scope">group</span></td><td>5,794</td><td>32.5</td><td>0.486</td><td>0.622</td><td>1.236</td><td>0.303</td><td>8</td><td>1.185</td></tr><tr><td><span class="scope">narrow(10)</span></td><td>2,025</td><td>13.4</td><td>0.416</td><td>0.519</td><td>1.188</td><td>0.286</td><td>8</td><td>1.141</td></tr><tr><td><span class="scope">narrow(5)</span></td><td>1,055</td><td>7.5</td><td>0.398</td><td>0.489</td><td>1.192</td><td>0.283</td><td>8</td><td>1.146</td></tr><tr><td><span class="scope">narrow(1)</span></td><td>201</td><td>1.7</td><td>0.425</td><td>0.438</td><td>1.169</td><td>0.263</td><td>8</td><td>1.124</td></tr><tr><td><span class="scope">local</span></td><td>167</td><td>1.6</td><td>0.605</td><td>0.608</td><td>1.551</td><td>0.562</td><td>1</td><td>1.490</td></tr></tbody></table></div><h3>SWE-agent trajectories ร่องรอยการทำงานของ agent จับกลุ่มด้วย repository</h3><div class="scroll"><table class=""><thead><tr><th>scope</th><th>corpus (tok)</th><th>support</th><th>structure</th><th>coverage</th><th>L/S</th><th>acc/tok</th><th>R</th><th>speedup รวม build</th></tr></thead><tbody><tr><td><span class="scope">global</span></td><td>207,147</td><td>111.1</td><td>0.448</td><td>0.991</td><td>1.830</td><td>0.460</td><td>96</td><td>1.759</td></tr><tr><td><span class="scope">group</span></td><td>17,262</td><td>25.0</td><td>0.516</td><td>0.960</td><td>1.932</td><td>0.488</td><td>8</td><td>1.857</td></tr><tr><td><span class="scope">narrow(10)</span></td><td>6,405</td><td>15.2</td><td>0.542</td><td>0.904</td><td>1.882</td><td>0.475</td><td>8</td><td>1.810</td></tr><tr><td><span class="scope">narrow(5)</span></td><td>3,095</td><td>10.0</td><td>0.554</td><td>0.865</td><td>1.835</td><td>0.461</td><td>8</td><td>1.764</td></tr><tr><td><span class="scope">narrow(1)</span></td><td>685</td><td>3.8</td><td>0.594</td><td>0.630</td><td>1.526</td><td>0.347</td><td>8</td><td>1.468</td></tr><tr><td><span class="scope">local</span></td><td>473</td><td>3.8</td><td>0.646</td><td>0.382</td><td>1.196</td><td>0.164</td><td>1</td><td>1.150</td></tr></tbody></table></div><h3>WildChat แชทจริงของผู้ใช้ จับกลุ่มด้วย hashed_ip</h3><div class="scroll"><table class=""><thead><tr><th>scope</th><th>corpus (tok)</th><th>support</th><th>structure</th><th>coverage</th><th>L/S</th><th>acc/tok</th><th>R</th><th>speedup รวม build</th></tr></thead><tbody><tr><td><span class="scope">global</span></td><td>94,129</td><td>263.8</td><td>0.316</td><td>0.912</td><td>1.177</td><td>0.151</td><td>96</td><td>1.132</td></tr><tr><td><span class="scope">group</span></td><td>7,844</td><td>43.6</td><td>0.367</td><td>0.781</td><td>1.169</td><td>0.145</td><td>8</td><td>1.124</td></tr><tr><td><span class="scope">narrow(10)</span></td><td>2,541</td><td>20.6</td><td>0.379</td><td>0.682</td><td>1.141</td><td>0.124</td><td>8</td><td>1.097</td></tr><tr><td><span class="scope">narrow(5)</span></td><td>1,360</td><td>13.2</td><td>0.374</td><td>0.610</td><td>1.125</td><td>0.112</td><td>8</td><td>1.082</td></tr><tr><td><span class="scope">narrow(1)</span></td><td>273</td><td>4.7</td><td>0.416</td><td>0.392</td><td>1.049</td><td>0.047</td><td>8</td><td>1.008</td></tr><tr><td><span class="scope">local</span></td><td>66</td><td>1.6</td><td>0.758</td><td>0.246</td><td>1.047</td><td>0.045</td><td>1</td><td>1.006</td></tr></tbody></table></div>
+
+<h2>5. ภาคผนวก ผลลัพธ์และความเร็ว</h2>
+
+<p>ส่วนนี้ไม่ใช่คำตอบของ RQ3 แต่เก็บไว้เพราะตอบคำถามที่ตามมาทันทีว่า
+การขยับบนระนาบแปลเป็นผลจริงได้ไหม และเป็นสะพานไปหา cost model ของ RQ2</p>
+<p><b>ต้องอ่านแยกจากหัวข้อ 3 ให้ชัด</b> ตัวเลขในส่วนนี้เป็นผลลัพธ์ ไม่ใช่นิยามของ speculatability
+การเอาความเร็วมานิยามว่า workload ไหน high-speculatability คือ circular reasoning
+ในที่นี้จึงใช้เป็นเพียงการยืนยันภายหลัง</p>
+<ul>
+<li><code>L/S</code> คือ accepted length ใช้เมื่อ target ยาวเกิน 32 token</li>
+<li><code>acc/tok</code> คือ accepted token ต่อ target token ใช้เมื่อ target สั้น
+เพราะคำตอบ SQuAD ยาวราว 3 token ทำให้ L/S กระโดดเป็นขั้นจนอ่านไม่ได้</li>
+</ul>
+<p>ผลโดยสรุป การขยับไปทางขวาในรูป B แปลเป็นผลจริงได้ในทุก dataset ที่มี group key
+โดยส่วนต่างจากคู่เทียบอยู่ที่ 1.10 ถึง 3.07 เท่าสำหรับ scope group
+และ 3 จาก 6 dataset ได้ผลดีขึ้นทั้งที่ corpus เล็กลง 12 เท่า</p>
+
+<figure><img src="artifacts/rq3_apx1_outcome_bars.png" alt="รูป ผนวก 1  ผลลัพธ์จริงของแต่ละ scope เทียบคู่เทียบ"><figcaption>รูป ผนวก 1  ผลลัพธ์จริงของแต่ละ scope เทียบคู่เทียบ</figcaption></figure>
+<figure><img src="artifacts/rq3_apx2_sweet_spot.png" alt="รูป ผนวก 2  speedup เทียบกับความกว้างของ scope"><figcaption>รูป ผนวก 2  speedup เทียบกับความกว้างของ scope</figcaption></figure>
+<figure><img src="artifacts/rq3_apx3_negative_control.png" alt="รูป ผนวก 3  บันได narrow(N) ที่หั่นด้วยความใหม่"><figcaption>รูป ผนวก 3  บันได narrow(N) ที่หั่นด้วยความใหม่</figcaption></figure>
+
+<p>รูปผนวก 3 คือบันได narrow(N) ที่หั่น history ด้วยความใหม่แทนความเกี่ยวข้อง
+ผลคือมันขึ้นตามขนาดอย่างเดียว ซึ่งเป็นหลักฐานอีกชิ้นของข้อสรุปที่ 1</p>
+
+<div class="scroll"><table class=""><thead><tr><th>dataset</th><th>scope</th><th>ของจริง</th><th>คู่เทียบสุ่ม (ขนาดเท่ากัน)</th><th>ส่วนต่างจาก relevance</th></tr></thead><tbody><tr><td>codesearch</td><td><span class="scope">global</span></td><td>1.329</td><td>1.343</td><td><b>0.99x</b></td></tr><tr><td>codesearch</td><td><span class="scope">group</span></td><td>1.372</td><td>1.189</td><td><b class="hot">1.15x</b></td></tr><tr><td>codesearch</td><td><span class="scope">local</span></td><td>1.487</td><td>1.012</td><td><b class="hot">1.47x</b></td></tr><tr><td>samsum</td><td><span class="scope">global</span></td><td>0.079</td><td>0.081</td><td><b>0.97x</b></td></tr><tr><td>samsum</td><td><span class="scope">group</span></td><td>0.000</td><td>0.000</td><td><b>ไม่มี group key</b></td></tr><tr><td>samsum</td><td><span class="scope">local</span></td><td>0.195</td><td>0.013</td><td><b class="hot">15.41x</b></td></tr><tr><td>spider</td><td><span class="scope">global</span></td><td>0.419</td><td>0.411</td><td><b>1.02x</b></td></tr><tr><td>spider</td><td><span class="scope">group</span></td><td>0.385</td><td>0.334</td><td><b class="hot">1.15x</b></td></tr><tr><td>spider</td><td><span class="scope">local</span></td><td>0.033</td><td>0.014</td><td><b class="hot">2.38x</b></td></tr><tr><td>squad</td><td><span class="scope">global</span></td><td>0.266</td><td>0.283</td><td><b>0.94x</b></td></tr><tr><td>squad</td><td><span class="scope">group</span></td><td>0.303</td><td>0.099</td><td><b class="hot">3.07x</b></td></tr><tr><td>squad</td><td><span class="scope">local</span></td><td>0.562</td><td>0.023</td><td><b class="hot">24.43x</b></td></tr><tr><td>swetraj</td><td><span class="scope">global</span></td><td>1.830</td><td>2.003</td><td><b>0.91x</b></td></tr><tr><td>swetraj</td><td><span class="scope">group</span></td><td>1.932</td><td>1.367</td><td><b class="hot">1.41x</b></td></tr><tr><td>swetraj</td><td><span class="scope">local</span></td><td>1.196</td><td>1.024</td><td><b class="hot">1.17x</b></td></tr><tr><td>wildchat</td><td><span class="scope">global</span></td><td>1.177</td><td>1.181</td><td><b>1.00x</b></td></tr><tr><td>wildchat</td><td><span class="scope">group</span></td><td>1.169</td><td>1.058</td><td><b class="hot">1.10x</b></td></tr><tr><td>wildchat</td><td><span class="scope">local</span></td><td>1.047</td><td>1.002</td><td><b>1.04x</b></td></tr></tbody></table></div>
+<div class="callout warn"><b>size-match ไม่ผ่าน</b><ul><li>samsum|n3|control_group: treatment has an empty datastore</li></ul></div>
+
+<h2>6. ข้อจำกัดและคำสั่ง</h2>
+
+<ul>
+<li><b>ยังไม่กวาด n</b> รอบนี้รัน n=3 อย่างเดียว โค้ดรองรับ <code>--n-grams 2,3,4</code> แล้ว</li>
+<li><b>คู่เทียบใช้ seed เดียว</b> จึงไม่มี error bar
+scope <code>global</code> ของ SWE-agent บอกว่าลำดับเอกสารอย่างเดียวขยับผลลัพธ์ได้ราว 9 เปอร์เซ็นต์
+เพราะ drafter หยิบตำแหน่ง match แรกสุด ควรรันหลาย seed เพื่อวัดช่วงนี้ให้ชัด</li>
+<li><b>support ที่ลง 4 คู่ในรูป B</b> อธิบายด้วย coverage ได้ แต่ยังไม่ได้พิสูจน์ตรง ๆ
+วิธีพิสูจน์คือดู support เฉพาะตำแหน่งที่ทั้งสองฝั่งหาเจอเหมือนกัน ซึ่งยังไม่ได้ทำ</li>
+<li><b>causality ผ่านแบบไม่ได้ออกแรง</b> เพราะ history วางไว้หมดก่อน request ทุกตัว
+ถ้าอยากได้เรื่อง history โตขึ้นเรื่อย ๆ แบบ DAS ต้องเปลี่ยนเป็น stream ที่โตจริง</li>
+<li><b>ภาคผนวกยังใช้ค่าสมมติ</b> t_v(1) และ beta ยกมาจาก RQ2 ไม่ได้วัด
+ส่วนหัวข้อ 3 ซึ่งเป็นผลหลัก วัดจริงทั้งหมด ไม่มี assumption ปน</li>
+<li><b>ยังไม่ commit</b></li>
+</ul>
+
+
+<pre><code># 5 dataset ที่เร็ว
+python scripts/run_rq3.py --sources squad,spider,samsum,codesearch,wildchat \
+    --n-grams 3 --history-per-group 30 --requests-per-group 8 \
+    --max-groups 12 --sample-limit 60000
+
+# SWE-agent รันแยกเพราะสตรีมช้าและกลุ่มใหญ่
+python scripts/run_rq3.py --sources swetraj \
+    --n-grams 3 --history-per-group 30 --requests-per-group 8 \
+    --max-groups 12 --sample-limit 12000
+
+python scripts/plot_rq3.py      # วาดรูปและพิมพ์ตารางตัวเลข
+python scripts/report_rq3.py    # สร้างรายงานใหม่จาก results.json
+ruff check . &amp;&amp; pyright &amp;&amp; python -m pytest tests/ -q</code></pre>
+<p class="meta">รันซ้ำจะข้าม cell ที่ทำไปแล้วอัตโนมัติ ใส่ <code>--force</code> ถ้าอยากล้าง</p>
+
+
+</div>
+</body>
+</html>

@@ -1,0 +1,824 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>RQ3 Results</title>
+<style>
+body { font-family: "Sarabun", "TH Sarabun New", Arial, sans-serif; font-size: 15px;
+       line-height: 1.7; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #111; }
+h1 { font-size: 26px; } h2 { font-size: 20px; margin-top: 34px; }
+h3 { font-size: 16px; margin-top: 24px; }
+table { border-collapse: collapse; margin: 14px 0; width: 100%; }
+th, td { border: 1px solid #999; padding: 6px 10px; text-align: left; }
+th { background: #eee; }
+code { background: #f2f2f2; padding: 1px 4px; }
+pre { background: #f6f6f6; padding: 12px; border-left: 3px solid #ccc; overflow-x: auto; }
+blockquote { border-left: 3px solid #bbb; margin-left: 0; padding-left: 14px; color: #444; }
+</style>
+<h1>RQ3 — ผลการทดลอง: History Scoping</h1>
+<p><strong>คำถามวิจัย:</strong> การจำกัดขอบเขตของประวัติ (history scoping) ช่วยยกระดับ workload speculatability ได้ไหม โดยไม่แตะ algorithm ของ speculative decoding</p>
+<p><strong>สมมติฐานตั้งต้น:</strong> scope แคบลง → เกี่ยวข้องมากขึ้น → เดาเก่งขึ้น ทั้งที่ corpus เล็กลง</p>
+<p><strong>คำตอบสั้น:</strong> ได้ แต่กลไกไม่ใช่ "แคบแล้วดี" อย่างที่คิด — มันมีสองระบอบที่ไม่ต่อเนื่องกัน และมีขอบเขตที่ชัดเจนว่าเก็บประวัติไปถึงไหนแล้วหยุด</p>
+<hr />
+<h2>1. ตั้งต้นจากอะไร</h2>
+<p>RQ2 ตอบว่า speculatability กับ efficiency ส่งผลต่อ speedup อย่างไร แต่<strong>รับ speculatability มาเป็นของที่มีอยู่แล้ว</strong></p>
+<p>RQ3 ถามต่อว่า <strong>เอา workload เดิม แล้วดัน speculatability ขึ้นเองได้ไหม โดยเปลี่ยนแค่ว่าจะเก็บประวัติส่วนไหนไว้ในคลัง</strong></p>
+<p><code>IndexedTensorNGramDrafter</code> รับ <code>NGramIndex</code> สำเร็จรูปอยู่แล้ว เราจึงแค่ป้อน index คนละก้อนให้ drafter คลาสเดิม — <strong>ไม่มีบรรทัดไหนของ algorithm เปลี่ยน</strong> ซึ่งเป็นเงื่อนไขที่ RQ3 กำหนดไว้</p>
+<hr />
+<h2>2. ตัววัด speculatability</h2>
+<p>ใช้ตัวที่ RQ1 กำหนดไว้:</p>
+<p>```
+historical support        suffix ที่ match ได้ โผล่ในคลังกี่ครั้ง          (สูง = ดี)
+prefix branching entropy  พอ match ได้ ตัวถัดไปแตกกี่ทาง (bits)          (ต่ำ = ดี)
+coverage                  สัดส่วนตำแหน่งที่หา match ได้เลย</p>
+<p>score = coverage × (1 − normalized entropy)
+```</p>
+<p>สองตัวชี้คนละทาง (support สูงดี / entropy สูงแย่) score จึงกลับด้าน entropy ก่อนคูณ</p>
+<blockquote>
+<p><strong>ตรวจแล้วว่าใช้ได้จริง</strong> — score correlate กับ speedup ที่วัดได้ <strong>+0.980</strong> (ดูหัวข้อ 10 ซึ่งระบุด้วยว่าใช้เดี่ยว ๆ ไม่ได้ และพลาดตรงไหน)</p>
+</blockquote>
+<hr />
+<h2>3. ปัญหาที่ต้องแก้ก่อน: จะเอา "กลุ่ม" มาจากไหน</h2>
+<p>RQ3 ต้องมีสถานการณ์ที่ <strong>หลาย request ใช้ประวัติร่วมกัน</strong> แต่<strong>ไม่มี dataset ไหนในเรปมี user id หรือ session id เลย</strong></p>
+<table>
+<thead>
+<tr>
+<th>ทางเลือก</th>
+<th>กลุ่ม</th>
+<th>ปัญหา</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SQuAD <code>title</code></td>
+<td>ของจริง 442 หัวข้อ มัธยฐาน 169 คำถาม/หัวข้อ</td>
+<td>คำตอบยาว 2.4 คำ (~3 token) → speedup กระโดดเป็นขั้น วัดไม่ได้</td>
+</tr>
+<tr>
+<td>Wikipedia แบ่งบทความเป็นช่วง</td>
+<td>causality ธรรมชาติ</td>
+<td>บทความหนึ่งได้ ~4 ช่วง → R≈4 อ่อนเกินไป</td>
+</tr>
+<tr>
+<td><strong>ใช้ dataset เป็นกลุ่ม</strong></td>
+<td>✅ ของจริง ไม่ต้องสังเคราะห์</td>
+<td>ต้องมีหลาย domain (ซึ่งต้องการอยู่แล้ว)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>ทางที่เลือก: dataset คือกลุ่ม</strong> — request จาก CNN เห็นแค่ประวัติข่าว CNN, request จาก arXiv เห็นแค่ประวัติเปเปอร์</p>
+<p><strong>การมีหลาย dataset จึงไม่ใช่แค่ replication แต่เป็นสิ่งที่ทำให้แกนกลุ่มมีอยู่ได้</strong></p>
+<hr />
+<h2>4. ออกแบบการทดลอง</h2>
+<h3>ประวัติทั้งหมด 2,547 เอกสาร = 1,001,722 token</h3>
+<table>
+<thead>
+<tr>
+<th>domain</th>
+<th>dataset</th>
+<th>เอกสาร</th>
+<th>เฉลี่ย/เอกสาร</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ข่าว extractive</td>
+<td>CNN/DailyMail</td>
+<td>282</td>
+<td>711 token</td>
+</tr>
+<tr>
+<td>ข่าว abstractive</td>
+<td>XSum</td>
+<td>458</td>
+<td>436 token</td>
+</tr>
+<tr>
+<td>บทสนทนา</td>
+<td>SAMSum</td>
+<td>1,414</td>
+<td>141 token</td>
+</tr>
+<tr>
+<td>วิทยาศาสตร์</td>
+<td>arXiv</td>
+<td>197</td>
+<td>1,019 token</td>
+</tr>
+<tr>
+<td>สารานุกรม</td>
+<td>Wikipedia</td>
+<td>196</td>
+<td>1,020 token</td>
+</tr>
+</tbody>
+</table>
+<p>ทุก domain มีประวัติ ~200,000 token เท่ากัน</p>
+<h3>4 ระดับของ scope (รัน 7 cell)</h3>
+<p><code>request-local   คลัง = เอกสารต้นทางของ request นี้เท่านั้น        557 token
+narrow(N)       คลัง = ประวัติ N เอกสารล่าสุดของ domain เดียวกัน   N = 1, 5, 10, 50
+domain          คลัง = ประวัติทั้งหมดของ domain เดียวกัน           200,344 token
+global          คลัง = ประวัติทั้งหมดทุก domain                    1,001,722 token</code></p>
+<p><code>narrow</code> กวาดหลายค่าเพื่อให้ได้<strong>เส้นโค้ง</strong> ไม่ใช่แค่จุดเดียว — จะได้รู้ว่ามี sweet spot ตรงกลางไหม</p>
+<blockquote>
+<p><strong><code>request-local</code> ไม่ใช่จุดหนึ่งบนแกน "ความกว้างของประวัติ"</strong> — คลังของมันคือ <em>prompt</em> ไม่ใช่ประวัติที่เก็บไว้ ในกราฟจึงวาดเป็น<strong>เส้นอ้างอิงแนวนอน</strong> ไม่ใช่จุดบนเส้นโค้ง</p>
+</blockquote>
+<h3>แบ่งครึ่งเพื่อกัน leakage</h3>
+<p><code>ประวัติ (เสิร์ฟไปแล้ว)  →  เข้าคลังได้
+request ที่เอามาวัดผล   →  มาทีหลังเสมอ ไม่เคยเข้าคลัง</code></p>
+<h3>เงื่อนไขที่คงที่ทุก scope</h3>
+<p>tokenizer Qwen2.5-0.5B-Instruct · 40 request/domain = <strong>200 request</strong> × 200 token (ชุดเดียวกันเป๊ะทุก scope) · draft budget B=4 · depth drafting · n=3 · 1 thread · ทิ้ง warm-up · รายงาน median + p95</p>
+<p><strong>เปลี่ยนอย่างเดียวคือ "คลังมีอะไรอยู่ข้างใน"</strong></p>
+<hr />
+<h2>5. การควบคุม 4 ชั้น</h2>
+<p>นี่คือ 4 วิธีที่การทดลองนี้จะโกหกเราได้ และวิธีปิด</p>
+<p><strong>ชั้นที่ 1 — คลังต้องไม่มีอนาคต</strong>
+ถ้าคลังมีเอกสารของ request ที่ยังไม่ถึงคิว จะเดาถูกเยอะแบบปลอม ๆ
+โค้ดที่เลือกเอกสารรับรายการที่<strong>กรองแล้ว</strong>เท่านั้น (<code>visible_history</code> ตัด <code>order ≥ request.order</code> ทิ้ง) → เลือกของอนาคตไม่ได้เพราะไม่รู้ว่ามีอยู่ และ <code>assert_causal()</code> ตรวจซ้ำก่อนวัดผลทุก cell</p>
+<p><strong>ชั้นที่ 2 — คลังชื่อเดียวกันต้องเป็นคลังเดียวกัน</strong>
+เราสร้าง index ครั้งเดียวให้ 40 request ใช้ร่วมกัน ถ้า 40 คนนั้นควรได้คลังต่างกัน 39 คนจะได้คลังของคนแรก</p>
+<blockquote>
+<p><strong>นี่คือ bug จริงที่เจอระหว่างพัฒนา</strong> เวอร์ชันแรกใส่เอกสารต้นทางของ request ลงในคลังที่แชร์กัน ทำให้ 39 จาก 40 request ถูกวัดด้วยเอกสารของคนอื่น <strong>ผลผิดทั้งหมดและดู "น่าสนใจ" มาก</strong> (control ชนะ treatment)
+แก้โดยแยกให้ชัดว่า <strong>เอกสารต้นทาง = prompt ไม่ใช่ประวัติ</strong> และเพิ่ม <code>assert_key_determines_tokens()</code> ตรวจทุก cell ว่าชื่อคลังเดียวกันต้องได้ token ชุดเดียวกันเสมอ</p>
+</blockquote>
+<p><strong>ชั้นที่ 3 — แยก "เกี่ยวข้อง" ออกจาก "เล็ก"</strong>
+scope แคบลงมี 2 อย่างเปลี่ยนพร้อมกัน (เล็กลง + เกี่ยวข้องขึ้น) และ RQ2 แสดงแล้วว่าขนาด corpus เปลี่ยนผลด้วยตัวมันเอง
+ทุก treatment จึงมีฝาแฝด <strong>ขนาดเท่ากันเป๊ะระดับ token แต่สุ่มเอกสารจากทั้ง pool</strong> ผลต่างคือ relevance ล้วน ๆ</p>
+<p><strong>ชั้นที่ 4 — control ต้องสร้าง index เท่ากัน</strong>
+ถ้า control สุ่มคลังใหม่ทุก request มันจะสร้าง index 200 ก้อนเทียบกับ treatment 5 ก้อน แล้วคอลัมน์ "รวมต้นทุน build" จะวัดว่าใครสร้าง index ถี่กว่าแทนที่จะวัด relevance
+control จึงสืบโครงสร้างการแบ่งกลุ่มจาก treatment → สร้าง index เท่ากัน มี R เท่ากัน</p>
+<p><code>ชั้น 1-2  กันไม่ให้ตัวเลขผิด
+ชั้น 3-4  กันไม่ให้ตีความผิด</code></p>
+<hr />
+<h2>6. ผลที่ 1 — เส้นโค้งความกว้างของประวัติ</h2>
+<h3>📊 [รูปที่ 1 — rq3_1_sweet_spot.png]</h3>
+<p><strong>แกนนอน:</strong> จำนวน token ในคลังต่อ request (log) เรียงจากแคบไปกว้าง
+<strong>แกนตั้ง:</strong> speedup ที่โมเดลคำนวณได้
+<strong>สองเส้น:</strong> ไม่รวม / รวมต้นทุนสร้าง index
+<strong>เส้นประเขียวแนวนอน:</strong> request-local (prompt ล้วน 557 token)
+<strong>เส้นประเทาที่ 1.00:</strong> เส้นคุ้มทุน</p>
+<h3>📊 [รูปที่ 4 — rq3_4_tradeoff.png]</h3>
+<p><strong>สามแผงใช้แกนนอนร่วมกัน</strong> (ไม่ใช้แกนตั้งสองอันในกราฟเดียว)
+บน = historical support (log) · กลาง = normalized branching entropy · ล่าง = score รวม</p>
+<h3>ตัวเลข</h3>
+<table>
+<thead>
+<tr>
+<th>scope</th>
+<th>คลัง (token)</th>
+<th>support</th>
+<th>entropy (bits)</th>
+<th>norm-ent</th>
+<th>coverage</th>
+<th><strong>score</strong></th>
+<th>L/S</th>
+<th>speedup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>request-local</td>
+<td>557</td>
+<td>6.2</td>
+<td>1.2367</td>
+<td><strong>0.5404</strong></td>
+<td>0.4584</td>
+<td>0.2107</td>
+<td>1.091</td>
+<td><strong>1.0491</strong></td>
+</tr>
+<tr>
+<td>narrow(1)</td>
+<td>690</td>
+<td>9.3</td>
+<td>1.5677</td>
+<td>0.5802</td>
+<td>0.3063</td>
+<td><strong>0.1286</strong></td>
+<td>1.016</td>
+<td><strong>0.9768</strong></td>
+</tr>
+<tr>
+<td>narrow(5)</td>
+<td>3,137</td>
+<td>27.3</td>
+<td>2.2280</td>
+<td>0.7170</td>
+<td>0.5201</td>
+<td>0.1472</td>
+<td>1.034</td>
+<td>0.9945</td>
+</tr>
+<tr>
+<td>narrow(10)</td>
+<td>6,384</td>
+<td>46.4</td>
+<td>2.5016</td>
+<td>0.7102</td>
+<td>0.5907</td>
+<td>0.1711</td>
+<td>1.046</td>
+<td>1.0057</td>
+</tr>
+<tr>
+<td>narrow(50)</td>
+<td>32,291</td>
+<td>131.7</td>
+<td>2.8624</td>
+<td>0.7240</td>
+<td>0.7725</td>
+<td>0.2132</td>
+<td>1.072</td>
+<td>1.0304</td>
+</tr>
+<tr>
+<td>domain</td>
+<td>200,344</td>
+<td>424.4</td>
+<td>3.1481</td>
+<td>0.7316</td>
+<td>0.9223</td>
+<td><strong>0.2476</strong></td>
+<td>1.101</td>
+<td><strong>1.0583</strong></td>
+</tr>
+<tr>
+<td>global</td>
+<td>1,001,722</td>
+<td>1,185.7</td>
+<td>3.5647</td>
+<td>0.7563</td>
+<td>0.9783</td>
+<td>0.2384</td>
+<td>1.100</td>
+<td>1.0574</td>
+</tr>
+</tbody>
+</table>
+<h3>อ่านยังไง</h3>
+<p><strong>ภายในแกน "ความกว้างของประวัติ" กว้างกว่าดีกว่าเสมอ จนถึงขอบเขต domain แล้วเริ่มลดลง</strong></p>
+<p><code>narrow(1) 0.1286  ──►  narrow(50) 0.2132  ──►  domain 0.2476  ──►  global 0.2384
+   690 tok                32,291 tok             200,344 tok        1,001,722 tok
+   แย่ที่สุด                                        ดีที่สุด            เริ่มถอย</code></p>
+<p><strong>ไม่มี sweet spot ตรงกลาง</strong> — สมมติฐาน "แคบลงแล้วดีขึ้น" <strong>ไม่จริงสำหรับประวัติ</strong></p>
+<p><strong>narrow(1) และ narrow(5) ให้ speedup ต่ำกว่า 1.0</strong> (0.9768 และ 0.9945) แปลว่า <strong>เก็บประวัติไว้นิดหน่อยแย่กว่าไม่เก็บเลย</strong> — support ไม่พอที่จะเดาถูก แต่เสียเวลาค้นหาไปแล้ว</p>
+<h3>สองตัวตั้งต้นชี้คนละทางอย่างชัดเจน</h3>
+<p><code>support   6.2 → 1,185.7      โต 190 เท่า      (ดีขึ้น)
+norm-ent  0.5404 → 0.7563    โต 0.22          (แย่ลง)</code></p>
+<p>คลังใหญ่ขึ้นให้หลักฐานมากขึ้นก็จริง แต่ก็ทำให้ตัวเลือกแตกทางเยอะขึ้นด้วย <strong>นี่คือเหตุผลที่ต้องใช้เป็นคู่ ไม่ใช่ตัวเดียว</strong></p>
+<hr />
+<h2>7. ผลที่ 2 — prompt ให้ผลเท่าประวัติที่ใหญ่กว่า 58 เท่า</h2>
+<p><code>request-local      557 token   score 0.2107   speedup 1.0491
+narrow(50)      32,291 token   score 0.2132   speedup 1.0304
+                       ↑
+                 ใหญ่กว่า 58 เท่า แต่ score เท่ากัน และช้ากว่า</code></p>
+<p><strong>score เกือบเท่ากันเป๊ะ (0.2107 vs 0.2132) ทั้งที่ใช้ข้อมูลต่างกัน 58 เท่า</strong></p>
+<p>และ request-local (1.0491) แพ้เฉพาะ domain (1.0583) กับ global (1.0574) ซึ่งใหญ่กว่า <strong>360 เท่าและ 1,800 เท่า</strong></p>
+<p><strong>ทำไม prompt ถึงมีประสิทธิภาพต่อ token สูงขนาดนั้น</strong> — ดูที่ entropy: request-local มี norm-ent <strong>0.5404 ต่ำที่สุดในทุก scope</strong> แปลว่าเมื่อ match ได้ ตัวเลือกถัดไปแทบไม่แตกทางเลย ตรงข้ามกับคลังใหญ่ที่ match ได้บ่อยแต่แตกทางเยอะ</p>
+<p><code>coverage   norm-ent   → score
+request-local     0.4584    0.5404      0.2107    หาเจอน้อย แต่เจอแล้วชัด
+domain            0.9223    0.7316      0.2476    หาเจอเกือบหมด แต่กำกวมกว่า</code></p>
+<hr />
+<h2>8. ผลที่ 3 — ทิ้งข้อมูล 80% แล้วดีขึ้นด้วยซ้ำ</h2>
+<p><strong>domain (200,344 token) เทียบกับ global (1,001,722 token)</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>support</th>
+<th>norm-ent</th>
+<th>coverage</th>
+<th>score</th>
+<th>L/S</th>
+<th>speedup</th>
+<th>build</th>
+<th>หน่วยความจำ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>domain</td>
+<td>424.4</td>
+<td><strong>0.7316</strong></td>
+<td>0.9223</td>
+<td><strong>0.2476</strong></td>
+<td><strong>1.101</strong></td>
+<td><strong>1.0583</strong></td>
+<td>58.9 ms</td>
+<td>21.4 MB</td>
+</tr>
+<tr>
+<td>global</td>
+<td>1,185.7</td>
+<td>0.7563</td>
+<td>0.9783</td>
+<td>0.2384</td>
+<td>1.100</td>
+<td>1.0574</td>
+<td>305.6 ms</td>
+<td>92.4 MB</td>
+</tr>
+</tbody>
+</table>
+<p><strong>global มี support มากกว่า 2.8 เท่าและ coverage สูงกว่า แต่ score ต่ำกว่า</strong> เพราะ entropy สูงขึ้น — ข้อมูลข้าม domain เพิ่มทางเลือกที่ผิดเข้ามามากกว่าที่ช่วย</p>
+<p>domain ใช้ข้อมูลน้อยกว่า 5 เท่า สร้าง index เร็วกว่า 5.2 เท่า กินแรมน้อยกว่า 4.3 เท่า <strong>และได้ผลดีกว่าเล็กน้อย</strong></p>
+<h3>แยกราย domain</h3>
+<table>
+<thead>
+<tr>
+<th>domain</th>
+<th>score (domain)</th>
+<th>score (global)</th>
+<th>L/S (domain)</th>
+<th>L/S (global)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>arXiv</td>
+<td><strong>0.2682</strong></td>
+<td>0.2530</td>
+<td><strong>1.1622</strong></td>
+<td>1.1595</td>
+</tr>
+<tr>
+<td>CNN</td>
+<td>0.2205</td>
+<td><strong>0.2371</strong></td>
+<td>1.0796</td>
+<td><strong>1.0806</strong></td>
+</tr>
+<tr>
+<td>SAMSum</td>
+<td><strong>0.2715</strong></td>
+<td>0.2429</td>
+<td><strong>1.0745</strong></td>
+<td>1.0656</td>
+</tr>
+<tr>
+<td>Wikipedia</td>
+<td><strong>0.2366</strong></td>
+<td>0.2361</td>
+<td>1.0900</td>
+<td><strong>1.0939</strong></td>
+</tr>
+<tr>
+<td>XSum</td>
+<td><strong>0.2424</strong></td>
+<td>0.2235</td>
+<td><strong>1.1017</strong></td>
+<td>1.1040</td>
+</tr>
+</tbody>
+</table>
+<p><strong>4 ใน 5 domain ดีขึ้นเมื่อจำกัดเป็น domain เดียว</strong></p>
+<p><strong>ข้อสรุปเชิงปฏิบัติ:</strong> การเก็บประวัติข้าม domain ไม่ให้ประโยชน์ แต่จ่ายค่าหน่วยความจำและเวลาสร้าง index เต็ม ๆ</p>
+<hr />
+<h2>9. ผลที่ 4 — แยก relevance ออกจากขนาดด้วย control</h2>
+<h3>📊 [รูปที่ 3 — rq3_3_relevance_vs_size.png]</h3>
+<p><strong>แกนนอน:</strong> scope · <strong>แกนตั้ง:</strong> ซ้าย = score, ขวา = speedup
+<strong>สองแท่งต่อคู่:</strong> น้ำเงิน = scope จริง / ส้ม = ขนาดเท่ากันแต่สุ่มเอกสาร
+<strong>ตัวเลขบนแท่ง:</strong> อัตราส่วน treatment ÷ control</p>
+<h3>ตัวเลขรวม</h3>
+<table>
+<thead>
+<tr>
+<th>scope</th>
+<th>support (จริง / สุ่ม)</th>
+<th>norm-ent (จริง / สุ่ม)</th>
+<th>score (จริง / สุ่ม)</th>
+<th>อัตราส่วน</th>
+<th>speedup (จริง / สุ่ม)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>request-local</td>
+<td>6.2 / 6.3</td>
+<td><strong>0.5404 / 0.6418</strong></td>
+<td>0.2107 / 0.1106</td>
+<td><strong>1.90×</strong></td>
+<td>1.0491 / 0.9725</td>
+</tr>
+<tr>
+<td>narrow(10)</td>
+<td>46.4 / 36.8</td>
+<td>0.7102 / 0.7380</td>
+<td>0.1711 / 0.1441</td>
+<td>1.19×</td>
+<td>1.0057 / 0.9890</td>
+</tr>
+<tr>
+<td>domain</td>
+<td>424.4 / 412.4</td>
+<td>0.7316 / 0.7425</td>
+<td>0.2476 / 0.2353</td>
+<td><strong>1.05×</strong></td>
+<td>1.0583 / 1.0309</td>
+</tr>
+</tbody>
+</table>
+<p><strong>คลังขนาดเท่ากันเป๊ะระดับ token</strong> ความต่างทั้งหมดคือ relevance</p>
+<p><strong>สังเกต request-local:</strong> support แทบเท่ากัน (6.2 vs 6.3) — ความได้เปรียบมาจาก <strong>entropy ล้วน ๆ</strong> (0.5404 vs 0.6418) prompt ไม่ได้ให้ข้อมูล<em>มากกว่า</em> แต่ให้ข้อมูลที่<em>กำกวมน้อยกว่า</em></p>
+<h3>⚠️ จุดที่ต้องรายงานตามจริง</h3>
+<p><strong><code>domain</code> ชนะการสุ่มแค่ 1.05× ตาม score</strong> ทั้งที่ speedup ที่วัดได้ต่างกัน 1.027× อย่างชัดเจน</p>
+<p>แยกราย domain:</p>
+<table>
+<thead>
+<tr>
+<th>domain</th>
+<th>score (จริง)</th>
+<th>score (สุ่ม)</th>
+<th>อัตราส่วน</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wikipedia</td>
+<td>0.2366</td>
+<td>0.2122</td>
+<td>1.12×</td>
+</tr>
+<tr>
+<td>SAMSum</td>
+<td>0.2715</td>
+<td>0.2462</td>
+<td>1.10×</td>
+</tr>
+<tr>
+<td>XSum</td>
+<td>0.2424</td>
+<td>0.2355</td>
+<td>1.03×</td>
+</tr>
+<tr>
+<td>arXiv</td>
+<td>0.2682</td>
+<td>0.2639</td>
+<td>1.02×</td>
+</tr>
+<tr>
+<td>CNN</td>
+<td>0.2205</td>
+<td>0.2209</td>
+<td><strong>1.00×</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>ที่คลังใหญ่ (200k token) score แยกความต่างแทบไม่ออก</strong> — เป็นข้อจำกัดด้านความไวของตัววัด ไม่ใช่ว่า domain scoping ไม่มีผล เพราะ speedup ที่วัดตรง ๆ บอกว่ามีผล</p>
+<p><strong>narrow(10) ราย domain ก็ไม่สม่ำเสมอ:</strong> SAMSum 2.05× / arXiv 1.34× / CNN 1.08× / XSum 1.04× / <strong>Wikipedia 0.85×</strong> (แพ้การสุ่ม)</p>
+<p>เอกสารที่อยู่ติดกันในลำดับมีเนื้อหาซ้ำกันสูง (วัดได้: distinct 2-gram ต่อ token ของ arXiv narrow window = 0.54 เทียบกับสุ่ม 0.71) <strong>recency จึงไม่ใช่ heuristic ที่ดีสำหรับ scoping</strong> ซึ่งขัดกับสิ่งที่ระบบส่วนใหญ่ทำ</p>
+<hr />
+<h2>10. ตรวจสอบตัววัด</h2>
+<h3>📊 [รูปที่ 2 — rq3_2_movement.png]</h3>
+<p><strong>แกนนอน:</strong> score · <strong>แกนตั้ง:</strong> speedup · <strong>5 เส้น:</strong> 5 domain แต่ละจุดคือ scope หนึ่ง
+ถ้า scoping ทำงานผ่าน speculatability อย่างเดียว ทุกจุดของ domain หนึ่งต้องเรียงอยู่บนเส้นโค้งขาขึ้นเส้นเดียว</p>
+<h3>score ทำนาย speedup ได้ดี</h3>
+<p><strong>correlation กับ speedup ที่วัดได้</strong></p>
+<table>
+<thead>
+<tr>
+<th>ตัววัด</th>
+<th>รวมทุก domain</th>
+<th>เฉลี่ยราย domain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>score (coverage × (1−nEnt))</strong></td>
+<td><strong>+0.980</strong></td>
+<td><strong>+0.947</strong></td>
+</tr>
+<tr>
+<td>coverage เดี่ยว</td>
+<td>+0.767</td>
+<td>—</td>
+</tr>
+<tr>
+<td>mean support เดี่ยว</td>
+<td>+0.612</td>
+<td>+0.553</td>
+</tr>
+<tr>
+<td>normalized entropy เดี่ยว</td>
+<td>+0.254</td>
+<td><strong>+0.084</strong></td>
+</tr>
+</tbody>
+</table>
+<h3>⚠️ ข้อควรระวัง 3 ข้อ</h3>
+<p><strong>1. ใช้เดี่ยว ๆ ไม่ได้</strong>
+normalized entropy อย่างเดียว correlate กับ speedup แค่ <strong>+0.084</strong> และ<strong>ติดลบใน 3 จาก 5 domain</strong> (arXiv −0.116, CNN −0.156, Wikipedia −0.483) ต้องใช้เป็นคู่เท่านั้น</p>
+<p><strong>2. entropy ดิบเกือบเป็นตัววัดขนาดคลัง</strong></p>
+<p>correlation กับ log(ขนาดคลัง):</p>
+<p><code>mean_branch_entropy   +0.970   ← แทบเป็นฟังก์ชันของขนาดคลังล้วน ๆ
+coverage              +0.973
+mean_support          +0.864
+score                 +0.746</code></p>
+<p>คลังใหญ่ → แตกทางเยอะ → entropy สูง โดยไม่เกี่ยวกับว่างานเดาง่ายหรือยาก
+<strong>นี่คือเหตุผลที่ต้องมี size-matched control เสมอ</strong> ไม่งั้นจะรายงาน "ขนาดคลัง" โดยเรียกมันว่า "speculatability"</p>
+<p><strong>3. จัดอันดับผิด 1 จุด</strong></p>
+<p><code>score จัดอันดับ    domain &gt; global &gt; narrow(50) &gt; request-local &gt; narrow(10) &gt; narrow(5) &gt; narrow(1)
+speedup จริง       domain &gt; global &gt; request-local &gt; narrow(50) &gt; narrow(10) &gt; narrow(5) &gt; narrow(1)
+                                     └──────── สลับกัน ────────┘</code></p>
+<p>score จัด request-local (557 token) ต่ำกว่า narrow(50) (32,291 token) ทั้งที่ของจริงเร็วกว่า
+สาเหตุ: สูตรคูณด้วย <code>coverage</code> ซึ่ง request-local ต่ำ (0.4584) เพราะคลังเล็ก — <strong>สูตรลงโทษกรณี "เจอน้อยแต่แม่น"</strong> ซึ่งเป็นเคสที่เป็นข้อค้นพบหลักของ RQ3 พอดี</p>
+<hr />
+<h2>11. ต้นทุนไม่ใช่ประเด็นที่ขนาดนี้</h2>
+<table>
+<thead>
+<tr>
+<th>scope</th>
+<th>ρ</th>
+<th>draft median</th>
+<th>draft p95</th>
+<th>build</th>
+<th>build เป็นกี่ step</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>request-local</td>
+<td>0.000060</td>
+<td>1.23 µs</td>
+<td>1.66 µs</td>
+<td>0.1 ms</td>
+<td>1.19</td>
+</tr>
+<tr>
+<td>narrow(10)</td>
+<td>0.000073</td>
+<td>1.50 µs</td>
+<td>1.68 µs</td>
+<td>4.6 ms</td>
+<td>1.15</td>
+</tr>
+<tr>
+<td>domain</td>
+<td>0.000072</td>
+<td>1.49 µs</td>
+<td>1.63 µs</td>
+<td>58.9 ms</td>
+<td>14.73</td>
+</tr>
+<tr>
+<td>global</td>
+<td>0.000073</td>
+<td>1.50 µs</td>
+<td>1.62 µs</td>
+<td>305.6 ms</td>
+<td>15.28</td>
+</tr>
+</tbody>
+</table>
+<p><strong>ρ อยู่ที่ ~0.00007 ทุก scope</strong> — การเปิด index เป็น O(1) ไม่ขึ้นกับขนาดคลัง drafter จึงแทบไม่มีต้นทุน</p>
+<p><strong>ต้นทุนสร้าง index สูงสุดคิดเป็น 15.3 step ของ target model เทียบกับ S ทั้งหมด ~36,100 step = 0.04%</strong></p>
+<p><strong>ข้อสรุป:</strong> ที่ขนาดคลังระดับนี้และ target model ระดับ 7B <strong>scoping ไม่ได้ซื้อ latency มันซื้อหน่วยความจำกับ acceptance</strong> เส้น "รวม build" กับ "ไม่รวม build" ทับกันเกือบสนิท</p>
+<p>เรื่อง amortization (R) จะมีน้ำหนักก็ต่อเมื่อ target model เร็วกว่านี้มาก หรือคลังใหญ่กว่านี้มาก</p>
+<hr />
+<h2>12. ความแตกต่างระหว่าง domain</h2>
+<h3>speedup แยกราย domain</h3>
+<table>
+<thead>
+<tr>
+<th>scope</th>
+<th>arXiv</th>
+<th>CNN</th>
+<th>SAMSum</th>
+<th>Wikipedia</th>
+<th>XSum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>request-local</td>
+<td><strong>1.2020</strong></td>
+<td><strong>1.0426</strong></td>
+<td>0.9856</td>
+<td><strong>1.0548</strong></td>
+<td>0.9880</td>
+</tr>
+<tr>
+<td>narrow(1)</td>
+<td>1.0176</td>
+<td>0.9775</td>
+<td>0.9622</td>
+<td>0.9650</td>
+<td>0.9637</td>
+</tr>
+<tr>
+<td>narrow(10)</td>
+<td>1.0696</td>
+<td>0.9964</td>
+<td>0.9793</td>
+<td>0.9933</td>
+<td>0.9947</td>
+</tr>
+<tr>
+<td>narrow(50)</td>
+<td>1.0988</td>
+<td>1.0217</td>
+<td>0.9941</td>
+<td>1.0294</td>
+<td>1.0142</td>
+</tr>
+<tr>
+<td>domain</td>
+<td>1.1174</td>
+<td>1.0380</td>
+<td><strong>1.0331</strong></td>
+<td>1.0480</td>
+<td>1.0593</td>
+</tr>
+<tr>
+<td>global</td>
+<td>1.1148</td>
+<td>1.0390</td>
+<td>1.0245</td>
+<td>1.0517</td>
+<td><strong>1.0615</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>scope ที่ดีที่สุดขึ้นกับ domain:</strong>
+- <strong>arXiv, CNN, Wikipedia</strong> → request-local ชนะ
+- <strong>SAMSum, XSum</strong> → domain/global ชนะ และ request-local ตกต่ำกว่า 1.0</p>
+<p>เหตุผลอยู่ในข้อจำกัดที่ 1 — เป็นข้อจำกัดของการออกแบบ workload ไม่ใช่ข้อค้นพบ</p>
+<hr />
+<h2>13. คำตอบของ RQ3</h2>
+<p><strong>ได้ — scoping ยกระดับ speculatability ได้จริง และแยกจากผลของขนาดคลังได้ด้วย control ที่ขนาดเท่ากันเป๊ะ</strong></p>
+<p><strong>แต่กลไกไม่ใช่ "แคบแล้วดี" มันมีสองระบอบที่ไม่ต่อเนื่องกัน:</strong></p>
+<p><strong>ระบอบที่ 1 — prompt</strong> ข้อความของ request เองมีความหนาแน่นของข้อมูลสูงที่สุด 557 token ให้ score เท่าประวัติ 32,291 token และเป็นเพราะ <strong>entropy ต่ำ</strong> ไม่ใช่เพราะ support สูง</p>
+<p><strong>ระบอบที่ 2 — ประวัติที่เก็บไว้</strong> ในระบอบนี้ <strong>กว้างกว่าดีกว่าเสมอ</strong> จนถึงขอบเขต domain แล้วเริ่มถอย การเก็บประวัติแค่บางส่วนแย่กว่าไม่เก็บเลย (speedup 0.977 ต่ำกว่า 1.0)</p>
+<p><strong>และมีขอบเขตชัดเจน: เก็บประวัติข้าม domain ทำให้แย่ลง</strong> ทั้งที่ข้อมูลมากกว่า 5 เท่า เพราะ entropy สูงขึ้นเร็วกว่าที่ support จะชดเชย</p>
+<h3>ข้อเสนอเชิงปฏิบัติ</h3>
+<p><code>✅ เก็บ prompt ไว้ในคลังเสมอ         ถูกที่สุด ได้ผลมากที่สุดต่อ token
+✅ เสริมด้วยประวัติทั้ง domain        ไม่ต้องเลือกบางส่วน
+❌ อย่าเก็บข้าม domain                จ่ายแรม 4.3 เท่า ได้ผลแย่ลง
+❌ อย่าใช้ sliding window ตามความล่าสุด  ที่งบเล็กแพ้การสุ่มด้วยซ้ำ</code></p>
+<hr />
+<h2>14. ข้อจำกัด</h2>
+<h3>⚠️ ข้อที่ 1 — target ประกอบจาก summary หลายเอกสาร (สำคัญที่สุด)</h3>
+<p>เพื่อให้ทุก domain มี target ยาว 200 token เท่ากัน เราต่อ summary ของเอกสารที่ต่อ ๆ กันจนครบ วัดจริง:</p>
+<table>
+<thead>
+<tr>
+<th>domain</th>
+<th>ความยาว summary</th>
+<th>ต้องใช้กี่เอกสารเพื่อครบ 200 token</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>arXiv</td>
+<td>196 token</td>
+<td><strong>1.0</strong> ✅</td>
+</tr>
+<tr>
+<td>CNN</td>
+<td>53 token</td>
+<td>3.8</td>
+</tr>
+<tr>
+<td>XSum</td>
+<td>26 token</td>
+<td>7.7</td>
+</tr>
+<tr>
+<td>SAMSum</td>
+<td>23 token</td>
+<td>8.7</td>
+</tr>
+</tbody>
+</table>
+<p><strong>สำหรับ XSum และ SAMSum ประมาณ 87% ของ target มาจากเอกสารที่ไม่ได้อยู่ในคลังเลย</strong></p>
+<p>ข้อนี้<strong>กดเพดานของทุก scope ลงพร้อมกัน</strong> และอธิบายว่าทำไม arXiv ถึงโดดกว่าชาวบ้าน และทำไม request-local ถึงตกต่ำกว่า 1.0 ใน XSum/SAMSum</p>
+<p><strong>arXiv คือ domain เดียวที่ผล request-local สะอาด</strong></p>
+<p><strong>ทางแก้รอบหน้า:</strong> ใช้ target ที่มาจากเอกสารตัวเองล้วน ความยาวต่างกันได้ตาม domain กำหนดขั้นต่ำแทน (เช่น ≥ 64 token)</p>
+<h3>⚠️ ข้อที่ 2 — ตัววัดไม่ไวพอที่คลังใหญ่</h3>
+<p>ที่คลัง 200k token score แยก treatment กับ control แทบไม่ออก (1.05× ภาพรวม, CNN 1.00×) ทั้งที่ speedup บอกว่าต่างกัน 1.027× — ดูหัวข้อ 10 ข้อ 2 และ 3</p>
+<h3>⚠️ ข้อที่ 3 — สืบทอดจาก RQ2 ทั้งหมด</h3>
+<p><code>t_v(1) = 20 ms</code> และ <code>β = 0.01</code> เป็นค่าสมมติ · ρ เอาเวลา drafter บน CPU มาหารด้วย t_v ที่สมมติเป็น GPU · cost model ยังไม่เคย validate กับระบบจริง · ใช้ ground truth แทน output ของ target model ทำให้ L/S ที่รายงานน่าจะเป็นขอบล่าง</p>
+<p>ทุกผลลัพธ์บันทึก <code>source = "assumed"</code> กำกับไว้ในไฟล์</p>
+<h3>⚠️ ข้อที่ 4 — กลุ่มคือ dataset ไม่ใช่ผู้ใช้</h3>
+<p>"domain" เป็นกลุ่มที่มีอยู่จริง แต่ไม่ใช่กลุ่มแบบ per-user หรือ per-session ที่ระบบให้บริการจริงเจอ ข้อสรุป "domain พอแล้ว" อาจไม่ย้ายไปยังกรณีที่กลุ่มแคบกว่าและเหนียวแน่นกว่า</p>
+<h3>⚠️ ข้อที่ 5 — ประวัติเป็นชุดคงที่</h3>
+<p>ประวัติเป็น seed corpus ที่มาก่อน request ทั้งหมด ไม่โตขึ้นระหว่างเสิร์ฟ ทำให้ scope key คงที่และ R วัดได้ตรง แต่แปลว่าไม่ได้วัดผลของ cache invalidation</p>
+<h3>⚠️ ข้อที่ 6 — เอกสารถูกตัดที่ 1,024 token</h3>
+<p>เพื่อไม่ให้เปเปอร์ arXiv ฉบับเดียว (ยาว ~6,000 token) กลบ narrow scope ทั้งก้อน แปลว่าคลังเห็นแค่ส่วนต้นของเปเปอร์</p>
+<h3>⚠️ ข้อที่ 7 — Wikipedia ไม่ตัดตามขอบบทความ</h3>
+<p>ประวัติของ Wikipedia เป็นช่วง 1,024 token ที่ตัดจากสตรีมโทเคน ไม่ได้ตัดตามขอบเขตบทความจริง</p>
+<hr />
+<h2>15. งานที่ควรทำต่อ</h2>
+<p><strong>ลำดับสูง</strong></p>
+<ol>
+<li><strong>แก้การสร้าง target</strong> (ข้อจำกัดที่ 1) — กระทบการตีความมากที่สุด</li>
+<li><strong>ตรวจว่า "domain พอแล้ว" ยังจริงไหมเมื่อกลุ่มแคบกว่า</strong> — SQuAD <code>title</code> เป็นกลุ่มของจริง (มัธยฐาน 169 คำถาม/หัวข้อ) ใช้วัด speculatability ได้ แม้วัด speedup ไม่ได้</li>
+</ol>
+<p><strong>ลำดับกลาง</strong></p>
+<ol start="3">
+<li><strong>วัด β จริง</strong> — forward pass ที่ B=1..8 บน Qwen2.5-0.5B ไม่กี่นาที เปลี่ยนจากค่าเดาเป็นค่าวัด</li>
+<li><strong>validate cost model</strong> — รัน end-to-end จริง 1 workload เทียบ measured vs modeled ให้ต่างไม่เกิน 20%</li>
+<li><strong>prompt + domain รวมกัน</strong> — การทดลองนี้เทียบ prompt <em>หรือ</em> ประวัติ ยังไม่ได้ลองรวม ซึ่งน่าจะเป็นทางเลือกที่ดีที่สุดในทางปฏิบัติ</li>
+<li><strong>ปรับสูตร score ให้ไม่ลงโทษ coverage ต่ำ</strong> — เช่น รายงาน coverage แยกจาก (1−entropy) แทนที่จะคูณกัน เพื่อไม่ให้พลาดเคส "เจอน้อยแต่แม่น"</li>
+</ol>
+<p><strong>ลำดับต่ำ</strong></p>
+<ol start="7">
+<li>ประวัติแบบโตขึ้นเรื่อย ๆ + นโยบาย invalidate index</li>
+<li>เพิ่ม domain ที่ห่างจากที่มีอยู่ (โค้ด, ภาษาอื่น)</li>
+</ol>
+<hr />
+<h2>16. ไฟล์</h2>
+<table>
+<thead>
+<tr>
+<th>อย่าง</th>
+<th>ที่อยู่</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ผลดิบ</td>
+<td><code>experiments/rq3_scoping/results.json</code></td>
+</tr>
+<tr>
+<td>log การรัน</td>
+<td><code>experiments/rq3_scoping/run.log</code></td>
+</tr>
+<tr>
+<td>รูปกราฟ</td>
+<td><code>experiments/rq3_scoping/artifacts/*.png</code></td>
+</tr>
+<tr>
+<td>สคริปต์รัน</td>
+<td><code>scripts/run_rq3.py</code></td>
+</tr>
+<tr>
+<td>สคริปต์วาดกราฟ + ตารางตัวเลข</td>
+<td><code>scripts/plot_rq3.py</code></td>
+</tr>
+<tr>
+<td>นิยาม scope + gate กัน leakage</td>
+<td><code>src/specdecode/scoping/policy.py</code></td>
+</tr>
+<tr>
+<td>index cache ที่นับ R</td>
+<td><code>src/specdecode/scoping/store.py</code></td>
+</tr>
+<tr>
+<td>สร้าง request stream จาก 5 dataset</td>
+<td><code>src/specdecode/experiments/rq3_workloads.py</code></td>
+</tr>
+<tr>
+<td>ตัววัด speculatability</td>
+<td><code>src/specdecode/speculatability/</code></td>
+</tr>
+<tr>
+<td>cost model (ใช้ร่วมกับ RQ2)</td>
+<td><code>src/specdecode/costmodel/</code></td>
+</tr>
+<tr>
+<td>tests (38 ตัวเฉพาะ scoping)</td>
+<td><code>tests/scoping/</code></td>
+</tr>
+<tr>
+<td>context ของ RQ2</td>
+<td><code>experiments/rq2_factorial/HANDOFF.md</code></td>
+</tr>
+</tbody>
+</table>
+<h3>รันซ้ำ</h3>
+<p><code>bash
+.venv/bin/python scripts/run_rq3.py          # ~1 นาที
+.venv/bin/python scripts/plot_rq3.py         # กราฟ + ตารางตัวเลข + ranking check
+.venv/bin/python -m pytest tests/scoping -v  # gate กัน leakage</code></p>
+<p>สลับตัววัดบนแกนของรูปที่ 2 ได้ด้วย <code>--movement-metric {rq1_score, oracle_accept_rate, mean_support, normalized_branch_entropy}</code></p>
+<p>รวมทั้งโปรเจกต์: 174 tests ผ่าน, ruff และ pyright สะอาด</p>
+<hr />
+<h2>ภาคผนวก — ตัววัดทางเลือก</h2>
+<p>ระหว่างพัฒนาได้ลองตัวที่สาม <strong><code>oracle_accept_rate</code></strong> = สัดส่วนตำแหน่งที่ token ซึ่งพบบ่อยที่สุดในคลังตรงกับคำตอบจริง</p>
+<p>ต่างจาก support/entropy ตรงที่ <strong>มันเทียบกับคำตอบจริง ส่วนสองตัวนั้นบรรยายเฉพาะตัวคลัง</strong></p>
+<table>
+<thead>
+<tr>
+<th>ตัววัด</th>
+<th>correlation กับ speedup (รวม)</th>
+<th>(ราย domain)</th>
+<th>จัดอันดับตรงกับ speedup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>score ของ RQ1</td>
+<td>+0.980</td>
+<td>+0.947</td>
+<td>❌ สลับ 1 จุด</td>
+</tr>
+<tr>
+<td>oracle_accept_rate</td>
+<td>+0.974</td>
+<td><strong>+0.970</strong></td>
+<td>✅ ตรงทุกจุด</td>
+</tr>
+</tbody>
+</table>
+<p>ต่างกันเล็กน้อย แต่ oracle ไม่มีปัญหาเรื่องการลงโทษ coverage ต่ำ ตัวเลขเก็บไว้ในไฟล์ผลแล้วทั้งคู่ (<code>rq1_score</code>, <code>oracle_accept_rate</code>) เผื่อต้องการเทียบ</p>
+<p><strong>ยังไม่ได้ตัดสินใจว่าจะใช้ตัวไหนในเปเปอร์ — รอคุยกับอาจารย์และ Santa (เจ้าของ RQ1)</strong></p>

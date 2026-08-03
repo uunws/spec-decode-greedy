@@ -1,6 +1,25 @@
 """Metrics collector for speculative decoding simulation steps."""
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Sequence
+
+
+def percentile_ns(sorted_samples: Sequence[int], q: float) -> float:
+    """Linear-interpolated percentile over an already-sorted sample list.
+
+    Drafter latency is heavy-tailed -- one OS preemption inflates the mean by
+    orders of magnitude -- so summaries report order statistics rather than
+    relying on the mean alone.
+    """
+    if not sorted_samples:
+        return 0.0
+    if len(sorted_samples) == 1:
+        return float(sorted_samples[0])
+
+    pos = (len(sorted_samples) - 1) * q
+    lower = int(pos)
+    upper = min(lower + 1, len(sorted_samples) - 1)
+    weight = pos - lower
+    return sorted_samples[lower] * (1.0 - weight) + sorted_samples[upper] * weight
 
 
 class PlaybackMetrics:
@@ -39,6 +58,16 @@ class PlaybackMetrics:
         self.drafter_wall_time_ns = 0
         self.min_drafter_wall_time_ns: Optional[int] = None
         self.max_drafter_wall_time_ns = 0
+        # Every call duration, for median/p95. One int per generated token, so a
+        # 200-request cell holds ~10k ints -- negligible next to the run itself.
+        self.drafter_wall_time_samples_ns: List[int] = []
+
+        # Datastore construction timing. Index building happens *outside* the
+        # playback loop but is a real cost of the precomputed arm: without it the
+        # precomputed drafter appears to get its index for free.
+        self.build_records: List[Dict[str, object]] = []
+        self.build_wall_time_ns = 0
+        self.build_bytes = 0
 
         # Playback loop timing. This excludes tokenizer encode/decode, drafter
         # generation (recorded separately), and any construction/precompute.
@@ -54,11 +83,33 @@ class PlaybackMetrics:
 
         self.drafter_calls += 1
         self.drafter_wall_time_ns += elapsed_ns
+        self.drafter_wall_time_samples_ns.append(elapsed_ns)
         self.max_drafter_wall_time_ns = max(self.max_drafter_wall_time_ns, elapsed_ns)
         if self.min_drafter_wall_time_ns is None:
             self.min_drafter_wall_time_ns = elapsed_ns
         else:
             self.min_drafter_wall_time_ns = min(self.min_drafter_wall_time_ns, elapsed_ns)
+
+    def record_build_time(
+        self, elapsed_ns: int, label: str, approx_bytes: int = 0
+    ) -> None:
+        """Record the cost of constructing a datastore (index, suffix table, ...).
+
+        Kept separate from per-call drafting time because it is paid once and then
+        amortized over however many requests reuse the datastore. Reporting both
+        ends of that amortization is what makes the on-the-fly vs precomputed
+        comparison honest.
+        """
+        if elapsed_ns < 0:
+            raise ValueError("elapsed_ns must be non-negative")
+        if approx_bytes < 0:
+            raise ValueError("approx_bytes must be non-negative")
+
+        self.build_records.append(
+            {"label": label, "elapsed_ns": elapsed_ns, "approx_bytes": approx_bytes}
+        )
+        self.build_wall_time_ns += elapsed_ns
+        self.build_bytes += approx_bytes
 
     def record_playback_time(self, elapsed_ns: int, excluded_ns: int = 0) -> None:
         """Record playback time after subtracting explicitly excluded intervals."""
@@ -84,6 +135,16 @@ class PlaybackMetrics:
         if self.drafter_calls == 0:
             return 0.0
         return self.drafter_wall_time_ns / self.drafter_calls
+
+    @property
+    def median_drafter_wall_time_ns(self) -> float:
+        """Median call duration -- the robust headline for drafter latency."""
+        return percentile_ns(sorted(self.drafter_wall_time_samples_ns), 0.5)
+
+    @property
+    def p95_drafter_wall_time_ns(self) -> float:
+        """95th-percentile call duration -- exposes a heavy tail the median hides."""
+        return percentile_ns(sorted(self.drafter_wall_time_samples_ns), 0.95)
 
     def record_step(
         self,
@@ -179,6 +240,13 @@ class PlaybackMetrics:
                 (self.min_drafter_wall_time_ns or 0) / 1_000_000, 6
             ),
             "max_drafter_wall_time_ms": round(self.max_drafter_wall_time_ns / 1_000_000, 6),
+            "median_drafter_wall_time_ms": round(
+                self.median_drafter_wall_time_ns / 1_000_000, 6
+            ),
+            "p95_drafter_wall_time_ms": round(self.p95_drafter_wall_time_ns / 1_000_000, 6),
+            "build_calls": len(self.build_records),
+            "build_wall_time_ms": round(self.build_wall_time_ns / 1_000_000, 6),
+            "build_bytes": self.build_bytes,
             "playback_runs": self.playback_runs,
             "playback_wall_time_ms": round(self.playback_wall_time_ns / 1_000_000, 6),
             "average_playback_wall_time_ms": round(

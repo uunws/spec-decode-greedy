@@ -1,6 +1,6 @@
 """Vectorized tensor-based n-gram drafter."""
 
-from typing import List
+from typing import List, Optional
 
 import torch
 
@@ -12,6 +12,11 @@ class VectorizeTensorNGramDrafter(TensorNGramDrafter):
 
     It preserves ``TensorNGramDrafter`` semantics while replacing the Python
     corpus scan with tensor-based window matching.
+
+    ``size_limit`` restricts matching to the first N corpus tokens. It mirrors
+    ``PrecomputeTensorNGramDrafter.size_limit`` exactly so that the two drafters
+    stay draft-equivalent under a corpus-size sweep: only their retrieval cost
+    should differ, never their output.
     """
 
     def __init__(
@@ -20,12 +25,14 @@ class VectorizeTensorNGramDrafter(TensorNGramDrafter):
         n: int = 3,
         num_sequences: int = 1,
         draft_depth: int = 3,
+        size_limit: Optional[int] = None,
     ) -> None:
         super().__init__(
             corpus_tokens=corpus_tokens,
             n=n,
             num_sequences=num_sequences,
             draft_depth=draft_depth,
+            size_limit=size_limit,
         )
         # This is only a representation change: no n-gram index is built.
         self.corpus_tensor = torch.as_tensor(corpus_tokens, dtype=torch.long).clone()
@@ -35,7 +42,7 @@ class VectorizeTensorNGramDrafter(TensorNGramDrafter):
         self.last_n_used = 0
         self.last_match_corpus_idx = -1
 
-        if not prompt or self.corpus_tensor.numel() == 0 or self.draft_depth <= 0:
+        if not prompt or self.size_limit == 0 or self.draft_depth <= 0:
             return torch.empty((0, 0), dtype=torch.long)
 
         corpus_len = int(self.corpus_tensor.numel())
@@ -43,8 +50,10 @@ class VectorizeTensorNGramDrafter(TensorNGramDrafter):
             if len(prompt) < current_n:
                 continue
 
-            # A match must have at least one token after its prefix.
-            num_starts = corpus_len - current_n
+            # A match must have at least one token after its prefix, and must
+            # start before size_limit -- the same bound the precomputed index
+            # applies when it filters `positions < size_limit`.
+            num_starts = min(self.size_limit, corpus_len - current_n)
             if num_starts <= 0:
                 continue
 
@@ -73,8 +82,8 @@ class VectorizeTensorNGramDrafter(TensorNGramDrafter):
             starts = selected_positions + current_n
             offsets = torch.arange(self.draft_depth, dtype=torch.long)
             indices = starts[:, None] + offsets[None, :]
-            valid = indices < corpus_len
-            safe_indices = indices.clamp(max=corpus_len - 1)
+            valid = indices < self.size_limit
+            safe_indices = indices.clamp(max=self.size_limit - 1)
             candidates = self.corpus_tensor[safe_indices]
             candidates = torch.where(valid, candidates, torch.full_like(candidates, PAD_ID))
 

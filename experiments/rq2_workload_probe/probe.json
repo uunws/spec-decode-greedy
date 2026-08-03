@@ -1,0 +1,115 @@
+{
+  "config": {
+    "tokenizer": "Qwen/Qwen2.5-0.5B-Instruct",
+    "datastore_tokens": 200000,
+    "n_requests": 120,
+    "target_tokens": 200,
+    "max_k": 3
+  },
+  "workloads": {
+    "wiki_pooled": {
+      "n_requests": 120,
+      "datastore_tokens": 200000,
+      "target_tokens": 200,
+      "oracle_q1": 0.10552763819095477,
+      "oracle_median": 0.1457286432160804,
+      "oracle_q3": 0.17587939698492464,
+      "oracle_mean": 0.1438860971524288,
+      "matched_k": 1.6897440773583337,
+      "coverage": 0.918425460636516,
+      "mean_support": 538.6134091829839,
+      "branch_entropy_bits": 3.0859510791711844
+    },
+    "wiki_self_relevant": {
+      "n_requests": 120,
+      "datastore_tokens": 200000,
+      "target_tokens": 200,
+      "oracle_q1": 0.1507537688442211,
+      "oracle_median": 0.1658291457286432,
+      "oracle_q3": 0.20100502512562815,
+      "oracle_mean": 0.17462311557788945,
+      "matched_k": 1.7766363914073908,
+      "coverage": 0.9451423785594639,
+      "mean_support": 467.99885515828953,
+      "branch_entropy_bits": 2.8313326462695376
+    },
+    "xsum_pooled": {
+      "n_requests": 120,
+      "datastore_tokens": 200000,
+      "target_tokens": 200,
+      "oracle_q1": 0.11557788944723618,
+      "oracle_median": 0.135678391959799,
+      "oracle_q3": 0.15577889447236182,
+      "oracle_mean": 0.1353433835845896,
+      "matched_k": 1.6925448208585272,
+      "coverage": 0.9417922948073703,
+      "mean_support": 313.3465843852279,
+      "branch_entropy_bits": 2.836142735647032
+    },
+    "xsum_self_relevant": {
+      "n_requests": 120,
+      "datastore_tokens": 200000,
+      "target_tokens": 200,
+      "oracle_q1": 0.135678391959799,
+      "oracle_median": 0.15577889447236182,
+      "oracle_q3": 0.17587939698492464,
+      "oracle_mean": 0.16005025125628142,
+      "matched_k": 1.7562616556448372,
+      "coverage": 0.9677554438860972,
+      "mean_support": 277.79209201305054,
+      "branch_entropy_bits": 2.694565915701354
+    },
+    "samsum_pooled": {
+      "n_requests": 120,
+      "datastore_tokens": 200000,
+      "target_tokens": 200,
+      "oracle_q1": 0.07537688442211055,
+      "oracle_median": 0.09045226130653267,
+      "oracle_q3": 0.10552763819095477,
+      "oracle_mean": 0.09258793969849247,
+      "matched_k": 1.659472027949844,
+      "coverage": 0.9313232830820771,
+      "mean_support": 328.049953937429,
+      "branch_entropy_bits": 2.8150212651581854
+    },
+    "samsum_self_relevant": {
+      "n_requests": 120,
+      "datastore_tokens": 200000,
+      "target_tokens": 200,
+      "oracle_q1": 0.12562814070351758,
+      "oracle_median": 0.15577889447236182,
+      "oracle_q3": 0.18592964824120603,
+      "oracle_mean": 0.15904522613065325,
+      "matched_k": 1.7977145858251597,
+      "coverage": 0.9670854271356785,
+      "mean_support": 296.68381403531765,
+      "branch_entropy_bits": 2.510331059065636
+    },
+    "cnn_pooled": {
+      "n_requests": 120,
+      "datastore_tokens": 200000,
+      "target_tokens": 200,
+      "oracle_q1": 0.09045226130653267,
+      "oracle_median": 0.10050251256281408,
+      "oracle_q3": 0.12060301507537688,
+      "oracle_mean": 0.10799832495812396,
+      "matched_k": 1.5637986250727498,
+      "coverage": 0.8561557788944724,
+      "mean_support": 323.7537904276551,
+      "branch_entropy_bits": 2.827979128236243
+    },
+    "cnn_self_relevant": {
+      "n_requests": 120,
+      "datastore_tokens": 200000,
+      "target_tokens": 200,
+      "oracle_q1": 0.24120603015075376,
+      "oracle_median": 0.2663316582914573,
+      "oracle_q3": 0.3065326633165829,
+      "oracle_mean": 0.271608040201005,
+      "matched_k": 1.9340331087299358,
+      "coverage": 0.9034338358458961,
+      "mean_support": 197.91644541318837,
+      "branch_entropy_bits": 2.1721017540636236
+    }
+  }
+}

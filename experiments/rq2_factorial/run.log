@@ -1,0 +1,78 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+tokenizer      Qwen/Qwen2.5-0.5B-Instruct
+datasets       ['cnn', 'codesearch', 'dolly', 'gsm8k', 'samsum', 'swetraj', 'wildchat', 'xsum']
+pairs          4  wildchat>xsum, wildchat>samsum, wildchat>cnn, codesearch>xsum
+store sizes    [50000, 200000, 500000, 1000000]
+budget         B=4  num_sequences=1  n=6
+requests/cell  200 x 200 tokens
+cells          32   arms/cell 4
+beta           0.0  (sensitivity at (0.005, 0.01))
+output         /Users/faith/Chula/LLM/spec-decode-greedy/experiments/rq2_factorial/results.json
+
+[1/32] cnn|50000|B4|S1  [low]
+        L/S=1.091  accept=0.028  scan=203us  index=11us  (17s)
+[2/32] cnn|200000|B4|S1  [low]
+        L/S=1.131  accept=0.036  scan=776us  index=11us  (19s)
+[3/32] cnn|500000|B4|S1  [low]
+        L/S=1.153  accept=0.040  scan=1907us  index=11us  (32s)
+[4/32] cnn|1000000|B4|S1  [low]
+        L/S=1.170  accept=0.044  scan=3796us  index=12us  (37s)
+[5/32] codesearch|50000|B4|S1  [high]
+        L/S=1.182  accept=0.059  scan=202us  index=11us  (22s)
+[6/32] codesearch|200000|B4|S1  [high]
+        L/S=1.203  accept=0.059  scan=781us  index=11us  (27s)
+[7/32] codesearch|500000|B4|S1  [high]
+        L/S=1.215  accept=0.059  scan=1908us  index=12us  (35s)
+[8/32] codesearch|1000000|B4|S1  [high]
+        L/S=1.225  accept=0.060  scan=3812us  index=12us  (45s)
+[9/32] dolly|50000|B4|S1  [mixed]
+        L/S=1.076  accept=0.023  scan=202us  index=11us  (10s)
+[10/32] dolly|200000|B4|S1  [mixed]
+        L/S=1.097  accept=0.027  scan=807us  index=11us  (14s)
+[11/32] dolly|500000|B4|S1  [mixed]
+        L/S=1.119  accept=0.031  scan=1911us  index=12us  (24s)
+[12/32] dolly|1000000|B4|S1  [mixed]
+        SKIPPED: dolly: datastore reached 640952 of 1000000 tokens; raise --sample-limit
+[13/32] gsm8k|50000|B4|S1  [mixed]
+        L/S=1.341  accept=0.092  scan=205us  index=12us  (9s)
+[14/32] gsm8k|200000|B4|S1  [mixed]
+        L/S=1.419  accept=0.109  scan=796us  index=12us  (12s)
+[15/32] gsm8k|500000|B4|S1  [mixed]
+        L/S=1.464  accept=0.119  scan=1924us  index=12us  (19s)
+[16/32] gsm8k|1000000|B4|S1  [mixed]
+        SKIPPED: gsm8k: datastore reached 682201 of 1000000 tokens; raise --sample-limit
+[17/32] samsum|50000|B4|S1  [mixed]
+        L/S=1.078  accept=0.023  scan=201us  index=11us  (8s)
+[18/32] samsum|200000|B4|S1  [mixed]
+        L/S=1.099  accept=0.027  scan=778us  index=11us  (12s)
+[19/32] samsum|500000|B4|S1  [mixed]
+        L/S=1.109  accept=0.029  scan=1909us  index=12us  (20s)
+[20/32] samsum|1000000|B4|S1  [mixed]
+        SKIPPED: samsum: datastore reached 596823 of 1000000 tokens; raise --sample-limit
+[21/32] swetraj|50000|B4|S1  [mixed]
+        L/S=1.574  accept=0.156  scan=202us  index=12us  (12s)
+[22/32] swetraj|200000|B4|S1  [mixed]
+        L/S=1.646  accept=0.173  scan=784us  index=12us  (15s)
+[23/32] swetraj|500000|B4|S1  [mixed]
+        L/S=1.686  accept=0.180  scan=1913us  index=15us  (21s)
+[24/32] swetraj|1000000|B4|S1  [mixed]
+        L/S=1.701  accept=0.183  scan=3831us  index=24us  (31s)
+[25/32] wildchat|50000|B4|S1  [high]
+        L/S=1.074  accept=0.027  scan=203us  index=12us  (16s)
+[26/32] wildchat|200000|B4|S1  [high]
+        L/S=1.105  accept=0.032  scan=778us  index=11us  (20s)
+[27/32] wildchat|500000|B4|S1  [high]
+        L/S=1.127  accept=0.036  scan=1898us  index=12us  (32s)
+[28/32] wildchat|1000000|B4|S1  [high]
+        L/S=1.147  accept=0.039  scan=3788us  index=12us  (45s)
+[29/32] xsum|50000|B4|S1  [low]
+        L/S=1.080  accept=0.024  scan=203us  index=11us  (16s)
+[30/32] xsum|200000|B4|S1  [low]
+        L/S=1.115  accept=0.031  scan=784us  index=11us  (19s)
+[31/32] xsum|500000|B4|S1  [low]
+        L/S=1.144  accept=0.038  scan=1908us  index=12us  (26s)
+[32/32] xsum|1000000|B4|S1  [low]
+        L/S=1.169  accept=0.044  scan=3804us  index=12us  (36s)
+
+done: 29/32 cells in 11.1 min
+results written to /Users/faith/Chula/LLM/spec-decode-greedy/experiments/rq2_factorial/results.json

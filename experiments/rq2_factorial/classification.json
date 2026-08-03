@@ -1,0 +1,181 @@
+{
+  "config": {
+    "tokenizer": "Qwen/Qwen2.5-0.5B-Instruct",
+    "store_tokens": 200000,
+    "n_requests": 100,
+    "target_tokens": 200,
+    "n_gram": 6,
+    "pair_rule": "dominance: high beats low on both axes by > 5%",
+    "margin": 0.05,
+    "note": "pairs are relative to this candidate set and are not portable"
+  },
+  "axes": {
+    "codesearch": {
+      "coverage": 0.8719798982024354,
+      "mean_support": 326.45056893749074,
+      "normalized_branch_entropy": 0.6311268566456504,
+      "structure": 0.3688731433543496,
+      "n_positions": 15521,
+      "n_covered": 13534
+    },
+    "gsm8k": {
+      "coverage": 0.9784533155169534,
+      "mean_support": 134.5914988050529,
+      "normalized_branch_entropy": 0.5760890929247056,
+      "structure": 0.42391090707529444,
+      "n_positions": 11974,
+      "n_covered": 11716
+    },
+    "swetraj": {
+      "coverage": 0.9753457606734817,
+      "mean_support": 121.32899198520346,
+      "normalized_branch_entropy": 0.40244093620853916,
+      "structure": 0.5975590637914608,
+      "n_positions": 13304,
+      "n_covered": 12976
+    },
+    "wildchat": {
+      "coverage": 0.8618890554722639,
+      "mean_support": 405.29828833843584,
+      "normalized_branch_entropy": 0.6320418865631712,
+      "structure": 0.3679581134368288,
+      "n_positions": 16675,
+      "n_covered": 14372
+    },
+    "cnn": {
+      "coverage": 0.9269988412514485,
+      "mean_support": 313.6478125,
+      "normalized_branch_entropy": 0.6828318084687147,
+      "structure": 0.3171681915312853,
+      "n_positions": 6904,
+      "n_covered": 6400
+    },
+    "samsum": {
+      "coverage": 0.9397794741306191,
+      "mean_support": 317.5442238267148,
+      "normalized_branch_entropy": 0.6903457159404223,
+      "structure": 0.30965428405957773,
+      "n_positions": 3537,
+      "n_covered": 3324
+    },
+    "xsum": {
+      "coverage": 0.9421544856252165,
+      "mean_support": 275.3463235294118,
+      "normalized_branch_entropy": 0.683892370766143,
+      "structure": 0.31610762923385705,
+      "n_positions": 2887,
+      "n_covered": 2720
+    },
+    "dolly": {
+      "coverage": 0.9274014583113178,
+      "mean_support": 592.2791704649043,
+      "normalized_branch_entropy": 0.6964368645147074,
+      "structure": 0.30356313548529257,
+      "n_positions": 9463,
+      "n_covered": 8776
+    }
+  },
+  "pairs": [
+    {
+      "high": "wildchat",
+      "low": "xsum",
+      "support_ratio": 1.471958234790605,
+      "structure_ratio": 1.164027943041554
+    },
+    {
+      "high": "wildchat",
+      "low": "samsum",
+      "support_ratio": 1.2763522619123715,
+      "structure_ratio": 1.1882868488460292
+    },
+    {
+      "high": "wildchat",
+      "low": "cnn",
+      "support_ratio": 1.2922082418108236,
+      "structure_ratio": 1.1601356102588039
+    },
+    {
+      "high": "codesearch",
+      "low": "xsum",
+      "support_ratio": 1.1855998829147982,
+      "structure_ratio": 1.1669226214134065
+    }
+  ],
+  "labels": {
+    "codesearch": "high",
+    "gsm8k": "mixed",
+    "swetraj": "mixed",
+    "wildchat": "high",
+    "cnn": "low",
+    "samsum": "mixed",
+    "xsum": "low",
+    "dolly": "mixed"
+  },
+  "shapes": {
+    "codesearch": {
+      "dataset": "codesearch",
+      "store_tokens": 200000,
+      "n_requests": 100,
+      "n_docs_in_store": 821,
+      "mean_target_tokens": 156.21,
+      "samples_scanned": 4000
+    },
+    "gsm8k": {
+      "dataset": "gsm8k",
+      "store_tokens": 200000,
+      "n_requests": 100,
+      "n_docs_in_store": 1119,
+      "mean_target_tokens": 120.74,
+      "samples_scanned": 4000
+    },
+    "swetraj": {
+      "dataset": "swetraj",
+      "store_tokens": 200000,
+      "n_requests": 100,
+      "n_docs_in_store": 382,
+      "mean_target_tokens": 134.04,
+      "samples_scanned": 4000
+    },
+    "wildchat": {
+      "dataset": "wildchat",
+      "store_tokens": 200000,
+      "n_requests": 100,
+      "n_docs_in_store": 470,
+      "mean_target_tokens": 167.75,
+      "samples_scanned": 4000
+    },
+    "cnn": {
+      "dataset": "cnn",
+      "store_tokens": 200000,
+      "n_requests": 100,
+      "n_docs_in_store": 238,
+      "mean_target_tokens": 70.04,
+      "samples_scanned": 4000
+    },
+    "samsum": {
+      "dataset": "samsum",
+      "store_tokens": 200000,
+      "n_requests": 100,
+      "n_docs_in_store": 1194,
+      "mean_target_tokens": 36.37,
+      "samples_scanned": 4000
+    },
+    "xsum": {
+      "dataset": "xsum",
+      "store_tokens": 200000,
+      "n_requests": 100,
+      "n_docs_in_store": 423,
+      "mean_target_tokens": 29.87,
+      "samples_scanned": 4000
+    },
+    "dolly": {
+      "dataset": "dolly",
+      "store_tokens": 200000,
+      "n_requests": 100,
+      "n_docs_in_store": 1166,
+      "mean_target_tokens": 95.63,
+      "samples_scanned": 4000
+    }
+  },
+  "excluded": {}
+}

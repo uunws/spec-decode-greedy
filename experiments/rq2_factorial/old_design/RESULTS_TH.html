@@ -1,0 +1,600 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>RQ2 Results</title>
+<style>
+body { font-family: "Sarabun", "TH Sarabun New", Arial, sans-serif; font-size: 15px;
+       line-height: 1.7; max-width: 820px; margin: 40px auto; padding: 0 20px; color: #111; }
+h1 { font-size: 26px; } h2 { font-size: 20px; margin-top: 34px; }
+table { border-collapse: collapse; margin: 14px 0; width: 100%; }
+th, td { border: 1px solid #999; padding: 6px 10px; text-align: left; }
+th { background: #eee; }
+code { background: #f2f2f2; padding: 1px 4px; }
+pre { background: #f6f6f6; padding: 12px; border-left: 3px solid #ccc; overflow-x: auto; }
+blockquote { border-left: 3px solid #bbb; margin-left: 0; padding-left: 14px; color: #444; }
+</style>
+<h1>RQ2 — ผลการทดลอง</h1>
+<p><strong>คำถามวิจัย:</strong> คุณสมบัติของ <em>งาน</em> (workload speculatability) กับ <em>วิธีดึง draft</em> (speculation efficiency) ส่งผลต่อความเร็วของ speculative decoding อย่างไร — ทั้งแยกกันและร่วมกัน</p>
+<hr />
+<h2>1. ตั้งต้นจากปัญหาอะไร</h2>
+<p>Speculative decoding ทำงานแบบนี้: มีตัวช่วยเดา (drafter) เสนอ token ล่วงหน้ามาหลายตัว แล้วให้ model ตัวจริง (target) ตรวจทีเดียว ถ้าเดาถูกก็ได้หลาย token ในหนึ่งรอบ ถ้าเดาผิดก็ทิ้ง</p>
+<p>ตัวจำลอง (simulator) ที่มีอยู่เดิมวัดความเร็วด้วยสูตร</p>
+<p><code>speedup = จำนวน token ที่ต้อง decode ปกติ / จำนวน step ที่ speculate แล้ว</code></p>
+<p><strong>ปัญหาคือสูตรนี้ถือว่า drafter ทำงานฟรี</strong> — ไม่คิดเวลาที่ drafter ใช้ค้นหาเลย ผลก็คือถ้าเราเปลี่ยนวิธีดึง draft ให้เร็วขึ้น 200 เท่า ตัวเลข speedup จะ <strong>ไม่ขยับเลยแม้แต่นิดเดียว</strong> เพราะทั้งสองวิธีเดา token ออกมาเหมือนกันเป๊ะ</p>
+<p>แกน "efficiency" ของ RQ2 จึงมองไม่เห็นด้วยเครื่องมือเดิม → ต้องสร้าง cost model ขึ้นมาก่อน</p>
+<hr />
+<h2>2. Cost model — สูตรที่ใช้แปลง "นับ token" เป็น "เวลาจริง"</h2>
+<p><code>speedup  =        L / S
+                ─────────────
+                1 + ρ + β·B</code></p>
+<table>
+<thead>
+<tr>
+<th>ตัวแปร</th>
+<th>ความหมาย</th>
+<th>ได้มาจากไหน</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>L</strong></td>
+<td>ถ้าไม่ speculate ต้อง decode กี่ token</td>
+<td>simulator (แม่นเป๊ะ)</td>
+</tr>
+<tr>
+<td><strong>S</strong></td>
+<td>speculate แล้วเหลือกี่ step</td>
+<td>simulator (แม่นเป๊ะ)</td>
+</tr>
+<tr>
+<td><strong>t_d</strong></td>
+<td>drafter ใช้เวลาต่อการเรียกหนึ่งครั้ง</td>
+<td>จับเวลาจริงบนเครื่อง</td>
+</tr>
+<tr>
+<td><strong>t_v(1)</strong></td>
+<td>target model ตรวจ 1 token นานแค่ไหน</td>
+<td>ตั้งเป็นพารามิเตอร์ = 20 ms (ระดับ model 7B)</td>
+</tr>
+<tr>
+<td><strong>ρ</strong> (rho)</td>
+<td>= t_d / t_v(1) — drafter แพงเทียบกับ target แค่ไหน</td>
+<td>คำนวณ</td>
+</tr>
+<tr>
+<td><strong>β</strong> (beta)</td>
+<td>ตรวจเพิ่มอีก 1 ตำแหน่งแพงขึ้นกี่ %</td>
+<td>ตั้งเป็นพารามิเตอร์ = 1%</td>
+</tr>
+<tr>
+<td><strong>B</strong></td>
+<td>เสนอกี่ token ต่อ step (draft budget)</td>
+<td>ตัวแปรที่กวาด</td>
+</tr>
+</tbody>
+</table>
+<p><strong>เศษ (L/S)</strong> คือฝั่งงาน — งานที่เดาง่ายจะได้ค่านี้สูง
+<strong>ส่วน (1 + ρ + β·B)</strong> คือฝั่งต้นทุน — วิธีดึง draft ที่เร็วจะทำให้ ρ เล็กลง</p>
+<blockquote>
+<p><strong>หมายเหตุ:</strong> การทดลองนี้ไม่ต้องรัน model จริงบน GPU เพราะ ρ กับ β ถูกทำเป็น <em>พารามิเตอร์ที่ประกาศชัดเจน</em> ไม่ใช่ค่าที่ซ่อนอยู่ ผลลัพธ์จึงรายงานคู่กับค่า ρ ที่วัดได้เสมอ</p>
+</blockquote>
+<hr />
+<h2>3. ออกแบบเป็นตาราง 4 ช่อง (2×2 factorial)</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>on-the-fly</strong> (สแกนใหม่ทุกครั้ง)</th>
+<th><strong>precomputed</strong> (สร้าง index ไว้ก่อน)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>งานเดายาก</strong> (low-spec)</td>
+<td><strong>A</strong></td>
+<td><strong>B</strong></td>
+</tr>
+<tr>
+<td><strong>งานเดาง่าย</strong> (high-spec)</td>
+<td><strong>C</strong></td>
+<td><strong>D</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>เทียบ <strong>A→B</strong> = ผลของการเปลี่ยนวิธีดึง draft อย่างเดียว</li>
+<li>เทียบ <strong>A→C</strong> = ผลของการเปลี่ยนงานอย่างเดียว</li>
+<li>เทียบ <strong>A→D</strong> = ผลของการเปลี่ยนทั้งสองอย่างพร้อมกัน</li>
+</ul>
+<hr />
+<h2>4. สร้างแกนที่ 1 — ทำยังไงให้งาน "เดายาก" กับ "เดาง่าย" ต่างกันจริง</h2>
+<p>ลองผิดมา 2 รอบก่อนจะเจอวิธีที่ใช้ได้:</p>
+<ol>
+<li>แบ่ง request ยาก/ง่ายภายใน dataset เดียวกัน → <strong>ไม่ผ่าน</strong> ต่างกันแค่ 1.17 เท่า น้อยเกินไป</li>
+<li>เทียบข้าม dataset (Wikipedia vs XSum) → <strong>ไม่ผ่าน</strong> ต่างกัน 1.07 เท่า</li>
+</ol>
+<p><strong>วิธีที่ใช้ได้: เปลี่ยน "ความเกี่ยวข้องของคลังข้อมูล"</strong></p>
+<ul>
+<li><strong>pooled</strong> — คลังข้อมูลเป็นบทความอื่น ๆ ที่ไม่เกี่ยวกับคำตอบ</li>
+<li><strong>self_relevant</strong> — คลังข้อมูลขนาดเท่ากันเป๊ะ แต่มีบทความต้นทางของคำตอบนั้นอยู่ข้างในด้วย</li>
+</ul>
+<p><strong>สำคัญ: จำนวน token ในคลังเท่ากันทุกประการ</strong> ต่างกันแค่ว่ามีเอกสารไหนอยู่ในนั้น</p>
+<p>วัดด้วย <code>oracle_accept_rate</code> = สัดส่วนตำแหน่งที่ตัวต่อไปซึ่งพบบ่อยที่สุดในคลัง ตรงกับคำตอบจริง (คลัง 200,000 token, 120 requests):</p>
+<table>
+<thead>
+<tr>
+<th>workload</th>
+<th>Q1</th>
+<th>median</th>
+<th>Q3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CNN pooled</td>
+<td>0.0905</td>
+<td><strong>0.1005</strong></td>
+<td>0.1206</td>
+</tr>
+<tr>
+<td>CNN self_relevant</td>
+<td>0.2412</td>
+<td><strong>0.2663</strong></td>
+<td>0.3065</td>
+</tr>
+<tr>
+<td>SAMSum pooled</td>
+<td>0.0754</td>
+<td><strong>0.0905</strong></td>
+<td>0.1055</td>
+</tr>
+<tr>
+<td>SAMSum self_relevant</td>
+<td>0.1256</td>
+<td><strong>0.1558</strong></td>
+<td>0.1859</td>
+</tr>
+</tbody>
+</table>
+<p>CNN ต่างกัน <strong>2.65 เท่า</strong> และช่วง Q1–Q3 ไม่ทับกันเลย → แยกกลุ่มได้ชัด
+SAMSum ต่างกัน <strong>1.72 เท่า</strong> ใช้เป็นชุดยืนยันซ้ำ (replication)</p>
+<p><em>(XSum ต่างกันแค่ 1.15 เท่า จึงไม่ถูกเลือก — เพราะ XSum เป็นงานเขียนใหม่ ไม่ได้คัดลอกจากต้นฉบับ)</em></p>
+<hr />
+<h2>5. สร้างแกนที่ 2 — และการควบคุมที่สำคัญที่สุดของงานนี้</h2>
+<p>สองวิธีดึง draft:
+- <strong>on-the-fly</strong> — สแกนคลังทั้งก้อนใหม่ทุกครั้งที่ต้องเดา
+- <strong>precomputed</strong> — สร้าง index ไว้ตอนเริ่ม แล้วแค่เปิดดู</p>
+<p><strong>ปัญหาที่ต้องกันไว้:</strong> ถ้าสองวิธีนี้เดา token ออกมา <em>ไม่เหมือนกัน</em> ผลที่วัดได้จะปนกันระหว่าง "เร็วกว่า" กับ "เดาเก่งกว่า" → ตีความไม่ได้</p>
+<p><strong>การควบคุม (draft equivalence):</strong> ทุก cell จะตรวจก่อนจับเวลาว่าทั้ง 4 วิธีสร้าง draft ออกมา <strong>เหมือนกันทุก bit</strong> (ตรวจ 244 prompts ต่อ cell) ถ้าไม่เหมือน การทดลองจะหยุดทันที</p>
+<p>ระหว่างทางพบ bug จริง 2 จุดที่ทำให้ draft ไม่ตรงกันโดยเงียบ ๆ และแก้ไปแล้ว</p>
+<p><strong>เพราะ draft เหมือนกันเป๊ะ ตัวเลข L/S จึงเท่ากันทุกวิธี</strong> ความต่างที่วัดได้จึงเป็นเรื่องเวลาล้วน ๆ</p>
+<hr />
+<h2>6. เงื่อนไขการทดลอง</h2>
+<ul>
+<li>tokenizer: Qwen2.5-0.5B-Instruct (ตัวเดียวทั้งหมด)</li>
+<li>200 requests ต่อ cell, ยาว 200 token ต่อ request</li>
+<li>ขนาดคลังข้อมูล: 50,000 / 200,000 / 500,000 / 1,000,000 token</li>
+<li>draft budget B: 1, 2, 3, 4, 6, 8</li>
+<li>draft แบบ depth (num_sequences = 1)</li>
+<li>ล็อกไว้ 1 thread, มี warm-up, รายงาน median (ไม่ใช่ mean)</li>
+</ul>
+<hr />
+<h2>7. ผลที่ 1 — สองปุ่มนี้ "คูณกัน" ไม่ใช่ "บวกกัน"</h2>
+<h3>📊 [รูปที่ 1 — rq2_1_interaction.png]</h3>
+<p>รูปนี้มี <strong>2 แผง</strong> — ซ้ายคือคลัง 200,000 token ขวาคือคลัง 1,000,000 token</p>
+<p><strong>แกนนอน:</strong> วิธีดึง draft (on-the-fly → precomputed)
+<strong>แกนตั้ง:</strong> speedup (มาตราส่วน log — เลือก log เพราะเรากำลังพูดถึง <em>อัตราส่วน</em> ถ้าใช้แกนปกติ เส้นที่เพิ่มขึ้นเท่ากันเชิงอัตราส่วนจะดูถ่างออกจากกันหลอกตา)
+<strong>สองเส้นในแต่ละแผง:</strong> งานเดายาก (ล่าง, สีส้ม) กับงานเดาง่าย (บน, สีน้ำเงิน)
+<strong>เส้นประแนวนอนที่ 1.00x:</strong> ต่ำกว่านี้คือช้ากว่าไม่ทำ speculative decoding</p>
+<p><strong>สิ่งที่เห็น: เส้นสองเส้นขนานกัน</strong> (ขนานบนแกน log = ขยับขึ้นเป็นอัตราส่วนเท่ากัน)</p>
+<p>สังเกตแผงขวา: เส้นสีส้มเริ่มที่ <strong>0.932x คือต่ำกว่าเส้นประ</strong> — งานเดายากที่ใช้ on-the-fly บนคลัง 1M ช้ากว่าการ decode ธรรมดา</p>
+<h3>ตัวเลขจริง (คลัง 1,000,000 token, B=4)</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>on-the-fly</th>
+<th>precomputed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>งานเดายาก</td>
+<td>A = 0.9316</td>
+<td>B = 1.0687</td>
+</tr>
+<tr>
+<td>งานเดาง่าย</td>
+<td>C = 1.0937</td>
+<td>D = 1.2541</td>
+</tr>
+</tbody>
+</table>
+<p>คำนวณสามค่า:</p>
+<p><code>ผลของ efficiency อย่างเดียว   =  B / A  =  1.0687 / 0.9316  =  1.147 เท่า
+ผลของ workload อย่างเดียว     =  C / A  =  1.0937 / 0.9316  =  1.174 เท่า
+ผลของทั้งสองพร้อมกัน (joint)  =  D / A  =  1.2541 / 0.9316  =  1.346 เท่า</code></p>
+<p>ถ้าสองปุ่มไม่ยุ่งกัน ผลรวมควรเท่ากับผลคูณ:</p>
+<p><code>1.147 × 1.174  =  1.347     ← ค่าที่ควรได้
+                   1.346     ← ค่าที่วัดได้จริง</code></p>
+<p><strong>ต่างกัน 0.1%</strong></p>
+<h3>เป็นแบบนี้ทุกช่อง ทั้งสอง dataset</h3>
+<table>
+<thead>
+<tr>
+<th>dataset</th>
+<th>คลัง</th>
+<th>efficiency</th>
+<th>workload</th>
+<th>joint (วัดได้)</th>
+<th>joint (ที่ควรได้)</th>
+<th>อัตราส่วน</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CNN</td>
+<td>50,000</td>
+<td>1.008×</td>
+<td>1.074×</td>
+<td>1.082×</td>
+<td>1.082×</td>
+<td>1.0000</td>
+</tr>
+<tr>
+<td>CNN</td>
+<td>200,000</td>
+<td>1.031×</td>
+<td>1.190×</td>
+<td>1.227×</td>
+<td>1.226×</td>
+<td>1.0002</td>
+</tr>
+<tr>
+<td>CNN</td>
+<td>500,000</td>
+<td>1.076×</td>
+<td>1.185×</td>
+<td>1.275×</td>
+<td>1.275×</td>
+<td>0.9997</td>
+</tr>
+<tr>
+<td>CNN</td>
+<td>1,000,000</td>
+<td>1.147×</td>
+<td>1.174×</td>
+<td>1.346×</td>
+<td>1.347×</td>
+<td>0.9995</td>
+</tr>
+<tr>
+<td>SAMSum</td>
+<td>50,000</td>
+<td>1.008×</td>
+<td>1.118×</td>
+<td>1.127×</td>
+<td>1.127×</td>
+<td>1.0001</td>
+</tr>
+<tr>
+<td>SAMSum</td>
+<td>200,000</td>
+<td>1.031×</td>
+<td>1.113×</td>
+<td>1.147×</td>
+<td>1.148×</td>
+<td>0.9997</td>
+</tr>
+<tr>
+<td>SAMSum</td>
+<td>500,000</td>
+<td>1.076×</td>
+<td>1.105×</td>
+<td>1.189×</td>
+<td>1.189×</td>
+<td>0.9999</td>
+</tr>
+<tr>
+<td>SAMSum</td>
+<td>1,000,000</td>
+<td>1.053×</td>
+<td>1.103×</td>
+<td>1.161×</td>
+<td>1.161×</td>
+<td>1.0002</td>
+</tr>
+</tbody>
+</table>
+<p><strong>คลาดเคลื่อนไม่เกิน 0.05% ทุกช่อง</strong></p>
+<h3>ตีความ</h3>
+<p>ค่านี้ไม่ได้ "มหัศจรรย์" — cost model <strong>ทำนายไว้ล่วงหน้าแล้ว</strong> ว่าต้องเป็นแบบนี้ เพราะ workload อยู่ที่เศษ ส่วน efficiency อยู่ที่ส่วน หารกันแล้วจึงคูณกันโดยธรรมชาติ</p>
+<p><strong>คุณค่าของผลนี้คือมันเป็นการ <em>ทดสอบ</em> สมมติฐานที่พิสูจน์ผิดได้</strong> ถ้าอัตราส่วนออกมาไม่ใช่ 1.000 จะแปลว่างานที่เดาง่ายไปทำให้ drafter ทำงานหนักขึ้น/เบาลงด้วย (คือ workload ไปขยับ ρ) — เราตรวจแล้วว่า <strong>ไม่เกิด</strong></p>
+<p><strong>ความหมายเชิงปฏิบัติ:</strong> ปรับปรุงสองด้านนี้แยกกันได้ ไม่ต้องกลัวว่าทำอย่างหนึ่งแล้วอีกอย่างจะไร้ผล</p>
+<hr />
+<h2>8. ผลที่ 2 — ต้นทุนการค้นหาโตตามขนาดคลัง แต่โตคนละแบบ</h2>
+<h3>📊 [รูปที่ 2 — rq2_2_retrieval_cost.png]</h3>
+<p><strong>แกนนอน:</strong> ขนาดคลังข้อมูล 50K → 1M (มาตราส่วน log)
+<strong>แกนตั้ง:</strong> เวลา median ที่ drafter ใช้ต่อการเรียกหนึ่งครั้ง หน่วยไมโครวินาที (มาตราส่วน log)
+<strong>สี่เส้น:</strong> เราวัดทั้ง 4 การ implement — on-the-fly 2 แบบ (tensor scan, python scan) และ precomputed 2 แบบ (tensor index, dict index)</p>
+<p><strong>เส้นบนสองเส้น (สแกน) ลาดขึ้น เส้นล่างสองเส้น (index) แบนราบ</strong> — นี่คือภาพรวมทั้งหมดของแกน efficiency</p>
+<p><em>(การทดลองหลักใช้คู่ tensor scan ↔ tensor index เพราะเป็นคู่ที่โค้ดส่วนเลือก candidate เหมือนกันตัวต่อตัว อีกสองเส้นเป็นตัวยืนยันว่าแนวโน้มไม่ได้ขึ้นกับ implementation)</em></p>
+<h3>ตัวเลขจริง (CNN, เวลา median ต่อการเรียก 1 ครั้ง)</h3>
+<table>
+<thead>
+<tr>
+<th>ขนาดคลัง</th>
+<th>on-the-fly</th>
+<th>precomputed</th>
+<th>เร็วกว่ากี่เท่า</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>50,000</td>
+<td>170,938 ns</td>
+<td>11,166 ns</td>
+<td>15×</td>
+</tr>
+<tr>
+<td>200,000</td>
+<td>652,125 ns</td>
+<td>11,625 ns</td>
+<td>56×</td>
+</tr>
+<tr>
+<td>500,000</td>
+<td>1,594,791 ns</td>
+<td>12,042 ns</td>
+<td>132×</td>
+</tr>
+<tr>
+<td>1,000,000</td>
+<td>3,067,625 ns</td>
+<td>14,875 ns</td>
+<td><strong>206×</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>on-the-fly โตแบบเชิงเส้นตามขนาดคลัง</strong> (คลังโต 20 เท่า → ช้าลง 18 เท่า)
+<strong>precomputed แทบไม่โตเลย</strong> (คลังโต 20 เท่า → ช้าลงแค่ 1.3 เท่า)</p>
+<p>แปลงเป็น ρ ที่คลัง 1M:
+<code>on-the-fly:   ρ = 0.152    ← drafter กินเวลา 15% ของ target model
+precomputed:  ρ = 0.00073  ← แทบไม่กินเลย</code></p>
+<h3>สิ่งที่ต้องแลก</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>on-the-fly</th>
+<th>precomputed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>เวลาสร้าง index (คลัง 1M)</td>
+<td>28 ms</td>
+<td>362 ms</td>
+</tr>
+<tr>
+<td>หน่วยความจำ</td>
+<td>8 MB</td>
+<td>76.6 MB</td>
+</tr>
+</tbody>
+</table>
+<p>precomputed ต้องจ่ายค่าสร้างก่อน แต่ <strong>จ่ายครั้งเดียว</strong> — ถ้ามี 100 requests ใช้ index เดียวกัน ค่านี้เฉลี่ยแล้วแทบหายไป (จาก reuse curve: R=1 ได้ 1.2534 / R=100 ได้ 1.2541)</p>
+<blockquote>
+<p><strong>หมายเหตุการวัด:</strong> เส้น python scan ลดลงจาก 500K → 1M ซึ่งขัดกับที่ควรเป็น สาเหตุคือ python scan ช้ามากจนชนเพดานเวลาที่ตั้งไว้ต่อการวัด ทำให้ที่ 1M เก็บตัวอย่างได้น้อยกว่าและได้ชุด prompt ที่ต่างออกไป <strong>ตัวเลขนี้ไม่ถูกใช้ในการทดลองหลัก</strong> (การทดลองหลักใช้ tensor scan ↔ tensor index)</p>
+</blockquote>
+<hr />
+<h2>9. ผลที่ 3 — จุดที่ speculative decoding เริ่ม "ขาดทุน"</h2>
+<h3>📊 [รูปที่ 3 — rq2_3_speedup_by_datastore.png]</h3>
+<p><strong>แกนนอน:</strong> ขนาดคลังข้อมูล 50K → 1M
+<strong>แกนตั้ง:</strong> speedup ที่โมเดลคำนวณได้
+<strong>สี่เส้น = ตาราง 4 ช่องพอดี:</strong> น้ำเงิน = D (ง่าย+precomputed), ส้ม = C (ง่าย+on-the-fly), เขียว = B (ยาก+precomputed), เหลือง = A (ยาก+on-the-fly)
+<strong>เส้นประแนวนอนที่ 1.00:</strong> เส้นคุ้มทุน — ต่ำกว่านี้คือ "ช้ากว่าไม่ทำ speculative decoding เลย"</p>
+<p><strong>สิ่งที่เห็น: เส้น precomputed (น้ำเงิน, เขียว) ไต่ขึ้นเรื่อย ๆ ส่วนเส้น on-the-fly (ส้ม, เหลือง) ขึ้นแล้วหักหัวลง</strong></p>
+<h3>ตัวเลขจริง (CNN, B=4)</h3>
+<table>
+<thead>
+<tr>
+<th>ขนาดคลัง</th>
+<th>A (ยาก+fly)</th>
+<th>B (ยาก+pre)</th>
+<th>C (ง่าย+fly)</th>
+<th>D (ง่าย+pre)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>50,000</td>
+<td>1.0291</td>
+<td>1.0371</td>
+<td>1.1050</td>
+<td>1.1135</td>
+</tr>
+<tr>
+<td>200,000</td>
+<td>1.0179</td>
+<td>1.0491</td>
+<td>1.2114</td>
+<td>1.2486</td>
+</tr>
+<tr>
+<td>500,000</td>
+<td><strong>0.9817</strong></td>
+<td>1.0568</td>
+<td>1.1631</td>
+<td>1.2515</td>
+</tr>
+<tr>
+<td>1,000,000</td>
+<td><strong>0.9316</strong></td>
+<td>1.0687</td>
+<td>1.0937</td>
+<td>1.2541</td>
+</tr>
+</tbody>
+</table>
+<p><strong>cell A ตกต่ำกว่า 1.0 ตั้งแต่คลัง 500,000 token</strong></p>
+<h3>ตีความ — นี่คือผลที่สำคัญที่สุดของ RQ2</h3>
+<p>คลังที่ใหญ่ขึ้นให้ <strong>ประโยชน์</strong> เพราะเจอ match มากขึ้น แต่ก็มี <strong>ต้นทุน</strong> เพราะสแกนนานขึ้น</p>
+<ul>
+<li>ถ้าใช้ <strong>on-the-fly</strong> ต้นทุนโตเร็วกว่าประโยชน์ → พอคลังใหญ่ระดับหนึ่ง <strong>ยิ่งเพิ่มข้อมูลยิ่งช้าลง</strong> และสุดท้ายแย่กว่าไม่ทำเลย</li>
+<li>ถ้าใช้ <strong>precomputed</strong> ต้นทุนแทบไม่โต → คลังยิ่งใหญ่ยิ่งดี (1.0371 → 1.0687 และ 1.1135 → 1.2541)</li>
+</ul>
+<p><strong>บทสรุป:</strong> "คลังใหญ่ขึ้นดีกว่า" เป็นจริง <strong>ก็ต่อเมื่อ</strong> ใช้วิธีดึงที่เหมาะสม ถ้าเลือกวิธีผิด การเพิ่มข้อมูลกลายเป็นการทำร้ายตัวเอง — และตัวเลข speedup แบบนับ token เดิม <strong>มองไม่เห็นเรื่องนี้เลย</strong> เพราะ A กับ B ได้ L/S เท่ากันเป๊ะ</p>
+<hr />
+<h2>10. ผลที่ 4 — ควรเสนอกี่ token ต่อรอบ ขึ้นกับงาน</h2>
+<h3>📊 [รูปที่ 4 — rq2_4_budget_sweep.png]</h3>
+<p><strong>แกนนอน:</strong> draft budget B (เสนอกี่ token ต่อ step) = 1, 2, 3, 4, 6, 8
+<strong>แกนตั้ง:</strong> speedup
+<strong>สองเส้น:</strong> งานเดาง่าย (บน, น้ำเงิน) กับงานเดายาก (ล่าง, ส้ม) — ทั้งคู่ใช้วิธี precomputed บนคลัง 1M
+<strong>วงกลมเน้น:</strong> จุดสูงสุดของแต่ละเส้น</p>
+<h3>ตัวเลขจริง (คลัง 1M, วิธี precomputed)</h3>
+<table>
+<thead>
+<tr>
+<th>B</th>
+<th>CNN ยาก</th>
+<th>CNN ง่าย</th>
+<th>SAMSum ยาก</th>
+<th>SAMSum ง่าย</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>1.0792</td>
+<td>1.1755</td>
+<td><strong>1.0706</strong></td>
+<td>1.1376</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>1.0831</strong></td>
+<td>1.2290</td>
+<td>1.0660</td>
+<td>1.1591</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1.0774</td>
+<td>1.2474</td>
+<td>1.0563</td>
+<td><strong>1.1605</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td>1.0687</td>
+<td><strong>1.2541</strong></td>
+<td>1.0461</td>
+<td>1.1536</td>
+</tr>
+<tr>
+<td>6</td>
+<td>1.0492</td>
+<td>1.2467</td>
+<td>1.0264</td>
+<td>1.1363</td>
+</tr>
+<tr>
+<td>8</td>
+<td>1.0301</td>
+<td>1.2329</td>
+<td>1.0077</td>
+<td>1.1160</td>
+</tr>
+</tbody>
+</table>
+<p>(ตัวหนา = จุดสูงสุด)</p>
+<h3>ตีความ</h3>
+<p>speedup <strong>ขึ้นแล้วลง</strong> เพราะโอกาสเดาถูกลดลงแบบทวีคูณเมื่อเดายาวขึ้น แต่ต้นทุนการตรวจ (β·B) โตแบบเชิงเส้น — เดายาวเกินไปคือจ่ายค่าตรวจสำหรับ token ที่จะถูกทิ้งอยู่ดี</p>
+<p><strong>จุดสูงสุดไม่เท่ากัน:</strong>
+- CNN: งานยากพีคที่ <strong>B=2</strong>, งานง่ายพีคที่ <strong>B=4</strong>
+- SAMSum: งานยากพีคที่ <strong>B=1</strong>, งานง่ายพีคที่ <strong>B=3</strong></p>
+<p><strong>ความหมาย:</strong> การตั้ง draft budget ค่าเดียวใช้กับทุกงานเป็นการตั้งที่ผิดสำหรับงานส่วนใหญ่ ระบบจริงควรปรับ B ตามความ "เดาง่าย" ของงานที่เข้ามา</p>
+<hr />
+<h2>11. สรุปคำตอบของ RQ2</h2>
+<table>
+<thead>
+<tr>
+<th>ประเด็น</th>
+<th>คำตอบ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ผลของ efficiency อย่างเดียว</strong></td>
+<td>1.008× ถึง 1.147× — ยิ่งคลังใหญ่ยิ่งสำคัญ</td>
+</tr>
+<tr>
+<td><strong>ผลของ workload อย่างเดียว</strong></td>
+<td>1.07× ถึง 1.19× — สม่ำเสมอทุกขนาดคลัง</td>
+</tr>
+<tr>
+<td><strong>ผลร่วมกัน</strong></td>
+<td>สูงสุด 1.346×</td>
+</tr>
+<tr>
+<td><strong>มี interaction ไหม</strong></td>
+<td><strong>ไม่มี</strong> — สองปัจจัยคูณกันตรง ๆ คลาดเคลื่อน &lt; 0.05% ทุกช่องทั้งสอง dataset</td>
+</tr>
+<tr>
+<td><strong>ข้อค้นพบสำคัญ</strong></td>
+<td>on-the-fly retrieval ตกต่ำกว่า 1.0 ที่คลัง ≥ 500K token — "เพิ่มข้อมูล" ไม่ได้ดีเสมอไป ขึ้นกับว่าดึงยังไง</td>
+</tr>
+<tr>
+<td><strong>ข้อค้นพบรอง</strong></td>
+<td>draft budget ที่เหมาะสมขึ้นกับงาน (B=1 ถึง B=4)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>12. ข้อจำกัดที่ต้องระบุใน paper</h2>
+<ol>
+<li><strong>ρ ข้าม hardware</strong> — เวลา drafter วัดบน CPU ส่วน t_v(1) เป็นค่าสมมติของ GPU การเทียบข้าม device นี้ทำให้ผลของ on-the-fly ดู <strong>แย่กว่าความจริง</strong> (pessimistic) จึงรายงาน ρ ควบคู่เสมอ และทำ ρ เป็นแกนกราฟ</li>
+<li><strong>ยังไม่มี validation กับ model จริง</strong> — ควรรัน end-to-end 1 workload เทียบ measured vs modeled ให้ต่างไม่เกิน 20%</li>
+<li><strong>ใช้ ground truth แทน target model</strong> — greedy decoding จริงให้ข้อความที่ซ้ำมากกว่า reference text ซึ่ง n-gram drafter น่าจะ match ได้ง่ายกว่า ดังนั้น L/S ที่รายงานน่าจะเป็น <strong>ขอบล่าง</strong> ของของจริง</li>
+<li><strong>ทดลองเฉพาะ depth drafting</strong> (num_sequences=1) — การเทียบ depth vs width เก็บไว้เป็นภาคผนวก</li>
+</ol>
+<hr />
+<h2>ภาคผนวก — ที่มาของไฟล์</h2>
+<table>
+<thead>
+<tr>
+<th>อย่าง</th>
+<th>ที่อยู่</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ผลดิบทั้งหมด</td>
+<td><code>experiments/rq2_factorial/results.json</code></td>
+</tr>
+<tr>
+<td>ผลการวัด speculatability</td>
+<td><code>experiments/rq2_workload_probe/probe.json</code></td>
+</tr>
+<tr>
+<td>รูปกราฟ</td>
+<td><code>experiments/rq2_factorial/artifacts/*.png</code></td>
+</tr>
+<tr>
+<td>สคริปต์รันการทดลอง</td>
+<td><code>scripts/run_rq2.py</code></td>
+</tr>
+<tr>
+<td>สคริปต์วาดกราฟ</td>
+<td><code>scripts/plot_rq2.py</code></td>
+</tr>
+<tr>
+<td>cost model</td>
+<td><code>src/specdecode/costmodel/</code></td>
+</tr>
+<tr>
+<td>ตัววัด speculatability</td>
+<td><code>src/specdecode/speculatability/</code></td>
+</tr>
+</tbody>
+</table>

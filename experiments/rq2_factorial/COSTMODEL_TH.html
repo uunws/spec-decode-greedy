@@ -1,0 +1,148 @@
+<div style="font-family:'Sarabun','Segoe UI',sans-serif;font-size:11pt;line-height:1.6;color:#1a1a1a;max-width:800px;">
+
+<h1 style="font-size:16pt;margin:0 0 3px 0;">RQ2 &mdash; Cost Model</h1>
+<p style="margin:0 0 20px 0;color:#555;font-size:10pt;">ที่มาของสูตร speedup และทำไมแต่ละพจน์ถึงแทน speculatability กับ efficiency ได้</p>
+
+<h2 style="font-size:12.5pt;margin:22px 0 7px 0;">1. ทำไมต้องมี</h2>
+
+<p style="margin:0 0 9px 0;">simulator เดิมรายงาน <code>speedup = L / S</code> ซึ่งเป็นการนับ step ล้วน ๆ <b>ไม่มีเวลาในสมการเลย</b> เท่ากับสมมติว่า drafter ฟรี</p>
+
+<p style="margin:0 0 9px 0;">ผลคือ retrieval สองแบบที่ออก draft เหมือนกันทุก bit ได้คะแนนเท่ากันเป๊ะ ทั้งที่ตัวหนึ่งช้ากว่า 206 เท่า <b>แกน efficiency ซึ่งเป็นครึ่งหนึ่งของ RQ2 มองไม่เห็นด้วยตัววัดนี้</b> cost model คือการเอาเวลาใส่กลับเข้าไปโดยไม่ทิ้ง <code>L/S</code></p>
+
+<h2 style="font-size:12.5pt;margin:22px 0 7px 0;">2. ที่มาของสูตร</h2>
+
+<p style="margin:0 0 9px 0;"><b>decoding ปกติ</b> ได้ 1 token ต่อ 1 forward pass อยากได้ <code>L</code> token ก็รัน <code>L</code> ครั้ง</p>
+
+<p style="margin:0 0 12px 0;padding:9px 13px;background:#f4f6f8;font-family:Consolas,monospace;font-size:10pt;">T_baseline = L &middot; t_v(1)</p>
+
+<p style="margin:0 0 9px 0;"><b>speculative</b> รัน <code>S</code> ครั้ง (<code>S &lt; L</code>) แต่ละรอบมีของแถมสองอย่าง คือเรียก drafter ราคา <code>t_d</code> และ verify <code>B</code> ตำแหน่งพร้อมกันแทนตำแหน่งเดียว ราคา <code>t_v(B)</code></p>
+
+<p style="margin:0 0 12px 0;padding:9px 13px;background:#f4f6f8;font-family:Consolas,monospace;font-size:10pt;">T_spec = t_build / R  +  S &middot; ( t_d + t_v(B) )</p>
+
+<p style="margin:0 0 9px 0;"><code>t_build / R</code> คือค่าสร้าง datastore จ่ายครั้งเดียวหารกับจำนวน request ที่ใช้ร่วมกัน ตัดทิ้งได้ในกรณี steady state</p>
+
+<p style="margin:0 0 9px 0;"><b>สมมติฐานเดียวของโมเดล</b> verify หลายตำแหน่งใน pass เดียวแพงขึ้นเชิงเส้น</p>
+
+<p style="margin:0 0 9px 0;padding:9px 13px;background:#f4f6f8;font-family:Consolas,monospace;font-size:10pt;">t_v(m) = t_v(1) &middot; ( 1 + &beta;(m &minus; 1) )</p>
+
+<p style="margin:0 0 9px 0;"><code>&beta;</code> เล็กมากเพราะ decoding ติดคอขวดที่ memory bandwidth ไม่ใช่ compute ขน weight ขึ้นมาแล้วจะคูณ 1 ตำแหน่งหรือ 8 ตำแหน่งต้นทุนแทบไม่ต่าง <b>ข้อนี้คือเหตุผลว่าทำไม speculative decoding ทำงานได้ตั้งแต่แรก</b></p>
+
+<p style="margin:0 0 12px 0;padding:9px 13px;background:#f2f8f5;border-left:3px solid #1baf7a;"><b>ค่าที่ใช้จริงคือ <code>&beta; = 0</code></b> ตามที่ตกลงกับที่ปรึกษาว่า &ldquo;n token per 1 forward pass&rdquo; คือ verify กี่ตำแหน่งก็นับเป็น forward pass เดียว ตัวส่วนจึงเหลือ <code>1 + &rho;</code> ค่า <code>&beta; &gt; 0</code> เก็บไว้เป็น sensitivity ท้ายรายงาน ไม่ใช่ผลหลัก</p>
+
+<p style="margin:0 0 9px 0;"><b>หารกัน</b> แล้วหารเศษส่วนด้วย <code>t_v(1)</code> ทั้งคู่</p>
+
+<p style="margin:0 0 5px 0;padding:9px 13px;background:#f4f6f8;font-family:Consolas,monospace;font-size:10pt;">speedup = T_baseline / T_spec = (L/S) &middot; t_v(1) / ( t_d + t_v(1)(1 + &beta;(B&minus;1)) )</p>
+
+<p style="margin:0 0 5px 0;padding:12px 13px;background:#eef4fb;border-left:3px solid #2a78d6;font-family:Consolas,monospace;font-size:11pt;"><b>speedup = (L / S) &nbsp;&divide;&nbsp; ( 1 + &rho; + &beta;(B &minus; 1) )</b>&nbsp;&nbsp;&nbsp;&rho; = t_d / t_v(1)</p>
+
+<p style="margin:0 0 12px 0;padding:9px 13px;background:#f4f6f8;font-family:Consolas,monospace;font-size:10pt;">ที่ &beta; = 0 &nbsp;&rarr;&nbsp; <b>speedup = (L / S) / (1 + &rho;)</b></p>
+
+<p style="margin:0 0 9px 0;">ทุกขั้นเป็นพีชคณิตตรงไปตรงมา สมมติฐานมีที่เดียวคือรูปของ <code>t_v(m)</code></p>
+
+<h2 style="font-size:12.5pt;margin:22px 0 7px 0;">3. แต่ละพจน์คืออะไร</h2>
+
+<table style="border-collapse:collapse;width:100%;font-size:10pt;margin:0 0 12px 0;">
+  <tr style="background:#eceff2;">
+    <th style="border:1px solid #c9cfd6;padding:6px 9px;text-align:left;">พจน์</th>
+    <th style="border:1px solid #c9cfd6;padding:6px 9px;text-align:left;">ความหมาย</th>
+    <th style="border:1px solid #c9cfd6;padding:6px 9px;text-align:left;">สมบัติของ</th>
+  </tr>
+  <tr>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;"><code>L / S</code></td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;">ได้กี่ token ต่อหนึ่ง forward pass</td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;"><b>ข้อมูล</b></td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;"><code>1</code></td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;">forward pass ที่ยังไงก็ต้องทำอยู่แล้ว</td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;">&mdash;</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;"><code>&rho;</code></td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;">ส่วนเกินจากการเรียก drafter คิดเป็นสัดส่วนของ forward pass</td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;"><b>ระบบ</b></td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;"><code>&beta;(B&minus;1)</code></td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;">ส่วนเกินจากการ verify <code>B</code> ตำแหน่งแทนตำแหน่งเดียว</td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;"><b>ฮาร์ดแวร์</b></td>
+  </tr>
+</table>
+
+<ul style="margin:0 0 9px 0;padding-left:21px;">
+  <li><b>ตัวเศษไม่มีหน่วยเวลาเลย</b> เปลี่ยน GPU เปลี่ยน implementation ค่านี้ไม่ขยับ มันขึ้นกับอย่างเดียวคือข้อความที่จะออกมาเดาได้แค่ไหน draft ผิดหมด &rarr; <code>S = L</code> &rarr; <code>L/S = 1</code></li>
+  <li><b>ตัวส่วนไม่มี <code>L</code> ไม่มี <code>S</code></b> อ่านว่า &ldquo;หนึ่ง speculative step แพงเท่ากับกี่ baseline step&rdquo; เปลี่ยน dataset แล้วไม่ควรขยับ ซึ่งเป็นเงื่อนไขที่ต้องตรวจ ไม่ใช่สิ่งที่อ้างเฉย ๆ (รอบก่อนวัดได้ต่างกัน 0.4%)</li>
+  <li><b>หารกันเพราะทั้งคู่เป็นอัตราส่วนแบบคูณ</b> ได้มา <code>L/S</code> เท่า จ่ายไป <code>(1+&rho;+&beta;(B&minus;1))</code> เท่า สุทธิคือหาร ตามมาด้วยเงื่อนไขคุ้มทุน <code>L/S &gt; 1 + &rho; + &beta;(B&minus;1)</code> คือ drafter แม่นอย่างเดียวไม่พอ ต้องแม่นกว่าราคาที่จ่ายไปเรียกมัน</li>
+  <li><b>ระวังเรื่องคำ</b> ตัวส่วนคือ<i>ค่าโสหุ้ย</i> ไม่ใช่ efficiency ตัว efficiency จริงคือส่วนกลับ ห้ามพูดว่าตัวส่วนสูงแปลว่า efficiency สูง</li>
+</ul>
+
+<h2 style="font-size:12.5pt;margin:22px 0 7px 0;">4. การแก้ off-by-one</h2>
+
+<p style="margin:0 0 9px 0;">โค้ดเดิมเขียน <code>t_v(m) = t_v(1)(1 + &beta;m)</code> ลองแทน <code>B = 1</code> คือ verify ตำแหน่งเดียว ซึ่ง<b>ก็คือ decoding ปกติเป๊ะ</b> ควรได้ <code>t_v(1)</code> แต่สูตรเดิมให้ <code>1.01 &middot; t_v(1)</code></p>
+
+<table style="border-collapse:collapse;width:100%;font-size:10pt;margin:0 0 12px 0;">
+  <tr style="background:#eceff2;">
+    <th style="border:1px solid #c9cfd6;padding:6px 9px;text-align:left;">กระทบ</th>
+    <th style="border:1px solid #c9cfd6;padding:6px 9px;text-align:left;">ยังไง</th>
+  </tr>
+  <tr>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;">อัตราส่วนระหว่าง cell</td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;"><b>ไม่กระทบ</b> พจน์ตัดกัน ข้อสรุปเชิงเปรียบเทียบรอบก่อนยังยืน</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;">speedup ดิบ</td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;">ต่ำกว่าจริงราว 1%</td>
+  </tr>
+  <tr style="background:#fdf3ef;">
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;">budget sweep หา <code>B</code> ที่ดีที่สุด</td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;"><b>กระทบเต็ม</b> จุดยอดอ่านจากพจน์ค่าปรับนี้ตรง ๆ และเมื่อตั้ง <code>&beta; = 0</code> ก็ไม่มีจุดยอดเหลือ ทิ้งผลนี้</td>
+  </tr>
+</table>
+
+<p style="margin:0 0 9px 0;">แก้ที่ <code>TargetLatencyModel.step_latency_ns</code> พร้อม test ยึดไว้ว่า <code>t_v(1)</code> ต้องเท่ากับ <code>t_verify_1_ns</code> เป๊ะ</p>
+
+<h2 style="font-size:12.5pt;margin:22px 0 7px 0;">5. อะไรวัดจริง อะไรยังเดา</h2>
+
+<table style="border-collapse:collapse;width:100%;font-size:10pt;margin:0 0 12px 0;">
+  <tr style="background:#eceff2;">
+    <th style="border:1px solid #c9cfd6;padding:6px 9px;text-align:left;">ตัวแปร</th>
+    <th style="border:1px solid #c9cfd6;padding:6px 9px;text-align:left;">สถานะ</th>
+    <th style="border:1px solid #c9cfd6;padding:6px 9px;text-align:left;">หมายเหตุ</th>
+  </tr>
+  <tr>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;"><code>L</code>, <code>S</code></td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;color:#1baf7a;"><b>วัดจริง</b></td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;">นับจาก simulator ตรง ๆ</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;"><code>t_d</code></td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;color:#1baf7a;"><b>วัดจริง</b></td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;">จับเวลาบน CPU หัก overhead ของตัวจับเวลาแล้ว</td>
+  </tr>
+  <tr style="background:#fdf3ef;">
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;"><code>t_v(1)</code></td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;color:#eb6834;"><b>สมมติ</b></td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;">20 ms ประมาณจากโมเดล 7B บน GPU ผู้บริโภค</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;"><code>&beta;</code></td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;color:#eb6834;"><b>ตั้งเป็น 0</b></td>
+    <td style="border:1px solid #c9cfd6;padding:6px 9px;">ตามข้อตกลง n token per 1 forward pass ไม่ใช่การเดาแล้ว แต่เป็นการนิยามหน่วย</td>
+  </tr>
+</table>
+
+<p style="margin:0 0 9px 0;">ผลของการตั้ง <code>&beta; = 0</code> คือ<b>ต้องทิ้ง budget sweep</b> ถ้าไม่มีค่าปรับกับ <code>B</code> แล้ว <code>L/S</code> โตตาม <code>B</code> เรื่อย ๆ จุดยอดหายไป จุดยอดที่รอบก่อนรายงานจึงเกิดจาก <code>&beta; = 0.01</code> ที่เดามาล้วน ๆ</p>
+
+<p style="margin:0 0 9px 0;">ที่เหลือคือ <code>&rho;</code> ซึ่งตอนนี้คร่อมสองเครื่อง (<code>t_d</code> จาก CPU หารด้วย <code>t_v(1)</code> ที่สมมติเป็น GPU) ลำเอียงเข้าข้าง on-the-fly เพราะการสแกนคือการเทียบ tensor แบบขนานที่ได้ประโยชน์จาก GPU ส่วนการเปิด index คือการไล่ pointer ที่ไม่ได้อะไรเลย จึงรายงาน <code>&rho;</code> เป็นแกนกวาด ไม่ใช่จุดเดียว</p>
+
+<h2 style="font-size:12.5pt;margin:22px 0 7px 0;">6. สรุป</h2>
+
+<ul style="margin:0 0 9px 0;padding-left:21px;">
+  <li>สูตรมาจากการหารเวลาสองอันแล้วจัดรูป สมมติฐานมีที่เดียว</li>
+  <li>ตัวเศษไม่มีเวลา ตัวส่วนไม่มีข้อมูล <b>การแยกนี้คือเหตุผลทั้งหมดว่าทำไม RQ2 ถึงถามคำถามแบบนี้ได้</b></li>
+  <li>speculatability เป็นเพดาน วิศวกรรมขยับไม่ได้ efficiency บอกว่าเข้าใกล้เพดานได้แค่ไหน</li>
+  <li>ที่ <code>&beta; = 0</code> เหลือ <code>speedup = (L/S)/(1+&rho;)</code> ซึ่งมีตัวแปรที่ต้องวัดแค่สองตัว</li>
+  <li>กฎที่ได้จากสมการตรง ๆ <b>วัด <code>&rho;</code> ก่อนเสมอ</b> ถ้าเกือบศูนย์ แปลว่า retrieval ฟรีอยู่แล้ว ไปแก้ datastore ไม่ต้องแตะโค้ด drafter</li>
+</ul>
+
+</div>

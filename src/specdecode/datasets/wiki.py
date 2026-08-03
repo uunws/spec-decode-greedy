@@ -155,6 +155,97 @@ def stream_tail_holdout_tokens(
     return corpus_tokens, target_tokens, stats
 
 
+def stream_forward_holdout_tokens(
+    lang: str,
+    encode: TokenEncoder,
+    corpus_token_limit: int,
+    target_count: int,
+    target_token_limit: int,
+    date: str = DEFAULT_DATE,
+    min_target_tokens: Optional[int] = None,
+    progress_callback: Optional[ProgressCallback] = None,
+    progress_every: int = 1_000,
+) -> Tuple[List[int], List[List[int]], Dict[str, int]]:
+    """Datastore and held-out targets from a single forward pass over the stream.
+
+    Like :func:`stream_tail_holdout_tokens`, but the holdout comes from articles
+    streamed *after* the corpus budget is met rather than from a negative split
+    such as ``train[-100:]``. A negative split is not streamable, so it forces a
+    download of the entire language dump -- fine for Lao (~15 MB), impractical for
+    English (~20 GB). Streaming forward keeps corpus and targets disjoint by
+    construction while touching only as much data as the budgets require.
+
+    Targets are returned individually, each truncated to ``target_token_limit``,
+    because the factorial study treats one article as one request and needs every
+    request to contribute the same number of measured positions.
+    """
+    if corpus_token_limit <= 0:
+        raise ValueError("corpus_token_limit must be positive")
+    if target_count <= 0:
+        raise ValueError("target_count must be positive")
+    if target_token_limit <= 0:
+        raise ValueError("target_token_limit must be positive")
+    if progress_every <= 0:
+        raise ValueError("progress_every must be positive")
+
+    floor = target_token_limit if min_target_tokens is None else min_target_tokens
+    config = available_config(lang, date)
+    corpus_tokens: List[int] = []
+    targets: List[List[int]] = []
+    articles_seen = 0
+    corpus_articles_encoded = 0
+    targets_skipped_too_short = 0
+
+    def emit_progress() -> None:
+        if progress_callback is None:
+            return
+        progress_callback(
+            {
+                "articles_seen": articles_seen,
+                "corpus_articles_encoded": corpus_articles_encoded,
+                "corpus_tokens": len(corpus_tokens),
+                "target_articles_encoded": len(targets),
+                "target_tokens": sum(len(t) for t in targets),
+            }
+        )
+
+    dataset = load_dataset("wikimedia/wikipedia", config, split="train", streaming=True)
+    for row in dataset:
+        articles_seen += 1
+        tokens = encode(row["text"])
+
+        if len(corpus_tokens) < corpus_token_limit:
+            remaining = corpus_token_limit - len(corpus_tokens)
+            corpus_tokens.extend(tokens[:remaining])
+            corpus_articles_encoded += 1
+        elif len(tokens) >= floor:
+            targets.append(tokens[:target_token_limit])
+        else:
+            targets_skipped_too_short += 1
+
+        if articles_seen % progress_every == 0:
+            emit_progress()
+        if len(corpus_tokens) >= corpus_token_limit and len(targets) >= target_count:
+            break
+
+    if len(corpus_tokens) < corpus_token_limit or len(targets) < target_count:
+        raise ValueError(
+            f"Wikipedia stream exhausted: got {len(corpus_tokens)}/{corpus_token_limit} "
+            f"corpus tokens and {len(targets)}/{target_count} targets"
+        )
+
+    stats = {
+        "articles_seen": articles_seen,
+        "corpus_articles_encoded": corpus_articles_encoded,
+        "target_articles_encoded": len(targets),
+        "targets_skipped_too_short": targets_skipped_too_short,
+        "corpus_tokens": len(corpus_tokens),
+        "target_tokens": sum(len(t) for t in targets),
+    }
+    emit_progress()
+    return corpus_tokens, targets, stats
+
+
 def available_config(lang: str, date: str = DEFAULT_DATE) -> str:
     """Config/subset name used by wikimedia/wikipedia, e.g. '20231101.lo'."""
     return f"{date}.{lang}"

@@ -32,6 +32,7 @@ class PrecomputeTensorNGramDrafter(VectorizeTensorNGramDrafter):
             n=n,
             num_sequences=num_sequences,
             draft_depth=draft_depth,
+            size_limit=size_limit,
         )
         self.cap_positions = cap_positions
         self.index = NGramIndex(
@@ -39,8 +40,6 @@ class PrecomputeTensorNGramDrafter(VectorizeTensorNGramDrafter):
             max_k=max(0, n - 1),
             cap_positions=cap_positions,
         )
-        requested_limit = len(corpus_tokens) if size_limit is None else size_limit
-        self.size_limit = max(0, min(requested_limit, len(corpus_tokens)))
 
     def generate_draft(self, prompt: List[int]) -> torch.Tensor:
         """Generate candidates from the precomputed index without corpus scanning."""
